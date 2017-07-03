@@ -1,0 +1,25 @@
+{
+	"FileVersion" : 1,
+	"Version" : 1,
+	"VersionName" : "1.0",
+	"FriendlyName" : "ROS Bridge Plugin",
+	"Description" : "A library which can be used to communicate between Unreal Engine and ROS Bridge.",
+	"Category" : "Examples",
+	"CreatedBy" : "Yilong Li",
+	"CreatedByURL" : "",
+	"DocsURL" : "",
+	"MarketplaceURL" : "",
+	"SupportURL" : "",
+	"EnabledByDefault" : true,
+	"CanContainContent" : false,
+	"IsBetaVersion" : false,
+	"Installed" : false,
+	"Modules" :
+	[
+		{
+			"Name" : "ROSBridgePlugin",
+			"Type" : "Developer",
+			"LoadingPhase" : "Default"
+		}
+	]
+}
