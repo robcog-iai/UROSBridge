@@ -35,7 +35,7 @@ bool FROSBridgeHandler::FROSBridgeHandlerRunnable::Init()
 
     // Bind Connected callback
     FWebsocketInfoCallBack ConnectedCallback;
-    ConnectedCallback.BindStatic(&CallbackOnConnection, true);
+    ConnectedCallback.BindStatic(&CallbackOnConnection, this->Handler);
     Handler->Client->SetConnectedCallBack(ConnectedCallback);
 
     // Bind Error callback
@@ -93,7 +93,7 @@ void FROSBridgeHandler::OnMessage(void* data, int32 length)
 
     // Find corresponding subscriber
     bool IsTopicFound = false;
-    TSharedPtr<UROSBridgeSubscriber> Subscriber;
+    TSharedPtr<FROSBridgeSubscriber> Subscriber;
     for (int i = 0; i < ListSubscribers.Num(); i++)
     {
         if (ListSubscribers[i]->GetMessageTopic() == Topic)
@@ -111,7 +111,7 @@ void FROSBridgeHandler::OnMessage(void* data, int32 length)
     {
         ROSBridgeMsg = Subscriber->ParseMessage(MsgObject.Get());
         TSharedPtr<FRenderTask> RenderTask = MakeShareable(
-             new FRenderTask(Subscriber, Topic, ROSBridgeMsg)
+             new FRenderTask(Subscriber.Get(), Topic, ROSBridgeMsg.Get())
         );
 
         QueueTask.Enqueue(RenderTask);
@@ -205,7 +205,7 @@ void FROSBridgeHandler::Render()
 {
     while (!QueueTask.IsEmpty())
     {
-        FRenderTask* RenderTask;
+        TSharedPtr<FRenderTask> RenderTask;
         QueueTask.Dequeue(RenderTask);
 
         FROSBridgeMsg* Msg = RenderTask->Message;

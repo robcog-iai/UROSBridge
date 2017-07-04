@@ -17,6 +17,8 @@ public:
         data = data_;
     }
 
+    ~FROSBridgeMsgStdmsgsInt32() override {}
+
     int64 GetData()
     {
         return data;
@@ -27,7 +29,7 @@ public:
         data = data_;
     }
 
-    virtual void FromJson(FJsonObject* JsonObject) override {
+    virtual void FromJson(const FJsonObject* JsonObject) override {
         data = (int64)(JsonObject->GetNumberField("data"));
     }
 
@@ -46,7 +48,7 @@ public:
         Object.SetNumberField(TEXT("data"), data);
 
         TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
-        FJsonSerializer::Serialize(Object.ToSharedRef(), Writer);
+        FJsonSerializer::Serialize(Object, Writer);
         return OutputString;
     }
 };

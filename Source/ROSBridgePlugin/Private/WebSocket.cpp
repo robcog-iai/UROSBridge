@@ -159,8 +159,25 @@ bool FWebSocket::Send(uint8* Data, uint32 Size)
 	Buffer.Append((uint8*)&Size, sizeof (uint32)); // insert size.
 	Buffer.Append((uint8*)Data, Size);
 	OutgoingBuffer.Add(Buffer);
+    OutgoingBufferType.Add( LWS_WRITE_BINARY );
 
 	return true;
+}
+
+bool FWebSocket::SendText(uint8* Data, uint32 Size)
+{
+    TArray<uint8> Buffer;
+
+#if !PLATFORM_HTML5
+    Buffer.AddDefaulted(LWS_PRE); // Reserve space for WS header data
+#endif
+
+    Buffer.Append((uint8*)&Size, sizeof (uint32)); // insert size.
+    Buffer.Append((uint8*)Data, Size);
+    OutgoingBuffer.Add(Buffer);
+    OutgoingBufferType.Add( LWS_WRITE_TEXT );
+
+    return true;
 }
 
 bool FWebSocket::Send(const FString &StringData)
@@ -170,7 +187,7 @@ bool FWebSocket::Send(const FString &StringData)
     uint8* Data = (uint8*)Conversion.Get();
 
     // Call FWebSocket::Send(uint8* Data, uint32 Size)
-    return Send(Data, DestLen);
+    return SendText(Data, DestLen);
 }
 
 void FWebSocket::SetRecieveCallBack(FWebsocketPacketRecievedCallBack CallBack)
@@ -404,6 +421,7 @@ void FWebSocket::OnRawWebSocketWritable(WebSocketInternal* wsi)
 		return;
 
 	TArray <uint8>& Packet = OutgoingBuffer[0];
+    lws_write_protocol OutType = (lws_write_protocol)OutgoingBufferType[0];
 
 #if !PLATFORM_HTML5_BROWSER
 
@@ -411,7 +429,8 @@ void FWebSocket::OnRawWebSocketWritable(WebSocketInternal* wsi)
 	uint32 DataToSend = TotalDataSize;
 	while (DataToSend)
 	{
-		int Sent = lws_write(Wsi, Packet.GetData() + LWS_PRE + (DataToSend-TotalDataSize), DataToSend, (lws_write_protocol)LWS_WRITE_BINARY);
+        int Sent = lws_write(Wsi, Packet.GetData() + LWS_PRE + (DataToSend-TotalDataSize), DataToSend, OutType);
+        ;
 		if (Sent < 0)
 		{
 			ErrorCallBack.ExecuteIfBound();
@@ -449,6 +468,7 @@ void FWebSocket::OnRawWebSocketWritable(WebSocketInternal* wsi)
 
 	// this is very inefficient we need a constant size circular buffer to efficiently not do unnecessary allocations/deallocations.
 	OutgoingBuffer.RemoveAt(0);
+    OutgoingBufferType.RemoveAt(0);
 
 }
 

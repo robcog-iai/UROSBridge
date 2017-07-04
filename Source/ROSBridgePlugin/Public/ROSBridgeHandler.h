@@ -18,11 +18,11 @@ private:
     /* FRenderTask: Representation of subscribed messages,
      *              can be processed by Render()*/
     struct FRenderTask {
-        FRenderTask(UROSBridgeSubscriber* Subscriber_, FString Topic_,
+        FRenderTask(FROSBridgeSubscriber* Subscriber_, FString Topic_,
                     FROSBridgeMsg* Message_):
             Subscriber(Subscriber_), Topic(Topic_), Message(Message_) {
         }
-        UROSBridgeSubscriber* Subscriber;
+        FROSBridgeSubscriber* Subscriber;
         FString Topic;
         FROSBridgeMsg* Message;
     };
@@ -59,8 +59,8 @@ private:
     FWebSocket* Client;
     FThreadSafeBool bIsClientConnected;
 
-    TArray< TSharedPtr< UROSBridgeSubscriber > > ListSubscribers;
-    TArray< TSharedPtr< UROSBridgePublisher > >  ListPublishers;
+    TArray< TSharedPtr< FROSBridgeSubscriber > > ListSubscribers;
+    TArray< TSharedPtr< FROSBridgePublisher > >  ListPublishers;
     TQueue< TSharedPtr< FRenderTask > > QueueTask;
 
     FROSBridgeHandlerRunnable* Runnable;
@@ -112,14 +112,14 @@ public:
         return Port;
     }
 
-    void AddSubscriber(UROSBridgeSubscriber* Subscriber)
+    void AddSubscriber(FROSBridgeSubscriber* Subscriber)
     {
-        ListSubscribers.Add(MakeShareable<UROSBridgeSubscriber>(Subscriber));
+        ListSubscribers.Add(MakeShareable<FROSBridgeSubscriber>(Subscriber));
     }
 
-    void AddPublisher(UROSBridgePublisher* Publisher)
+    void AddPublisher(FROSBridgePublisher* Publisher)
     {
-        ListPublishers.Add(MakeShareable<UROSBridgePublisher>(Publisher));
+        ListPublishers.Add(MakeShareable<FROSBridgePublisher>(Publisher));
     }
 
     void AddServiceResponse(UObject ServiceResponse)

@@ -4,18 +4,21 @@
 #include "ThreadingBase.h"
 #include "Queue.h"
 #include "Json.h"
-
 #include "ROSBridgeMsg.h"
 
-class UROSBridgeSubscriber : UObject {
+class FROSBridgeSubscriber {
     FString Type;
     FString Topic;
 
 public:
 
-    UROSBridgeSubscriber(FString Type_, FString Topic_):
+    FROSBridgeSubscriber(FString Type_, FString Topic_):
         Type(Type_), Topic(Topic_)
     {
+
+    }
+
+    virtual ~FROSBridgeSubscriber() {
 
     }
 
@@ -31,7 +34,7 @@ public:
         return NULL;
     }
 
-    virtual void CallBack(const FROSBridgeMsg* msg) {
+    virtual void CallBack(FROSBridgeMsg* msg) {
         return;
     }
 };

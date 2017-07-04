@@ -18,6 +18,8 @@ public:
         data = data_;
     }
 
+    ~FROSBridgeMsgStdmsgsUInt8() override {}
+
     uint8 GetData()
     {
         return data;

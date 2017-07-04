@@ -8,6 +8,7 @@
 
 class FWebSocket; 
 class FWebSocketServer; 
+class FROSBridgeHandler;
 
 typedef struct lws_context WebSocketInternalContext;
 typedef struct lws WebSocketInternal;

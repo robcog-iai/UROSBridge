@@ -3,18 +3,21 @@
 #include "CoreMinimal.h"
 #include "ThreadingBase.h"
 #include "Queue.h"
-#include "UObject.h"
 #include "ROSBridgeMsg.h"
 
-class UROSBridgePublisher : UObject {
+class FROSBridgePublisher {
     FString Type;
     FString Topic;
 
 public:
 
-    UROSBridgePublisher(FString Type_, FString Topic_):
+    FROSBridgePublisher(FString Type_, FString Topic_):
         Type(Type_), Topic(Topic_)
     {
+
+    }
+
+    virtual ~FROSBridgePublisher() {
 
     }
 

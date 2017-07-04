@@ -6,6 +6,8 @@
 #include "Json.h"
 
 class FROSBridgeMsg {
+
+protected:
     FString Type;
 
 public:
@@ -13,7 +15,11 @@ public:
 
     }
 
-    virtual void FromJson(FJsonObject* JsonObject) {
+    virtual ~FROSBridgeMsg() {
+
+    }
+
+    virtual void FromJson(const FJsonObject* JsonObject) {
 
     }
 
