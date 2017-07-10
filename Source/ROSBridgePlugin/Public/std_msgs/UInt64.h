@@ -31,7 +31,7 @@ public:
     }
 
 
-    virtual void FromJson(const FJsonObject* JsonObject) override {
+    virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override {
         data = (UInt64)(JsonObject->GetNumberField("data"));
     }
 

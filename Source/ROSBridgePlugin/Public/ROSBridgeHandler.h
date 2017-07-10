@@ -59,9 +59,9 @@ private:
     FWebSocket* Client;
     FThreadSafeBool bIsClientConnected;
 
-    TArray< TSharedPtr< FROSBridgeSubscriber > > ListSubscribers;
-    TArray< TSharedPtr< FROSBridgePublisher > >  ListPublishers;
-    TQueue< TSharedPtr< FRenderTask > > QueueTask;
+    TArray< FROSBridgeSubscriber* > ListSubscribers;
+    TArray< FROSBridgePublisher* >  ListPublishers;
+    TQueue< FRenderTask* > QueueTask;
 
     FROSBridgeHandlerRunnable* Runnable;
     FRunnableThread* Thread;
@@ -114,12 +114,12 @@ public:
 
     void AddSubscriber(FROSBridgeSubscriber* Subscriber)
     {
-        ListSubscribers.Add(MakeShareable<FROSBridgeSubscriber>(Subscriber));
+        ListSubscribers.Add(Subscriber);
     }
 
     void AddPublisher(FROSBridgePublisher* Publisher)
     {
-        ListPublishers.Add(MakeShareable<FROSBridgePublisher>(Publisher));
+        ListPublishers.Add(Publisher);
     }
 
     void AddServiceResponse(UObject ServiceResponse)

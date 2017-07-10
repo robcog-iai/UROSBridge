@@ -172,7 +172,7 @@ bool FWebSocket::SendText(uint8* Data, uint32 Size)
     Buffer.AddDefaulted(LWS_PRE); // Reserve space for WS header data
 #endif
 
-    Buffer.Append((uint8*)&Size, sizeof (uint32)); // insert size.
+    // Buffer.Append((uint8*)&Size, sizeof (uint32)); // insert size.
     Buffer.Append((uint8*)Data, Size);
     OutgoingBuffer.Add(Buffer);
     OutgoingBufferType.Add( LWS_WRITE_TEXT );
@@ -182,6 +182,7 @@ bool FWebSocket::SendText(uint8* Data, uint32 Size)
 
 bool FWebSocket::Send(const FString &StringData)
 {
+    UE_LOG(LogTemp, Log, TEXT("Output Message: %s"), *StringData);
     FTCHARToUTF8 Conversion(*StringData);
     uint32 DestLen = Conversion.Length();
     uint8* Data = (uint8*)Conversion.Get();
@@ -346,7 +347,7 @@ void FWebSocket::SetErrorCallBack(FWebsocketInfoCallBack CallBack)
 
 void FWebSocket::OnRawRecieve(void* Data, uint32 Size, bool isBinary)
 {
-    // UE_LOG(LogTemp, Warning, TEXT("OnRawReceive Called. Size = %d"), Size);
+    UE_LOG(LogTemp, Warning, TEXT("OnRawReceive Called. Size = %d, isBinary = %d"), Size, isBinary);
 #if !PLATFORM_HTML5
 
 	RecievedBuffer.Append((uint8*)Data, Size); // consumes all of Data
@@ -525,7 +526,7 @@ static int unreal_networking_client(
 		break;
 	case LWS_CALLBACK_CLIENT_RECEIVE:
 		{
-            // UE_LOG(LogTemp, Warning, TEXT("LWS_CALLBACK_CLIENT_RECEIVE Called. Is it Binary? %d. "), lws_frame_is_binary(Wsi));
+            UE_LOG(LogTemp, Warning, TEXT("LWS_CALLBACK_CLIENT_RECEIVE Called. Is it Binary? %d. "), lws_frame_is_binary(Wsi));
 
 			// push it on the socket.
             Socket->OnRawRecieve(In, (uint32)Len, lws_frame_is_binary(Wsi));

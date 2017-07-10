@@ -30,7 +30,7 @@ public:
         data = data_;
     }
 
-    virtual void FromJson(const FJsonObject* JsonObject) override {
+    virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override {
         data = JsonObject->GetIntegerField("data");
     }
 

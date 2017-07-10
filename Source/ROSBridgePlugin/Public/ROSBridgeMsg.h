@@ -19,7 +19,7 @@ public:
 
     }
 
-    virtual void FromJson(const FJsonObject* JsonObject) {
+    virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) {
 
     }
 

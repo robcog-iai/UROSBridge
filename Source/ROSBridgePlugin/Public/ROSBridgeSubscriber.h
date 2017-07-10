@@ -30,7 +30,7 @@ public:
         return Topic;
     }
 
-    virtual TSharedPtr<FROSBridgeMsg> ParseMessage(const FJsonObject* JsonObject) {
+    virtual FROSBridgeMsg* ParseMessage(TSharedPtr<FJsonObject> JsonObject) {
         return NULL;
     }
 

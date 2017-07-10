@@ -29,8 +29,9 @@ public:
         data = str;
     }
 
-    virtual void FromJson(const FJsonObject* JsonObject) override {
+    virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override {
         data = JsonObject->GetStringField("data");
+        UE_LOG(LogTemp, Log, TEXT("In From Json, data: %s"), *data);
     }
 
     virtual FString ToString () override

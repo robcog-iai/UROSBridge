@@ -75,6 +75,7 @@ void FROSBridgeHandler::OnMessage(void* data, int32 length)
     CharMessage[length] = 0;
 
     FString JsonMessage = UTF8_TO_TCHAR(CharMessage);
+    UE_LOG(LogTemp, Error, TEXT("Json Message: %s"), *JsonMessage);
 
     // Parse Json Message Here
     TSharedRef< TJsonReader<> > Reader =
@@ -88,17 +89,22 @@ void FROSBridgeHandler::OnMessage(void* data, int32 length)
     }
 
     FString Topic = JsonObject->GetStringField(TEXT("topic"));
+    UE_LOG(LogTemp, Error, TEXT("Received, Topic: %s. "), *Topic);
+
+    FString Data = JsonObject->GetObjectField(TEXT("msg"))->GetStringField(TEXT("data"));
+    UE_LOG(LogTemp, Error, TEXT("Received, Data: %s. "), *Data);
+
     TSharedPtr< FJsonObject > MsgObject = JsonObject->GetObjectField(TEXT("msg"));
-    TSharedPtr< FROSBridgeMsg > ROSBridgeMsg;
 
     // Find corresponding subscriber
     bool IsTopicFound = false;
-    TSharedPtr<FROSBridgeSubscriber> Subscriber;
+    FROSBridgeSubscriber* Subscriber;
     for (int i = 0; i < ListSubscribers.Num(); i++)
     {
         if (ListSubscribers[i]->GetMessageTopic() == Topic)
         {
             Subscriber = ListSubscribers[i];
+            UE_LOG(LogTemp, Error, TEXT("Subscriber Found. Id = %d. "), i);
             IsTopicFound = true; break;
         }
     }
@@ -109,15 +115,18 @@ void FROSBridgeHandler::OnMessage(void* data, int32 length)
     }
     else
     {
-        ROSBridgeMsg = Subscriber->ParseMessage(MsgObject.Get());
-        TSharedPtr<FRenderTask> RenderTask = MakeShareable(
-             new FRenderTask(Subscriber.Get(), Topic, ROSBridgeMsg.Get())
-        );
+        FROSBridgeMsg* ROSBridgeMsg;
+        ROSBridgeMsg = Subscriber->ParseMessage(MsgObject);
+        UE_LOG(LogTemp, Error, TEXT("Parse Finished. "));
+
+        FRenderTask* RenderTask = new FRenderTask(Subscriber, Topic, ROSBridgeMsg);
+        UE_LOG(LogTemp, Error, TEXT("New FRenderTask. "));
 
         QueueTask.Enqueue(RenderTask);
     }
 
     delete [] CharMessage;
+    UE_LOG(LogTemp, Error, TEXT("OnMessage End. "));
 }
 
 // Create runnable instance and run the thread;
@@ -205,10 +214,16 @@ void FROSBridgeHandler::Render()
 {
     while (!QueueTask.IsEmpty())
     {
-        TSharedPtr<FRenderTask> RenderTask;
+        UE_LOG(LogTemp, Log, TEXT("Queue not empty. "));
+        FRenderTask* RenderTask;
         QueueTask.Dequeue(RenderTask);
+        UE_LOG(LogTemp, Log, TEXT("Dequeue Done. "));
 
         FROSBridgeMsg* Msg = RenderTask->Message;
         RenderTask->Subscriber->CallBack(Msg);
+        UE_LOG(LogTemp, Log, TEXT("Callback Done. "));
+
+        delete RenderTask;
+        // delete Msg;
     }
 }
