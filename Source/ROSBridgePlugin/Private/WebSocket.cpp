@@ -418,7 +418,7 @@ void FWebSocket::OnRawRecieve(void* Data, uint32 Size, bool isBinary)
 
 void FWebSocket::OnRawWebSocketWritable(WebSocketInternal* wsi)
 {
-	if (OutgoingBuffer.Num() == 0)
+    if (OutgoingBuffer.Num() == 0 || OutgoingBufferType.Num() == 0)
 		return;
 
 	TArray <uint8>& Packet = OutgoingBuffer[0];

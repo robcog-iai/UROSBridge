@@ -33,7 +33,7 @@ public:
         data = (int64)(JsonObject->GetNumberField("data"));
     }
 
-    virtual FString ToString () override
+    virtual FString ToString () const override
     {
         char CharData[21];
         sprintf(CharData, "%lld", data);
@@ -42,7 +42,7 @@ public:
         return TEXT("Int64 { data = \"" + StringData + "\" }");
     }
 
-    virtual FString ToYamlString() override {
+    virtual FString ToYamlString() const override {
         FString OutputString;
         FJsonObject Object;
         Object.SetNumberField(TEXT("data"), data);

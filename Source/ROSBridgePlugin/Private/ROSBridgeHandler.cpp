@@ -153,7 +153,7 @@ void FROSBridgeHandler::Connect()
     UE_LOG(LogTemp, Log, TEXT("Advertise all topics. "));
     for (int i = 0; i < ListPublishers.Num(); i++)
     {
-        UE_LOG(LogTemp, Warning, TEXT("Unadvertising Topic %s"), *ListPublishers[i]->GetMessageTopic());
+        UE_LOG(LogTemp, Warning, TEXT("Adfadvertising Topic %s"), *ListPublishers[i]->GetMessageTopic());
         FString WebSocketMessage = FROSBridgeMsg::Advertise(ListPublishers[i]->GetMessageTopic(),
                                                             ListPublishers[i]->GetMessageType());
         Client->Send(WebSocketMessage);
@@ -226,4 +226,10 @@ void FROSBridgeHandler::Render()
         delete RenderTask;
         // delete Msg;
     }
+}
+
+void FROSBridgeHandler::PublishMsg(FString Topic, FROSBridgeMsg* Msg)
+{
+    FString MsgToSend = FROSBridgeMsg::Publish(Topic, Msg);
+    Client->Send(MsgToSend);
 }

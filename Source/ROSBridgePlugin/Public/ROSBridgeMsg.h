@@ -23,12 +23,12 @@ public:
 
     }
 
-    virtual FString ToString()
+    virtual FString ToString() const
     {
         return TEXT("{}");
     }
 
-    virtual FString ToYamlString() {
+    virtual FString ToYamlString() const {
         return TEXT("{}");
     }
 
@@ -40,6 +40,12 @@ public:
 
     static FString UnAdvertise(FString MessageTopic) {
         return TEXT("{\"op\": \"unadvertise\", \"topic\": \"") + MessageTopic + TEXT("\"}");
+    }
+
+    static FString Publish(const FString& MessageTopic, const FROSBridgeMsg* Message) {
+        return TEXT("{\"op\": \"publish\", \"topic\": \"") + MessageTopic +
+               TEXT("\", \"msg\": ") + Message->ToYamlString() +
+               TEXT("}";)
     }
 
     static FString Publish(const FString& MessageTopic, const FString& Message) {

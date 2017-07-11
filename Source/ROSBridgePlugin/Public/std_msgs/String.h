@@ -34,12 +34,12 @@ public:
         UE_LOG(LogTemp, Log, TEXT("In From Json, data: %s"), *data);
     }
 
-    virtual FString ToString () override
+    virtual FString ToString () const override
     {
         return TEXT("String { data = \"" + data + "\" }");
     }
 
-    virtual FString ToYamlString() override {
+    virtual FString ToYamlString() const override {
         FString OutputString;
         FJsonObject Object;
         Object.SetStringField(TEXT("data"), data);

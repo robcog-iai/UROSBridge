@@ -127,6 +127,8 @@ public:
         UE_LOG(LogTemp, Warning, TEXT("Not Implemented Yet!"));
     }
 
+    void PublishMsg(FString Topic, FROSBridgeMsg* Msg);
+
     // Create runnable instance and run the thread;
     void Connect();
 

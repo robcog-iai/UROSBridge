@@ -33,12 +33,12 @@ public:
         data = (int8)(JsonObject->GetIntegerField("data"));
     }
 
-    virtual FString ToString () override
+    virtual FString ToString () const override
     {
         return TEXT("Int8 { data = \"" + FString::FromInt(data) + "\" }");
     }
 
-    virtual FString ToYamlString() override {
+    virtual FString ToYamlString() const override {
         FString OutputString;
         FJsonObject Object;
         Object.SetNumberField(TEXT("data"), data);
