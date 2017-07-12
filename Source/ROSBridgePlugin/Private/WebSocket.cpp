@@ -529,7 +529,7 @@ static int unreal_networking_client(
             UE_LOG(LogTemp, Warning, TEXT("LWS_CALLBACK_CLIENT_RECEIVE Called. Is it Binary? %d. "), lws_frame_is_binary(Wsi));
 
 			// push it on the socket.
-            Socket->OnRawRecieve(In, (uint32)Len, lws_frame_is_binary(Wsi));
+            Socket->OnRawRecieve(In, (uint32)Len, (bool)lws_frame_is_binary(Wsi));
 			check(Socket->Wsi == Wsi);
 			lws_set_timeout(Wsi, NO_PENDING_TIMEOUT, 0);
 			break;
