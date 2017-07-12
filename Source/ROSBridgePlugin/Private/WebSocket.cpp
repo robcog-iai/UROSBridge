@@ -479,7 +479,7 @@ FWebSocket::~FWebSocket()
     ConnectedCallBack.Unbind();
     ErrorCallBack.Unbind();
 
-#if !PLATFORM_HTfML5
+#if !PLATFORM_HTML5
 
 	Flush();
 
