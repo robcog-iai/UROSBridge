@@ -70,6 +70,9 @@ public:
 	TArray<TArray<uint8>> OutgoingBuffer;
     TArray<uint8> OutgoingBufferType;
 
+    /** Critical Section */
+    FCriticalSection CriticalSection;
+
 #if !PLATFORM_HTML5_BROWSER
 	/** libwebsocket internal context*/
 	WebSocketInternalContext* Context;

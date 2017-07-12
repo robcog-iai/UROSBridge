@@ -158,8 +158,11 @@ bool FWebSocket::Send(uint8* Data, uint32 Size)
 
 	Buffer.Append((uint8*)&Size, sizeof (uint32)); // insert size.
 	Buffer.Append((uint8*)Data, Size);
-	OutgoingBuffer.Add(Buffer);
+
+    CriticalSection.Lock();
+    OutgoingBuffer.Add(Buffer);
     OutgoingBufferType.Add( LWS_WRITE_BINARY );
+    CriticalSection.Unlock();
 
 	return true;
 }
@@ -174,8 +177,11 @@ bool FWebSocket::SendText(uint8* Data, uint32 Size)
 
     // Buffer.Append((uint8*)&Size, sizeof (uint32)); // insert size.
     Buffer.Append((uint8*)Data, Size);
+
+    CriticalSection.Lock();
     OutgoingBuffer.Add(Buffer);
     OutgoingBufferType.Add( LWS_WRITE_TEXT );
+    CriticalSection.Unlock();
 
     return true;
 }
@@ -421,8 +427,10 @@ void FWebSocket::OnRawWebSocketWritable(WebSocketInternal* wsi)
     if (OutgoingBuffer.Num() == 0 || OutgoingBufferType.Num() == 0)
 		return;
 
+    CriticalSection.Lock();
 	TArray <uint8>& Packet = OutgoingBuffer[0];
     lws_write_protocol OutType = (lws_write_protocol)OutgoingBufferType[0];
+    CriticalSection.Unlock();
 
 #if !PLATFORM_HTML5_BROWSER
 
@@ -468,8 +476,10 @@ void FWebSocket::OnRawWebSocketWritable(WebSocketInternal* wsi)
 #endif
 
 	// this is very inefficient we need a constant size circular buffer to efficiently not do unnecessary allocations/deallocations.
+    CriticalSection.Lock();
 	OutgoingBuffer.RemoveAt(0);
     OutgoingBufferType.RemoveAt(0);
+    CriticalSection.Unlock();
 
 }
 
