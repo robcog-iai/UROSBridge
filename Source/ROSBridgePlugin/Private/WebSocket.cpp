@@ -22,11 +22,22 @@
 
 #if !PLATFORM_HTML5
 // Work around a conflict between a UI namespace defined by engine code and a typedef in OpenSSL
+
+#if PLATFORM_LINUX || PLATFORM_MAC
 #pragma push_macro("UI")
+#undef UI
+#elif PLATFORM_WINDOWS
+#define UI UI_ST
+#endif 
 THIRD_PARTY_INCLUDES_START
 #include "libwebsockets.h"
 THIRD_PARTY_INCLUDES_END
+#if PLATFORM_LINUX || PLATFORM_MAC
 #pragma pop_macro("UI")
+#elif PLATFORM_WINDOWS
+#undef UI
+#endif 
+
 #endif
 
 #if !PLATFORM_HTML5
