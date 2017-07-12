@@ -6,11 +6,11 @@
 
 #if !PLATFORM_HTML5
 // Work around a conflict between a UI namespace defined by engine code and a typedef in OpenSSL
-#pragma PUSH_MACRO("UI")
+#pragma push_macro("UI")
 THIRD_PARTY_INCLUDES_START
 #include "libwebsockets.h"
 THIRD_PARTY_INCLUDES_END
-#pragma POP_MACRO("UI")
+#pragma pop_macro("UI")
 #endif
 
 // a object of this type is associated by libwebsocket to every connected session.
