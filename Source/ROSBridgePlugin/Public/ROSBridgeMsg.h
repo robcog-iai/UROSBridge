@@ -5,7 +5,7 @@
 #include "Queue.h"
 #include "Json.h"
 
-class FROSBridgeMsg {
+class ROSBRIDGEPLUGIN_API FROSBridgeMsg {
 
 protected:
     FString Type;

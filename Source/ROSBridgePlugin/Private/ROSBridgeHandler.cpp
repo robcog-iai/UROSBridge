@@ -98,7 +98,7 @@ void FROSBridgeHandler::OnMessage(void* data, int32 length)
 
     // Find corresponding subscriber
     bool IsTopicFound = false;
-    FROSBridgeSubscriber* Subscriber;
+    FROSBridgeSubscriber* Subscriber = NULL;
     for (int i = 0; i < ListSubscribers.Num(); i++)
     {
         if (ListSubscribers[i]->GetMessageTopic() == Topic)

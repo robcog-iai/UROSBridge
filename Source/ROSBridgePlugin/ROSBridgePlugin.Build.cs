@@ -36,7 +36,11 @@ namespace UnrealBuildTool.Rules
 				{
                     "CoreUObject", 
                     "Engine",
-				}
+                    "Core",
+                    "Networking", "Sockets", "PacketHandler",
+                    "libWebSockets", "OpenSSL", "zlib",
+                    "Json", "JsonUtilities"
+                }
 				);
 
 			DynamicallyLoadedModuleNames.AddRange(

@@ -7,11 +7,10 @@
 #include "ROSBridgeMsg.h"
 #include "ROSBridgePublisher.h"
 #include "ROSBridgeSubscriber.h"
-#include "UObject.h"
 
 #include "WebSocket.h"
 
-class FROSBridgeHandler {
+class ROSBRIDGEPLUGIN_API FROSBridgeHandler {
 
 private:
     /* Subclasses */

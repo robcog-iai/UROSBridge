@@ -5,7 +5,7 @@
 #include "Queue.h"
 #include "ROSBridgeMsg.h"
 
-class FROSBridgePublisher {
+class ROSBRIDGEPLUGIN_API FROSBridgePublisher {
     FString Type;
     FString Topic;
 
