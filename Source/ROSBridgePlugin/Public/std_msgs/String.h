@@ -34,12 +34,13 @@ public:
         UE_LOG(LogTemp, Log, TEXT("In From Json, data: %s"), *data);
     }
 
-    virtual FString ToString () const override
-    {
-        return TEXT("String { data = \"" + data + "\" }");
-    }
+	virtual TSharedPtr<FJsonObject> ToJsonObject() const override {
+		TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
+		Object->SetStringField(TEXT("data"), data); 
+		return Object;
+	}
 
-    virtual FString ToYamlString() const override {
+    /* virtual FString ToYamlString() const override {
         FString OutputString;
         FJsonObject Object;
         Object.SetStringField(TEXT("data"), data);
@@ -47,5 +48,5 @@ public:
         TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
         FJsonSerializer::Serialize(MakeShared<FJsonObject>(Object), Writer);
         return OutputString;
-    }
+    } */ 
 };

@@ -6,7 +6,7 @@ class FROSBridgeMsgStdmsgsUInt32 : public FROSBridgeMsg
     uint32 data;
 
 public:
-    FROSBridgeMsgStdmsgsUint32()
+    FROSBridgeMsgStdmsgsUInt32()
     {
         Type = "std_msgs/UInt32";
     }

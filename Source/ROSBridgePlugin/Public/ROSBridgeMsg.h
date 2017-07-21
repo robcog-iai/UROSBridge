@@ -1,9 +1,12 @@
 #pragma once
 
-#include "CoreMinimal.h"
+#include "Core.h"
+#include "LogMacros.h"
 #include "ThreadingBase.h"
 #include "Queue.h"
 #include "Json.h"
+
+#include "ROSTime.h"
 
 class ROSBRIDGEPLUGIN_API FROSBridgeMsg {
 
@@ -14,7 +17,7 @@ public:
     FROSBridgeMsg() {
 
     }
-
+	
     virtual ~FROSBridgeMsg() {
 
     }
@@ -23,13 +26,21 @@ public:
 
     }
 
+	virtual TSharedPtr<FJsonObject> ToJsonObject() const {
+		TSharedPtr<FJsonObject> NewObject = MakeShareable<FJsonObject>(new FJsonObject());
+		return NewObject; 
+	}
+
     virtual FString ToString() const
     {
         return TEXT("{}");
     }
 
     virtual FString ToYamlString() const {
-        return TEXT("{}");
+		FString OutputString;
+		TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
+		FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
+		return OutputString;
     }
 
     static FString Advertise(const FString& MessageTopic, const FString& MessageType) {
