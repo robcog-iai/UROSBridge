@@ -183,6 +183,8 @@ void FROSBridgeHandler::Disconnect()
         Client->Send(WebSocketMessage);
     }
 
+	Client->Flush();
+
     // Kill the thread and the Runnable
     UE_LOG(LogTemp, Log, TEXT("Kill the thread. "));
     Thread->Kill();
