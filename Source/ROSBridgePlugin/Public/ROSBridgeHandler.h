@@ -5,8 +5,10 @@
 #include "Queue.h"
 
 #include "ROSBridgeMsg.h"
+#include "ROSBridgeSrv.h"
 #include "ROSBridgePublisher.h"
 #include "ROSBridgeSubscriber.h"
+#include "ROSBridgeSrvClient.h"
 
 #include "WebSocket.h"
 
@@ -24,6 +26,28 @@ private:
         FROSBridgeSubscriber* Subscriber;
         FString Topic;
         FROSBridgeMsg* Message;
+    };
+
+    /* FServiceTask: Service call results, can be processed by Render() */
+    struct FServiceTask {
+        FServiceTask(FROSBridgeSrvClient* Client_, FString ServiceName_, FString ID_) :
+            Client(Client_), Name(ServiceName_), ID(ID_), bIsResponsed(false), bIsProcessed(false) {
+        }
+
+        FServiceTask(FROSBridgeSrvClient* Client_, FString ServiceName_, FString ID_, 
+            TSharedPtr<FROSBridgeSrv::SrvRequest> Request_, 
+            TSharedPtr<FROSBridgeSrv::SrvResponse> Response_) :
+            Client(Client_), Name(ServiceName_), ID(ID_), 
+            Request(Request_), Response(Response_),
+            bIsResponsed(false), bIsProcessed(false) {
+        }
+        FROSBridgeSrvClient* Client; 
+        FString Name;
+        FString ID; 
+        TSharedPtr<FROSBridgeSrv::SrvRequest> Request; 
+        TSharedPtr<FROSBridgeSrv::SrvResponse> Response;
+        bool bIsResponsed; 
+        bool bIsProcessed; 
     };
 
     class FROSBridgeHandlerRunnable : public FRunnable {
@@ -61,9 +85,13 @@ private:
     TArray< FROSBridgeSubscriber* > ListSubscribers;
     TArray< FROSBridgePublisher* >  ListPublishers;
     TQueue< FRenderTask* > QueueTask;
+    TArray< FServiceTask* > ArrayService;
 
     FROSBridgeHandlerRunnable* Runnable;
     FRunnableThread* Thread;
+
+    FCriticalSection LockTask; 
+    FCriticalSection LockService;
 
     // When message comes, create FRenderTask instances and push it
     // into QueueTask.
@@ -127,6 +155,10 @@ public:
     }
 
     void PublishMsg(FString Topic, FROSBridgeMsg* Msg);
+    void CallService(FROSBridgeSrvClient* SrvClient,
+        FROSBridgeSrv::SrvRequest* Request,
+        FROSBridgeSrv::SrvResponse* Response); 
+    void CallServiceImpl(FString Name, FROSBridgeSrv::SrvRequest* Request, FString ID);
 
     // Create runnable instance and run the thread;
     void Connect();
