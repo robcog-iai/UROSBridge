@@ -26,5 +26,4 @@ void FROSBridgePlugin::ShutdownModule()
 	// we call this function before unloading the module.
 }
 
-
-
+DEFINE_LOG_CATEGORY(LogROS);

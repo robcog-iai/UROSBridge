@@ -1,8 +1,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ThreadingBase.h"
-#include "Queue.h"
 #include "Json.h"
 #include "ROSBridgeMsg.h"
 
@@ -30,11 +28,7 @@ public:
         return Topic;
     }
 
-    virtual FROSBridgeMsg* ParseMessage(TSharedPtr<FJsonObject> JsonObject) {
-        return NULL;
-    }
+    virtual FROSBridgeMsg* ParseMessage(TSharedPtr<FJsonObject> JsonObject) const = 0;
 
-    virtual void CallBack(FROSBridgeMsg* msg) {
-        return;
-    }
+    virtual void CallBack(FROSBridgeMsg* msg) const = 0;
 };

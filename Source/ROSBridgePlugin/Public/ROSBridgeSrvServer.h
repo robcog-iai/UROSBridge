@@ -1,16 +1,12 @@
 #pragma once
 
 #include "Core.h"
-#include "LogMacros.h"
-#include "ThreadingBase.h"
-#include "Queue.h"
 #include "Json.h"
 
-#include "ROSTime.h"
 #include "ROSBridgeSrv.h"
 
 class ROSBRIDGEPLUGIN_API FROSBridgeSrvServer {
-private:
+protected:
     FString Name; 
     FString Type; 
 
@@ -23,7 +19,7 @@ public:
 
     FString GetType() const { return Type; }
 
-    virtual TSharedPtr<FROSBridgeSrv::SrvRequest> FromJson(TSharedPtr<FJsonObject> JsonObject) = 0; 
+    virtual TSharedPtr<FROSBridgeSrv::SrvRequest> FromJson(TSharedPtr<FJsonObject> JsonObject) const = 0;
     
-    virtual TSharedPtr<FROSBridgeSrv::SrvResponse> CallBack(TSharedPtr<FROSBridgeSrv::SrvRequest> Request) = 0; 
+    virtual TSharedPtr<FROSBridgeSrv::SrvResponse> CallBack(TSharedPtr<FROSBridgeSrv::SrvRequest> Request) const = 0;
 }; 

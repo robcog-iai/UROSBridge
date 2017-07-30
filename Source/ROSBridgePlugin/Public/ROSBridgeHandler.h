@@ -100,7 +100,9 @@ private:
     // When message comes, create FRenderTask instances and push it
     // into QueueTask.
     void OnMessage(void* data, int32 length);
-    void Run();
+
+    void CallServiceImpl(FString Name,
+        TSharedPtr<FROSBridgeSrv::SrvRequest> Request, FString ID);
 
     // friendship declaration
     friend class FROSBridgeHandlerRunnable;
@@ -158,20 +160,17 @@ public:
         ListServiceServer.Add(Server); 
     }
 
-    void AddServiceResponse(UObject ServiceResponse)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Not Implemented Yet!"));
-    }
-
-
+    // Publish service response, used in service server
     void PublishServiceResponse(FString Service, FString ID,
         TSharedPtr<FROSBridgeSrv::SrvResponse> Response); 
+
+    // Publish ROS message to topics
     void PublishMsg(FString Topic, FROSBridgeMsg* Msg);
+
+    // Call external ROS service
     void CallService(FROSBridgeSrvClient* SrvClient,
         TSharedPtr<FROSBridgeSrv::SrvRequest> Request,
         TSharedPtr<FROSBridgeSrv::SrvResponse> Response);
-    void CallServiceImpl(FString Name, 
-        TSharedPtr<FROSBridgeSrv::SrvRequest> Request, FString ID);
 
     // Create runnable instance and run the thread;
     void Connect();

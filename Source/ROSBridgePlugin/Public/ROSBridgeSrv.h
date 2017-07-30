@@ -1,12 +1,7 @@
 #pragma once
 
 #include "Core.h"
-#include "LogMacros.h"
-#include "ThreadingBase.h"
-#include "Queue.h"
 #include "Json.h"
-
-#include "ROSTime.h"
 
 class ROSBRIDGEPLUGIN_API FROSBridgeSrv {
 public:
