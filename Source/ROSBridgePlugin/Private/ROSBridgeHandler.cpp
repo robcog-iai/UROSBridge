@@ -215,7 +215,8 @@ void FROSBridgeHandler::Connect()
     for (int i = 0; i < ListSubscribers.Num(); i++)
     {
         UE_LOG(LogROS, Warning, TEXT("[FROSBridgeHandler::Connect] Subscribing Topic %s"), *ListSubscribers[i]->GetMessageTopic());
-        FString WebSocketMessage = FROSBridgeMsg::Subscribe(ListSubscribers[i]->GetMessageTopic());
+        FString WebSocketMessage = FROSBridgeMsg::Subscribe(ListSubscribers[i]->GetMessageTopic(),
+                                                            ListSubscribers[i]->GetMessageType());
         Client->Send(WebSocketMessage);
     }
 
