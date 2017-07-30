@@ -1,88 +1,26 @@
 # ROSBridgePlugin
 
-A UE4 Plugin for communication with ROS Bridge using WebSockets. 
+A UE4 Plugin for communication with ROS Bridge using WebSockets, which supports subscribing and publishing both ROS messages (topics) and services. 
 
 This plugin is originated from Michael Jenkin and Mathias Ciarlo's [ROSBridgeLib](https://github.com/MathiasCiarlo/ROSBridgeLib), a Unity-based ROS bridge library; This repository could be used as a plugin for UE4 or UE4 projects. 
 
-## Messages 
+## Messages and Services
 
-Now only `std_msgs` are supported and We are intending to add more messages like `sensor_msgs` and `geometry_msgs` for PR2 simulation. 
+Now only `std_msgs`, `sensor_msgs`, `geometry_msgs` and `std_srvs` are supported. If you are going to add new message / service types, please make a pull request. 
 
 ## Usage 
 
-To subscribe messages, the user needs to extend a subscriber class from FROSBridgeSubscriber, and implement its destructor, `ParseMessage` and `CallBack` methods. 
+See [Wiki](https://github.com/gnoliyil/ROSBridgePlugin/wiki) for tutorials on how to subscribe to topic, publish to topic, call external services and advertise to service calls. 
 
-To publish messages, the user needs to extend a publisher class from FROSBridgePublisher or use FROSBridgePublisher directly. 
+[ROSBridgeTest](https://github.com/gnoliyil/URoboSim/tree/RI/ROSBridgeTest) is an Unreal Project to test all these functionalities.
 
-Example: 
-
-``` cpp
-UCLASS()
-class ROSBRIDGETEST_API AROSBridgeTestGameModeBase : public AGameModeBase
-{
-    GENERATED_BODY()
-	
-public:
-    FROSBridgeHandler* Handler;
-    FROSStringSubScriber* Subscriber;
-    FROSBridgePublisher* Publisher;
-
-    AROSBridgeTestGameModeBase(const FObjectInitializer &ObjectInitializer) :
-        AGameModeBase(ObjectInitializer){
-        PrimaryActorTick.bCanEverTick = true;
-        PrimaryActorTick.bStartWithTickEnabled = true;
-    }
-
-    void BeginPlay() override
-    {
-        Super::BeginPlay();
-        // Create ROS Bridge Handler
-        Handler = new FROSBridgeHandler(TEXT("127.0.0.1"), 9001);
-
-        // Create ROS Subscriber, which extends the ROSBridgeSubscriber class
-        Subscriber = new FROSStringSubScriber(TEXT("/chatter")); 
-        Handler->AddSubscriber(Subscriber);
-
-        // Create ROS Publisher
-        Publisher = new FROSBridgePublisher(TEXT("std_msgs/String"), TEXT("/talker"));
-        Handler->AddPublisher(Publisher);
-
-        Handler->Connect();
-    }
-
-    void Tick(float DeltaSeconds) override {
-        Super::Tick(DeltaSeconds);
- 
-        // Test sending message
-        FROSBridgeMsgStdmsgsString* StringMsgToSend = new
-            FROSBridgeMsgStdmsgsString(TEXT("New Message at ") + FDateTime::Now().ToString());
-        Handler->PublishMsg(TEXT("/talker"), StringMsgToSend);
-        delete StringMsgToSend;
-
-        // Process message received between two frames
-        Handler->Render();
-    }
-
-    void Logout(AController *Exiting) override
-    {
-        // disconnect the handler
-        Handler->Disconnect();
-
-        // delete used handler, subscriber and publisher. 
-        delete Handler;
-        delete Subscriber;
-        delete Publisher;
-
-        // game ends. 
-        AGameModeBase::Logout(Exiting);
-    }
-
-};
-```
+To add new message / service classes, please refer to `Source/ROSBridgePlugin/Public` directory. 
 
 ## TODO
 
-The library is currently not blueprintable so it could be only used in C++ codes. We need to add UHT-related macros (`UCLASS`, `UFUNCTION`, etc.) to make it work in blueprints.
+1. Use smart pointers instead of C++ native pointers. 
+
+2. The library is currently not blueprintable so it could be only used in C++ codes. We need to add UHT-related macros (`UCLASS`, `UFUNCTION`, etc.) to make it work in blueprints.
 
 ## Note
 
