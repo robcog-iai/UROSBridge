@@ -5,8 +5,11 @@
 #include "Queue.h"
 
 #include "ROSBridgeMsg.h"
+#include "ROSBridgeSrv.h"
 #include "ROSBridgePublisher.h"
 #include "ROSBridgeSubscriber.h"
+#include "ROSBridgeSrvClient.h"
+#include "ROSBridgeSrvServer.h"
 
 #include "WebSocket.h"
 
@@ -26,11 +29,35 @@ private:
         FROSBridgeMsg* Message;
     };
 
+    /* FServiceTask: Service call results, can be processed by Render() */
+    struct FServiceTask {
+        FServiceTask(FROSBridgeSrvClient* Client_, FString ServiceName_, 
+            FString ID_) :
+            Client(Client_), Name(ServiceName_), ID(ID_), 
+            bIsResponsed(false), bIsProcessed(false) {
+        }
+
+        FServiceTask(FROSBridgeSrvClient* Client_, FString ServiceName_, 
+            FString ID_, TSharedPtr<FROSBridgeSrv::SrvRequest> Request_, 
+            TSharedPtr<FROSBridgeSrv::SrvResponse> Response_) :
+            Client(Client_), Name(ServiceName_), ID(ID_), 
+            Request(Request_), Response(Response_),
+            bIsResponsed(false), bIsProcessed(false) {
+        }
+
+        FROSBridgeSrvClient* Client; 
+        FString Name;
+        FString ID; 
+        TSharedPtr<FROSBridgeSrv::SrvRequest> Request; 
+        TSharedPtr<FROSBridgeSrv::SrvResponse> Response;
+        bool bIsResponsed; 
+        bool bIsProcessed; 
+    };
+
     class FROSBridgeHandlerRunnable : public FRunnable {
     public:
         FROSBridgeHandlerRunnable(FROSBridgeHandler* ROSBridgeHandler):
-            Handler(ROSBridgeHandler),
-            StopCounter(0)
+            StopCounter(0), Handler(ROSBridgeHandler)
         {
         }
 
@@ -60,15 +87,22 @@ private:
 
     TArray< FROSBridgeSubscriber* > ListSubscribers;
     TArray< FROSBridgePublisher* >  ListPublishers;
+    TArray< FROSBridgeSrvServer* > ListServiceServer;
     TQueue< FRenderTask* > QueueTask;
+    TArray< FServiceTask* > ArrayService;
 
     FROSBridgeHandlerRunnable* Runnable;
     FRunnableThread* Thread;
 
+    FCriticalSection LockTask; 
+    FCriticalSection LockArrayService;
+
     // When message comes, create FRenderTask instances and push it
     // into QueueTask.
     void OnMessage(void* data, int32 length);
-    void Run();
+
+    void CallServiceImpl(FString Name,
+        TSharedPtr<FROSBridgeSrv::SrvRequest> Request, FString ID);
 
     // friendship declaration
     friend class FROSBridgeHandlerRunnable;
@@ -121,12 +155,22 @@ public:
         ListPublishers.Add(Publisher);
     }
 
-    void AddServiceResponse(UObject ServiceResponse)
+    void AddServiceServer(FROSBridgeSrvServer* Server)
     {
-        UE_LOG(LogTemp, Warning, TEXT("Not Implemented Yet!"));
+        ListServiceServer.Add(Server); 
     }
 
+    // Publish service response, used in service server
+    void PublishServiceResponse(FString Service, FString ID,
+        TSharedPtr<FROSBridgeSrv::SrvResponse> Response); 
+
+    // Publish ROS message to topics
     void PublishMsg(FString Topic, FROSBridgeMsg* Msg);
+
+    // Call external ROS service
+    void CallService(FROSBridgeSrvClient* SrvClient,
+        TSharedPtr<FROSBridgeSrv::SrvRequest> Request,
+        TSharedPtr<FROSBridgeSrv::SrvResponse> Response);
 
     // Create runnable instance and run the thread;
     void Connect();

@@ -6,12 +6,12 @@
 #include "Modules/ModuleInterface.h"
 #include "Modules/ModuleManager.h"
 
-#include "Engine.h"
+/* #include "Engine.h"
 #include "Core.h"
 #include "ROSBridgeHandler.h"
 #include "ROSBridgeMsg.h"
 #include "WebSocket.h"
-#include "WebSocketServer.h"
+#include "WebSocketServer.h" */
 
 /**
  * The public interface to this module
@@ -42,4 +42,6 @@ public:
 		return FModuleManager::Get().IsModuleLoaded( "ROSBridgePlugin" );
 	}
 };
+
+DECLARE_LOG_CATEGORY_EXTERN(LogROS, Log, All);
 

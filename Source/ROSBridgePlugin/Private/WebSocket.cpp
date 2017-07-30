@@ -199,7 +199,9 @@ bool FWebSocket::SendText(uint8* Data, uint32 Size)
 
 bool FWebSocket::Send(const FString &StringData)
 {
-    UE_LOG(LogTemp, Log, TEXT("Output Message: %s"), *StringData);
+#if UE_BUILD_DEBUG
+    UE_LOG(LogROS, Log, TEXT("[WebSocket::Send] Output Message: %s"), *StringData);
+#endif
     FTCHARToUTF8 Conversion(*StringData);
     uint32 DestLen = Conversion.Length();
     uint8* Data = (uint8*)Conversion.Get();
@@ -344,7 +346,7 @@ void FWebSocket::Flush()
 		}
 #endif
 		HandlePacket();
-		if (PendingMesssages >= OutgoingBuffer.Num())
+		if (PendingMesssages <= OutgoingBuffer.Num()) // FIXME! 
 		{
 			UE_LOG(LogHTML5Networking, Warning, TEXT("Unable to flush all of OutgoingBuffer in FWebSocket."));
 			break;
@@ -364,18 +366,21 @@ void FWebSocket::SetErrorCallBack(FWebsocketInfoCallBack CallBack)
 
 void FWebSocket::OnRawRecieve(void* Data, uint32 Size, bool isBinary)
 {
-    UE_LOG(LogTemp, Warning, TEXT("OnRawReceive Called. Size = %d, isBinary = %d"), Size, isBinary);
+#if UE_BUILD_DEBUG
+    UE_LOG(LogROS, Warning, TEXT("[WebSocket::OnRawReceive] Message size = %d, isBinary = %d"), Size, isBinary);
+#endif
+
 #if !PLATFORM_HTML5
 
 	RecievedBuffer.Append((uint8*)Data, Size); // consumes all of Data
-    // UE_LOG(LogTemp, Warning, TEXT("ReceivedBuffer.Num() = %d"), RecievedBuffer.Num());
+    // UE_LOG(LogROS, Warning, TEXT("ReceivedBuffer.Num() = %d"), RecievedBuffer.Num());
 
     if (isBinary)
     {
         while (RecievedBuffer.Num() > sizeof(uint32))
         {
             uint32 BytesToBeRead = *(uint32*)RecievedBuffer.GetData();
-            // UE_LOG(LogTemp, Warning, TEXT("BytesToBeRead = %d"), BytesToBeRead);
+            // UE_LOG(LogROS, Warning, TEXT("BytesToBeRead = %d"), BytesToBeRead);
 
             if (BytesToBeRead <= ((uint32)RecievedBuffer.Num() - sizeof(uint32)))
             {
@@ -547,8 +552,6 @@ static int unreal_networking_client(
 		break;
 	case LWS_CALLBACK_CLIENT_RECEIVE:
 		{
-            UE_LOG(LogTemp, Warning, TEXT("LWS_CALLBACK_CLIENT_RECEIVE Called. Is it Binary? %d. "), lws_frame_is_binary(Wsi));
-
 			// push it on the socket.
             Socket->OnRawRecieve(In, (uint32)Len, !!lws_frame_is_binary(Wsi));
 			check(Socket->Wsi == Wsi);
