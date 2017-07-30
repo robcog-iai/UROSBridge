@@ -73,7 +73,7 @@ public:
 			     TEXT(", frame_id = ") + frame_id + TEXT(" } ");
     }
 
-	virtual TSharedPtr<FJsonObject> ToJsonObject() const {
+    virtual TSharedPtr<FJsonObject> ToJsonObject() const override {
 		TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 		Object->SetNumberField(TEXT("seq"), seq);
 		Object->SetObjectField(TEXT("stamp"), stamp.ToJsonObject()); 

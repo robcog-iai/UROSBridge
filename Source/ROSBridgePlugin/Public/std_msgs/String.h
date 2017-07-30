@@ -31,7 +31,7 @@ public:
 
     virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override {
         data = JsonObject->GetStringField("data");
-        UE_LOG(LogTemp, Log, TEXT("In From Json, data: %s"), *data);
+        // UE_LOG(LogTemp, Log, TEXT("In From Json, data: %s"), *data);
     }
 
 	virtual TSharedPtr<FJsonObject> ToJsonObject() const override {

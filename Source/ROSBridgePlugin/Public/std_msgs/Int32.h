@@ -39,6 +39,12 @@ public:
         return TEXT("Int32 { data = \"" + FString::FromInt(data) + "\" }");
     }
 
+    virtual TSharedPtr<FJsonObject> ToJsonObject() const override {
+        TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
+        Object->SetNumberField(TEXT("data"), data);
+        return Object;
+    }
+
     virtual FString ToYamlString() const override {
         FString OutputString;
         FJsonObject Object;
