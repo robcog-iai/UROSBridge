@@ -344,7 +344,7 @@ void FWebSocket::Flush()
 		}
 #endif
 		HandlePacket();
-		if (PendingMesssages >= OutgoingBuffer.Num()) // FIXME! 
+		if (PendingMesssages <= OutgoingBuffer.Num()) // FIXME! 
 		{
 			UE_LOG(LogHTML5Networking, Warning, TEXT("Unable to flush all of OutgoingBuffer in FWebSocket."));
 			break;

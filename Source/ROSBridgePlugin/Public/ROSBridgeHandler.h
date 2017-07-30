@@ -9,6 +9,7 @@
 #include "ROSBridgePublisher.h"
 #include "ROSBridgeSubscriber.h"
 #include "ROSBridgeSrvClient.h"
+#include "ROSBridgeSrvServer.h"
 
 #include "WebSocket.h"
 
@@ -30,17 +31,20 @@ private:
 
     /* FServiceTask: Service call results, can be processed by Render() */
     struct FServiceTask {
-        FServiceTask(FROSBridgeSrvClient* Client_, FString ServiceName_, FString ID_) :
-            Client(Client_), Name(ServiceName_), ID(ID_), bIsResponsed(false), bIsProcessed(false) {
+        FServiceTask(FROSBridgeSrvClient* Client_, FString ServiceName_, 
+            FString ID_) :
+            Client(Client_), Name(ServiceName_), ID(ID_), 
+            bIsResponsed(false), bIsProcessed(false) {
         }
 
-        FServiceTask(FROSBridgeSrvClient* Client_, FString ServiceName_, FString ID_, 
-            TSharedPtr<FROSBridgeSrv::SrvRequest> Request_, 
+        FServiceTask(FROSBridgeSrvClient* Client_, FString ServiceName_, 
+            FString ID_, TSharedPtr<FROSBridgeSrv::SrvRequest> Request_, 
             TSharedPtr<FROSBridgeSrv::SrvResponse> Response_) :
             Client(Client_), Name(ServiceName_), ID(ID_), 
             Request(Request_), Response(Response_),
             bIsResponsed(false), bIsProcessed(false) {
         }
+
         FROSBridgeSrvClient* Client; 
         FString Name;
         FString ID; 
@@ -83,6 +87,7 @@ private:
 
     TArray< FROSBridgeSubscriber* > ListSubscribers;
     TArray< FROSBridgePublisher* >  ListPublishers;
+    TArray< FROSBridgeSrvServer* > ListServiceServer;
     TQueue< FRenderTask* > QueueTask;
     TArray< FServiceTask* > ArrayService;
 
@@ -90,7 +95,7 @@ private:
     FRunnableThread* Thread;
 
     FCriticalSection LockTask; 
-    FCriticalSection LockService;
+    FCriticalSection LockArrayService;
 
     // When message comes, create FRenderTask instances and push it
     // into QueueTask.
@@ -148,16 +153,25 @@ public:
         ListPublishers.Add(Publisher);
     }
 
+    void AddServiceServer(FROSBridgeSrvServer* Server)
+    {
+        ListServiceServer.Add(Server); 
+    }
+
     void AddServiceResponse(UObject ServiceResponse)
     {
         UE_LOG(LogTemp, Warning, TEXT("Not Implemented Yet!"));
     }
 
+
+    void PublishServiceResponse(FString Service, FString ID,
+        TSharedPtr<FROSBridgeSrv::SrvResponse> Response); 
     void PublishMsg(FString Topic, FROSBridgeMsg* Msg);
     void CallService(FROSBridgeSrvClient* SrvClient,
         TSharedPtr<FROSBridgeSrv::SrvRequest> Request,
         TSharedPtr<FROSBridgeSrv::SrvResponse> Response);
-    void CallServiceImpl(FString Name, TSharedPtr<FROSBridgeSrv::SrvRequest> Request, FString ID);
+    void CallServiceImpl(FString Name, 
+        TSharedPtr<FROSBridgeSrv::SrvRequest> Request, FString ID);
 
     // Create runnable instance and run the thread;
     void Connect();

@@ -5,7 +5,6 @@
 #include "Json.h"
 #include "ROSBridgeHandler.h"
 
-
 static void CallbackOnConnection(FROSBridgeHandler* Handler)
 {
     UE_LOG(LogTemp, Warning, TEXT("Websocket Connected."));
@@ -141,7 +140,7 @@ void FROSBridgeHandler::OnMessage(void* data, int32 length)
 
         bool bFoundService = false; 
         int FoundServiceIndex; 
-        LockService.Lock(); // lock mutex, when access ArrayService
+        LockArrayService.Lock(); // lock mutex, when access ArrayService
         for (int i = 0; i < ArrayService.Num(); i++)
         {
             if (ArrayService[i]->Name == ServiceName &&
@@ -154,12 +153,46 @@ void FROSBridgeHandler::OnMessage(void* data, int32 length)
                 FoundServiceIndex = i;
             }
         }
-        LockService.Unlock(); // unlock mutex
+        LockArrayService.Unlock(); // unlock mutex
 
         if (!bFoundService)
         {
             UE_LOG(LogTemp, Error, TEXT("Error: Service Name [%s] Id [%s] not found. "), *ServiceName, *ID); 
         } 
+    }
+    else if (Op == "call_service")
+    {
+        FString ID = JsonObject->GetStringField(TEXT("id")); 
+        // there is always an Id for rosbridge_server generated service call
+        FString ServiceName = JsonObject->GetStringField(TEXT("service"));
+        TSharedPtr< FJsonObject > ArgsObj;
+        if (JsonObject->HasField("args")) // has values
+            ArgsObj = JsonObject->GetObjectField(TEXT("args"));
+        else
+            ArgsObj = MakeShareable(new FJsonObject);
+
+        // call service in block mode
+        bool bFoundService = false;
+        int FoundServiceIndex;
+        for (int i = 0; i < ListServiceServer.Num(); i++)
+            if (ListServiceServer[i]->GetName() == ServiceName)
+            {
+                bFoundService = true;
+                FoundServiceIndex = i; 
+                break; 
+            }
+
+        if (!bFoundService)
+        {
+            UE_LOG(LogTemp, Error, TEXT("Error: Service Name [%s] Id [%s] not found. "), *ServiceName, *ID);
+        }
+        else
+        {
+            UE_LOG(LogTemp, Log, TEXT("Info: Service Name [%s] Id [%s] found, calling callback function."), *ServiceName, *ID);
+            TSharedPtr<FROSBridgeSrv::SrvRequest> Request = ListServiceServer[FoundServiceIndex]->FromJson(ArgsObj); 
+            TSharedPtr<FROSBridgeSrv::SrvResponse > Response = ListServiceServer[FoundServiceIndex]->CallBack(Request); // block 
+            PublishServiceResponse(ServiceName, ID, Response); 
+        }
     }
 
     delete [] CharMessage;
@@ -196,6 +229,14 @@ void FROSBridgeHandler::Connect()
         Client->Send(WebSocketMessage);
     }
 
+    // Advertise all service servers
+    for (int i = 0; i < ListServiceServer.Num(); i++)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Advertising Service [%s]"), *ListServiceServer[i]->GetName()); 
+        FString WebSocketMessage = FROSBridgeSrv::AdvertiseService(ListServiceServer[i]->GetName(), 
+                                                                   ListServiceServer[i]->GetType());
+        Client->Send(WebSocketMessage); 
+    }
 }
 
 // Unsubscribe / Unadvertise all topics
@@ -217,6 +258,14 @@ void FROSBridgeHandler::Disconnect()
     {
         UE_LOG(LogTemp, Warning, TEXT("Unadvertising Topic %s"), *ListPublishers[i]->GetMessageTopic());
         FString WebSocketMessage = FROSBridgeMsg::UnAdvertise(ListPublishers[i]->GetMessageTopic());
+        Client->Send(WebSocketMessage);
+    }
+
+    // Unadvertise all service servers
+    for (int i = 0; i < ListServiceServer.Num(); i++)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Unadvertising Service [%s]"), *ListServiceServer[i]->GetName());
+        FString WebSocketMessage = FROSBridgeSrv::UnadvertiseService(ListServiceServer[i]->GetName());
         Client->Send(WebSocketMessage);
     }
 
@@ -266,7 +315,7 @@ void FROSBridgeHandler::Render()
         // delete Msg;
     }
 
-    LockService.Lock(); // lock mutex, when access ArrayService
+    LockArrayService.Lock(); // lock mutex, when access ArrayService
     for (int i = 0; i < ArrayService.Num(); i++)
     {
         if (ArrayService[i]->bIsResponsed)
@@ -286,7 +335,14 @@ void FROSBridgeHandler::Render()
             i--;
         }
     }
-    LockService.Unlock(); // unlock mutex of ArrayService
+    LockArrayService.Unlock(); // unlock mutex of ArrayService
+}
+
+void FROSBridgeHandler::PublishServiceResponse(FString Service, FString ID,
+    TSharedPtr<FROSBridgeSrv::SrvResponse> Response)
+{
+    FString MsgToSend = FROSBridgeSrv::ServiceResponse(Service, ID, Response); 
+    Client->Send(MsgToSend); 
 }
 
 void FROSBridgeHandler::PublishMsg(FString Topic, FROSBridgeMsg* Msg)
@@ -301,9 +357,9 @@ void FROSBridgeHandler::CallService(FROSBridgeSrvClient* SrvClient,
 {
     FString Name = SrvClient->GetName(); 
     FString ID = FString::FromInt(FMath::RandRange(0, 10000000)); 
-    LockService.Lock(); // lock mutex, when access ArrayService
+    LockArrayService.Lock(); // lock mutex, when access ArrayService
     ArrayService.Add(new FServiceTask(SrvClient, Name, ID, Request, Response));
-    LockService.Unlock(); 
+    LockArrayService.Unlock(); 
     CallServiceImpl(Name, Request, ID); 
 }
 
