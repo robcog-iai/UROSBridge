@@ -53,8 +53,7 @@ private:
     class FROSBridgeHandlerRunnable : public FRunnable {
     public:
         FROSBridgeHandlerRunnable(FROSBridgeHandler* ROSBridgeHandler):
-            Handler(ROSBridgeHandler),
-            StopCounter(0)
+            StopCounter(0), Handler(ROSBridgeHandler)
         {
         }
 
@@ -156,9 +155,9 @@ public:
 
     void PublishMsg(FString Topic, FROSBridgeMsg* Msg);
     void CallService(FROSBridgeSrvClient* SrvClient,
-        FROSBridgeSrv::SrvRequest* Request,
-        FROSBridgeSrv::SrvResponse* Response); 
-    void CallServiceImpl(FString Name, FROSBridgeSrv::SrvRequest* Request, FString ID);
+        TSharedPtr<FROSBridgeSrv::SrvRequest> Request,
+        TSharedPtr<FROSBridgeSrv::SrvResponse> Response);
+    void CallServiceImpl(FString Name, TSharedPtr<FROSBridgeSrv::SrvRequest> Request, FString ID);
 
     // Create runnable instance and run the thread;
     void Connect();

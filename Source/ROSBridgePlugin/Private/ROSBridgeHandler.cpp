@@ -137,7 +137,7 @@ void FROSBridgeHandler::OnMessage(void* data, int32 length)
         if (JsonObject->HasField("values")) // has values
             ValuesObj = JsonObject->GetObjectField(TEXT("values"));
         else
-            ValuesObj = MakeShareable(new FJsonObject); 
+            ValuesObj = MakeShareable(new FJsonObject);
 
         bool bFoundService = false; 
         int FoundServiceIndex; 
@@ -149,7 +149,7 @@ void FROSBridgeHandler::OnMessage(void* data, int32 length)
             {
                 ArrayService[i]->bIsResponsed = true; 
                 check(ArrayService[i]->Response.IsValid());
-                ArrayService[i]->Response->FromJson(JsonObject);
+                ArrayService[i]->Response->FromJson(ValuesObj);
                 bFoundService = true; 
                 FoundServiceIndex = i;
             }
@@ -296,20 +296,20 @@ void FROSBridgeHandler::PublishMsg(FString Topic, FROSBridgeMsg* Msg)
 }
 
 void FROSBridgeHandler::CallService(FROSBridgeSrvClient* SrvClient, 
-                                    FROSBridgeSrv::SrvRequest* Request, 
-                                    FROSBridgeSrv::SrvResponse* Response)
+                                    TSharedPtr<FROSBridgeSrv::SrvRequest> Request,
+                                    TSharedPtr<FROSBridgeSrv::SrvResponse> Response)
 {
     FString Name = SrvClient->GetName(); 
     FString ID = FString::FromInt(FMath::RandRange(0, 10000000)); 
     LockService.Lock(); // lock mutex, when access ArrayService
-    ArrayService.Add(new FServiceTask(SrvClient, Name, ID, MakeShareable(Request), MakeShareable(Response))); 
+    ArrayService.Add(new FServiceTask(SrvClient, Name, ID, Request, Response));
     LockService.Unlock(); 
     CallServiceImpl(Name, Request, ID); 
 }
 
-void FROSBridgeHandler::CallServiceImpl(FString Name, FROSBridgeSrv::SrvRequest* Request, FString ID)
+void FROSBridgeHandler::CallServiceImpl(FString Name, TSharedPtr<FROSBridgeSrv::SrvRequest> Request, FString ID)
 {
-    FString MsgToSend = FROSBridgeSrv::CallService(Name, Request, ID); 
+    FString MsgToSend = FROSBridgeSrv::CallService(Name, Request.Get(), ID);
     UE_LOG(LogTemp, Log, TEXT("Call Service Impl: Message to Send: %s"), *MsgToSend);
     Client->Send(MsgToSend); 
 }

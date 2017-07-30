@@ -25,7 +25,7 @@ public:
     {
     public:
         Message() {}
-        ~Message() {}
+        virtual ~Message() {}
 
         // Need Implementation
         virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) = 0; 
@@ -71,8 +71,8 @@ public:
 
     static FString CallService(const FString& service, const FROSBridgeSrv::SrvRequest* Req, FString ID) {
         return TEXT("{\"op\": \"call_service\", \"service\": \"") + service + TEXT("\", ") +
-                TEXT("\"args\" : ") + Req->ToYamlString() + TEXT("\", ") +
-                TEXT("\"id\" : ") + ID + TEXT("\" }");
+                TEXT("\"args\" : ") + Req->ToYamlString() + TEXT(", ") +
+                TEXT("\"id\" : \"") + ID + TEXT("\" }");
     }
 
     static FString CallService(const FString& service, const FString& args) {
