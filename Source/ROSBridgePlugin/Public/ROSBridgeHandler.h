@@ -20,24 +20,24 @@ private:
     /* FRenderTask: Representation of subscribed messages,
      *              can be processed by Render()*/
     struct FRenderTask {
-        FRenderTask(FROSBridgeSubscriber* Subscriber_, FString Topic_,
-                    FROSBridgeMsg* Message_):
+        FRenderTask(TSharedPtr<FROSBridgeSubscriber> Subscriber_, FString Topic_,
+                    TSharedPtr<FROSBridgeMsg> Message_):
             Subscriber(Subscriber_), Topic(Topic_), Message(Message_) {
         }
-        FROSBridgeSubscriber* Subscriber;
+        TSharedPtr<FROSBridgeSubscriber> Subscriber;
         FString Topic;
-        FROSBridgeMsg* Message;
+        TSharedPtr<FROSBridgeMsg> Message;
     };
 
     /* FServiceTask: Service call results, can be processed by Render() */
     struct FServiceTask {
-        FServiceTask(FROSBridgeSrvClient* Client_, FString ServiceName_, 
+        FServiceTask(TSharedPtr<FROSBridgeSrvClient> Client_, FString ServiceName_, 
             FString ID_) :
             Client(Client_), Name(ServiceName_), ID(ID_), 
             bIsResponsed(false), bIsProcessed(false) {
         }
 
-        FServiceTask(FROSBridgeSrvClient* Client_, FString ServiceName_, 
+        FServiceTask(TSharedPtr<FROSBridgeSrvClient> Client_, FString ServiceName_,
             FString ID_, TSharedPtr<FROSBridgeSrv::SrvRequest> Request_, 
             TSharedPtr<FROSBridgeSrv::SrvResponse> Response_) :
             Client(Client_), Name(ServiceName_), ID(ID_), 
@@ -45,7 +45,7 @@ private:
             bIsResponsed(false), bIsProcessed(false) {
         }
 
-        FROSBridgeSrvClient* Client; 
+        TSharedPtr<FROSBridgeSrvClient> Client;
         FString Name;
         FString ID; 
         TSharedPtr<FROSBridgeSrv::SrvRequest> Request; 
@@ -82,14 +82,14 @@ private:
     float ClientInterval;
 
     // TSharedPtr<FWebSocket> Client;
-    FWebSocket* Client;
+    TSharedPtr<FWebSocket> Client;
     FThreadSafeBool bIsClientConnected;
 
-    TArray< FROSBridgeSubscriber* > ListSubscribers;
-    TArray< FROSBridgePublisher* >  ListPublishers;
-    TArray< FROSBridgeSrvServer* > ListServiceServer;
-    TQueue< FRenderTask* > QueueTask;
-    TArray< FServiceTask* > ArrayService;
+    TArray< TSharedPtr<FROSBridgeSubscriber> > ListSubscribers;
+    TArray< TSharedPtr<FROSBridgePublisher> >  ListPublishers;
+    TArray< TSharedPtr<FROSBridgeSrvServer> > ListServiceServer;
+    TQueue< TSharedPtr<FRenderTask> > QueueTask;
+    TArray< TSharedPtr<FServiceTask> > ArrayService;
 
     FROSBridgeHandlerRunnable* Runnable;
     FRunnableThread* Thread;
@@ -145,17 +145,17 @@ public:
         return Port;
     }
 
-    void AddSubscriber(FROSBridgeSubscriber* Subscriber)
+    void AddSubscriber(TSharedPtr<FROSBridgeSubscriber> Subscriber)
     {
         ListSubscribers.Add(Subscriber);
     }
 
-    void AddPublisher(FROSBridgePublisher* Publisher)
+    void AddPublisher(TSharedPtr<FROSBridgePublisher> Publisher)
     {
         ListPublishers.Add(Publisher);
     }
 
-    void AddServiceServer(FROSBridgeSrvServer* Server)
+    void AddServiceServer(TSharedPtr<FROSBridgeSrvServer> Server)
     {
         ListServiceServer.Add(Server); 
     }
@@ -165,10 +165,10 @@ public:
         TSharedPtr<FROSBridgeSrv::SrvResponse> Response); 
 
     // Publish ROS message to topics
-    void PublishMsg(FString Topic, FROSBridgeMsg* Msg);
+    void PublishMsg(FString Topic, TSharedPtr<FROSBridgeMsg> Msg);
 
     // Call external ROS service
-    void CallService(FROSBridgeSrvClient* SrvClient,
+    void CallService(TSharedPtr<FROSBridgeSrvClient> SrvClient,
         TSharedPtr<FROSBridgeSrv::SrvRequest> Request,
         TSharedPtr<FROSBridgeSrv::SrvResponse> Response);
 

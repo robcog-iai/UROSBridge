@@ -27,7 +27,7 @@ bool FROSBridgeHandler::FROSBridgeHandlerRunnable::Init()
     FIPv4Address::Parse(Handler->GetHost(), IPAddress);
 
     FIPv4Endpoint Endpoint(IPAddress, Handler->GetPort());
-    Handler->Client = new FWebSocket(Endpoint.ToInternetAddr().Get());
+    Handler->Client = MakeShareable<FWebSocket>(new FWebSocket(Endpoint.ToInternetAddr().Get()));
 
     // Bind Received callback
     FWebsocketPacketRecievedCallBack ReceivedCallback;
@@ -52,7 +52,7 @@ bool FROSBridgeHandler::FROSBridgeHandlerRunnable::Init()
 uint32 FROSBridgeHandler::FROSBridgeHandlerRunnable::Run()
 {
     while (StopCounter.GetValue() == 0){
-        if (Handler->Client)
+        if (Handler->Client.IsValid() && !Handler->Client->IsDestroyed)
             Handler->Client->Tick();
         FPlatformProcess::Sleep(Handler->GetClientInterval());
     }
@@ -72,8 +72,9 @@ void FROSBridgeHandler::OnMessage(void* data, int32 length)
     char * CharMessage = new char [length + 1];
     memcpy(CharMessage, data, length);
     CharMessage[length] = 0;
-
     FString JsonMessage = UTF8_TO_TCHAR(CharMessage);
+    delete[] CharMessage;
+
 #if UE_BUILD_DEBUG
     UE_LOG(LogROS, Error, TEXT("[FROSBridgeHandler::OnMessage] Json Message: %s"), *JsonMessage);
 #endif
@@ -101,7 +102,7 @@ void FROSBridgeHandler::OnMessage(void* data, int32 length)
 
         // Find corresponding subscriber
         bool IsTopicFound = false;
-        FROSBridgeSubscriber* Subscriber = NULL;
+        TSharedPtr<FROSBridgeSubscriber> Subscriber;
         for (int i = 0; i < ListSubscribers.Num(); i++)
         {
             if (ListSubscribers[i]->GetMessageTopic() == Topic)
@@ -120,9 +121,9 @@ void FROSBridgeHandler::OnMessage(void* data, int32 length)
         }
         else
         {
-            FROSBridgeMsg* ROSBridgeMsg;
+            TSharedPtr<FROSBridgeMsg> ROSBridgeMsg;
             ROSBridgeMsg = Subscriber->ParseMessage(MsgObject);
-            FRenderTask* RenderTask = new FRenderTask(Subscriber, Topic, ROSBridgeMsg);
+            TSharedPtr<FRenderTask> RenderTask = MakeShareable<FRenderTask>(new FRenderTask(Subscriber, Topic, ROSBridgeMsg));
 
             QueueTask.Enqueue(RenderTask);
         }
@@ -195,8 +196,6 @@ void FROSBridgeHandler::OnMessage(void* data, int32 length)
             PublishServiceResponse(ServiceName, ID, Response); 
         }
     }
-
-    delete [] CharMessage;
 }
 
 // Create runnable instance and run the thread;
@@ -271,14 +270,13 @@ void FROSBridgeHandler::Disconnect()
         Client->Send(WebSocketMessage);
     }
 
-	Client->Flush();
-
     // Kill the thread and the Runnable
-    Thread->Kill();
+    Runnable->Stop(); 
     Thread->WaitForCompletion();
 
+	Client->Destroy();
+
     delete Thread;
-    delete Client;
     delete Runnable;
 
     Thread = NULL;
@@ -291,13 +289,12 @@ void FROSBridgeHandler::Render()
 {
     while (!QueueTask.IsEmpty())
     {
-        FRenderTask* RenderTask;
+        TSharedPtr<FRenderTask> RenderTask;
         QueueTask.Dequeue(RenderTask);
 
-        FROSBridgeMsg* Msg = RenderTask->Message;
+        TSharedPtr<FROSBridgeMsg> Msg = RenderTask->Message;
         RenderTask->Subscriber->CallBack(Msg);
 
-        delete RenderTask;
         // delete Msg;
     }
 
@@ -331,27 +328,30 @@ void FROSBridgeHandler::PublishServiceResponse(FString Service, FString ID,
     Client->Send(MsgToSend); 
 }
 
-void FROSBridgeHandler::PublishMsg(FString Topic, FROSBridgeMsg* Msg)
+void FROSBridgeHandler::PublishMsg(FString Topic, TSharedPtr<FROSBridgeMsg> Msg)
 {
     FString MsgToSend = FROSBridgeMsg::Publish(Topic, Msg);
     Client->Send(MsgToSend);
 }
 
-void FROSBridgeHandler::CallService(FROSBridgeSrvClient* SrvClient, 
+void FROSBridgeHandler::CallService(TSharedPtr<FROSBridgeSrvClient> SrvClient,
                                     TSharedPtr<FROSBridgeSrv::SrvRequest> Request,
                                     TSharedPtr<FROSBridgeSrv::SrvResponse> Response)
 {
     FString Name = SrvClient->GetName(); 
     FString ID = Name + TEXT("_request_") + FString::FromInt(FMath::RandRange(0, 10000000));
     LockArrayService.Lock(); // lock mutex, when access ArrayService
-    ArrayService.Add(new FServiceTask(SrvClient, Name, ID, Request, Response));
+
+    TSharedPtr<FServiceTask> ServiceTask = MakeShareable<FServiceTask>(new FServiceTask(SrvClient, Name, ID, Request, Response)); 
+    ArrayService.Add(ServiceTask);
+
     LockArrayService.Unlock(); 
     CallServiceImpl(Name, Request, ID); 
 }
 
 void FROSBridgeHandler::CallServiceImpl(FString Name, TSharedPtr<FROSBridgeSrv::SrvRequest> Request, FString ID)
 {
-    FString MsgToSend = FROSBridgeSrv::CallService(Name, Request.Get(), ID);
+    FString MsgToSend = FROSBridgeSrv::CallService(Name, Request, ID);
     Client->Send(MsgToSend); 
 }
 

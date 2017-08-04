@@ -28,7 +28,7 @@ public:
         return Topic;
     }
 
-    virtual FROSBridgeMsg* ParseMessage(TSharedPtr<FJsonObject> JsonObject) const = 0;
+    virtual TSharedPtr<FROSBridgeMsg> ParseMessage(TSharedPtr<FJsonObject> JsonObject) const = 0;
 
-    virtual void CallBack(FROSBridgeMsg* msg) const = 0;
+    virtual void CallBack(TSharedPtr<FROSBridgeMsg> msg) const = 0;
 };

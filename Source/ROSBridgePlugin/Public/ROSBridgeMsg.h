@@ -50,7 +50,7 @@ public:
         return TEXT("{\"op\": \"unadvertise\", \"topic\": \"") + MessageTopic + TEXT("\"}");
     }
 
-    static FString Publish(const FString& MessageTopic, const FROSBridgeMsg* Message) {
+    static FString Publish(const FString& MessageTopic, TSharedPtr<FROSBridgeMsg> Message) {
         return TEXT("{\"op\": \"publish\", \"topic\": \"") + MessageTopic +
                TEXT("\", \"msg\": ") + Message->ToYamlString() +
                TEXT("}";)

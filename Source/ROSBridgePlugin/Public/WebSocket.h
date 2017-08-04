@@ -29,6 +29,8 @@ public:
 
     void Connect();
 
+    void Destroy();
+
 	/************************************************************************/
 	/* Set various callbacks for Socket Events                              */
 	/************************************************************************/
@@ -93,6 +95,9 @@ public:
 
 	/** Server side socket or client side*/
 	bool IsServerSide;
+
+    /** Is the client destroyed? */ 
+    bool IsDestroyed; 
 
 	friend class FWebSocketServer;
 };

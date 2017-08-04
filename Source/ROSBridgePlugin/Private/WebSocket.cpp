@@ -144,6 +144,8 @@ void FWebSocket::Connect(){
 	int Ret = connect(SockFd, (struct sockaddr *)&RemoteAddr, sizeof(RemoteAddr));
 	UE_LOG(LogHTML5Networking, Warning, TEXT(" Connect socket returned %d"), Ret);
 #endif
+
+    IsDestroyed = false; 
 }
 
 #if !PLATFORM_HTML5
@@ -499,30 +501,37 @@ void FWebSocket::OnRawWebSocketWritable(WebSocketInternal* wsi)
 
 }
 
-FWebSocket::~FWebSocket()
+void FWebSocket::Destroy()
 {
-	RecievedCallBack.Unbind();
+    RecievedCallBack.Unbind();
     ConnectedCallBack.Unbind();
     ErrorCallBack.Unbind();
 
 #if !PLATFORM_HTML5
 
-	Flush();
+    Flush();
 
-	if ( !IsServerSide)
-	{
-		lws_context_destroy(Context);
-		Context = NULL;
-		delete Protocols;
-		Protocols = NULL;
-	}
+    if (!IsServerSide)
+    {
+        lws_context_destroy(Context);
+        Context = NULL;
+        delete Protocols;
+        Protocols = NULL;
+    }
 
 #else // PLATFORM_HTML5
 
-	close(SockFd);
+    close(SockFd);
 
 #endif
 
+    IsDestroyed = true; 
+}
+
+FWebSocket::~FWebSocket()
+{
+    if (!IsDestroyed)
+        Destroy(); 
 }
 
 #if !PLATFORM_HTML5
