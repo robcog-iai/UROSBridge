@@ -1,0 +1,23 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "UROSBridge",
+	"Description": "",
+	"Category": "RobCoG",
+	"CreatedBy": "Yilong Li",
+	"CreatedByURL": "https://github.com/gnoliyil",
+	"DocsURL": "https://github.com/robcog-iai/UROSBridge",
+	"MarketplaceURL": "http://robcog.org/",
+	"SupportURL": "http://robcog.org/",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "UROSBridge",
+			"Type": "Developer",
+			"LoadingPhase": "Default"
+		}
+	]
+}
