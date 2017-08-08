@@ -95,7 +95,6 @@ void FROSBridgeHandler::OnMessage(void* data, int32 length)
     if (Op == TEXT("publish")) // Message 
     {
         FString Topic = JsonObject->GetStringField(TEXT("topic"));
-        FString Data = JsonObject->GetObjectField(TEXT("msg"))->GetStringField(TEXT("data"));
         UE_LOG(LogROS, Log, TEXT("[FROSBridgeHandler::OnMessage] Received message at Topic [%s]. "), *Topic);
 
         TSharedPtr< FJsonObject > MsgObject = JsonObject->GetObjectField(TEXT("msg"));
