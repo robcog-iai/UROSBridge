@@ -16,7 +16,7 @@
 /**
  * The public interface to this module
  */
-class IROSBridgePlugin : public IModuleInterface
+class IUROSBridge : public IModuleInterface
 {
 
 public:
@@ -27,9 +27,9 @@ public:
 	 *
 	 * @return Returns singleton instance, loading the module on demand if needed
 	 */
-	static inline IROSBridgePlugin& Get()
+	static inline IUROSBridge& Get()
 	{
-		return FModuleManager::LoadModuleChecked< IROSBridgePlugin >( "ROSBridgePlugin" );
+		return FModuleManager::LoadModuleChecked< IUROSBridge >( "UROSBridge" );
 	}
 
 	/**
@@ -39,7 +39,7 @@ public:
 	 */
 	static inline bool IsAvailable()
 	{
-		return FModuleManager::Get().IsModuleLoaded( "ROSBridgePlugin" );
+		return FModuleManager::Get().IsModuleLoaded( "UROSBridge" );
 	}
 };
 

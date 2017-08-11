@@ -2,7 +2,7 @@
 
 #include "ROSBridgeSrv.h"
 
-class ROSBRIDGEPLUGIN_API FROSBridgeSrvStdsrvsEmpty : public FROSBridgeSrv {
+class UROSBRIDGE_API FROSBridgeSrvStdsrvsEmpty : public FROSBridgeSrv {
 
 protected:
     FString Type;

@@ -1,5 +1,5 @@
 // Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
-#include "IROSBridgePlugin.h"
+#include "IUROSBridge.h"
 #include "WebSocketServer.h"
 #include "HTML5NetworkingPrivate.h"
 #include "WebSocket.h"

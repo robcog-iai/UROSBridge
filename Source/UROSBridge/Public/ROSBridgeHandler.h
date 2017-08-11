@@ -13,7 +13,7 @@
 
 #include "WebSocket.h"
 
-class ROSBRIDGEPLUGIN_API FROSBridgeHandler {
+class UROSBRIDGE_API FROSBridgeHandler {
 
 private:
     /* Subclasses */

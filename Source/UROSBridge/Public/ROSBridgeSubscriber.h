@@ -4,7 +4,7 @@
 #include "Json.h"
 #include "ROSBridgeMsg.h"
 
-class ROSBRIDGEPLUGIN_API FROSBridgeSubscriber {
+class UROSBRIDGE_API FROSBridgeSubscriber {
     FString Type;
     FString Topic;
 

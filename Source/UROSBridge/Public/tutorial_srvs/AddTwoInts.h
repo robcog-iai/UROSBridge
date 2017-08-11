@@ -2,23 +2,33 @@
 
 #include "ROSBridgeSrv.h"
 
-class ROSBRIDGEPLUGIN_API FROSBridgeSrvStdsrvsTrigger : public FROSBridgeSrv {
+class UROSBRIDGE_API FROSBridgeSrvRospytutorialsAddTwoInts : public FROSBridgeSrv {
 
 protected:
     FString Type;
 
 public:
-    FROSBridgeSrvStdsrvsTrigger()
+    FROSBridgeSrvRospytutorialsAddTwoInts()
     {
-        Type = TEXT("srd_srvs/Trigger");
+        Type = TEXT("rospy_tutorials/AddTwoInts");
     }
 
     class Request : public SrvRequest {
+    private:
+        int64 a;
+        int64 b; 
 
     public:
         Request() { }
+        Request(int64 a_, int64 b_) : a(a_), b(b_) {}
+        int64 GetA() const { return a; }
+        void SetA(int64 a_) { a = a_; }
+        int64 GetB() const { return b; }
+        void SetB(int64 b_) { b = b_; }
 
         virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override {
+            a = JsonObject->GetNumberField("a");
+            b = JsonObject->GetNumberField("b");
         }
 
         static Request GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -29,31 +39,30 @@ public:
 
         virtual FString ToString() const override
         {
-            return TEXT("Trigger::Request { } ");
+            return TEXT("AddTwoInts::Request { a = ") + FString::FromInt(a) +
+                                       TEXT(", b = ") + FString::FromInt(b) + TEXT("} ");
         }
 
         virtual TSharedPtr<FJsonObject> ToJsonObject() const {
             TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
+            Object->SetNumberField(TEXT("a"), a);
+            Object->SetNumberField(TEXT("b"), b);
             return Object;
         }
     };
 
     class Response : public SrvResponse {
     private:
-        uint8 success;
-        FString message;
+        int64 sum;
 
     public:
         Response() {}
-        Response(uint8 success_, FString message_) : success(success_), message(message_) {}
-        uint8 GetSuccess() const { return success; }
-        FString GetMessage() const { return message; }
-        void SetSuccess(uint8 success_) { success = success_; }
-        void SetMessage(FString message_) { message = message_; }
+        Response(int64 sum_) : sum(sum_) {}
+        int64 GetSum() const { return sum; }
+        void SetSum(int64 sum_) { sum = sum_; }
 
         virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override {
-            success = JsonObject->GetIntegerField("success");
-            message = JsonObject->GetStringField("message");
+            sum = JsonObject->GetNumberField("sum");
         }
 
         static Response GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -64,14 +73,12 @@ public:
 
         virtual FString ToString() const override
         {
-            return TEXT("Trigger::Response { success = ") + FString::FromInt(success) + TEXT(", ") +
-                TEXT(" message = \"") + message + TEXT("\" } ");
+            return TEXT("AddTwoInts::Response { sum = ") + FString::SanitizeFloat(sum) + TEXT(" } ");
         }
 
         virtual TSharedPtr<FJsonObject> ToJsonObject() const {
             TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-            Object->SetNumberField("success", success);
-            Object->SetStringField("message", message);
+            Object->SetNumberField("sum", sum);
             return Object;
         }
     };

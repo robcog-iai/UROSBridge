@@ -5,7 +5,7 @@
 
 #include "ROSBridgeSrv.h"
 
-class ROSBRIDGEPLUGIN_API FROSBridgeSrvClient {
+class UROSBRIDGE_API FROSBridgeSrvClient {
 protected:
     FString Name; 
     FString Type; 

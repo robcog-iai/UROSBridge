@@ -2,21 +2,21 @@
 
 namespace UnrealBuildTool.Rules
 {
-	public class ROSBridgePlugin : ModuleRules
+	public class UROSBridge : ModuleRules
 	{
-		public ROSBridgePlugin (TargetInfo Target)
+		public UROSBridge (TargetInfo Target)
 		{
 			PublicIncludePaths.AddRange(
 				new string[] {
-					"ROSBridgePlugin/Public"
+					"UROSBridge/Public"
 					// ... add public include paths required here ...
 				}
 				);
 
 			PrivateIncludePaths.AddRange(
 				new string[] {
-                    "ROSBridgePlugin/Public",
-					"ROSBridgePlugin/Private"
+                    "UROSBridge/Public",
+					"UROSBridge/Private"
 					// ... add other private include paths required here ...
 				}
 				);

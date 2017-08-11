@@ -3,7 +3,7 @@
 #include "Core.h"
 #include "Json.h"
 
-class ROSBRIDGEPLUGIN_API FROSBridgeSrv {
+class UROSBRIDGE_API FROSBridgeSrv {
 public:
     class SrvRequest; 
     class SrvResponse; 

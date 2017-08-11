@@ -1,4 +1,4 @@
-#include "IROSBridgePlugin.h"
+#include "IUROSBridge.h"
 #include "Core.h"
 #include "Modules/ModuleManager.h"
 #include "Networking.h"

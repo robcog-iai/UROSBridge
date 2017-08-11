@@ -5,7 +5,7 @@
 
 #include "ROSTime.h"
 
-class ROSBRIDGEPLUGIN_API FROSBridgeMsg {
+class UROSBRIDGE_API FROSBridgeMsg {
 
 protected:
     FString Type;

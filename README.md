@@ -1,4 +1,4 @@
-# ROSBridgePlugin
+# UROSBridge
 
 A UE4 Plugin for communication with ROS Bridge using WebSockets, which supports subscribing and publishing both ROS messages (topics) and services. 
 
@@ -10,11 +10,11 @@ Now only `std_msgs`, `sensor_msgs`, `geometry_msgs` and `std_srvs` are supported
 
 ## Usage 
 
-See [Wiki](https://github.com/gnoliyil/ROSBridgePlugin/wiki) for tutorials on how to subscribe to topic, publish to topic, call external services and advertise to service calls. 
+See [Wiki](https://github.com/gnoliyil/UROSBridge/wiki) for tutorials on how to subscribe to topic, publish to topic, call external services and advertise to service calls. 
 
 [ROSBridgeTest](https://github.com/gnoliyil/URoboSim/tree/RI/ROSBridgeTest) is an Unreal Project to test all these functionalities.
 
-To add new message / service classes, please refer to `Source/ROSBridgePlugin/Public` directory. 
+To add new message / service classes, please refer to `Source/UROSBridge/Public` directory. 
 
 ## TODO
 

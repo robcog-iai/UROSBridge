@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "Json.h"
 
-class ROSBRIDGEPLUGIN_API FROSTime {
+class UROSBRIDGE_API FROSTime {
 public:
     uint32 secs, nsecs;
 
