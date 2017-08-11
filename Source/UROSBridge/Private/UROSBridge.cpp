@@ -1,8 +1,9 @@
-// Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
+// Copyright 2017, Institute for Artificial Intelligence - University of Bremen
 #include "IUROSBridge.h"
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
+#define LOCTEXT_NAMESPACE "FUROSBridgeModule"
 class FUROSBridge : public IUROSBridge
 {
 	/** IModuleInterface implementation */
@@ -27,3 +28,4 @@ void FUROSBridge::ShutdownModule()
 }
 
 DEFINE_LOG_CATEGORY(LogROS);
+#undef LOCTEXT_NAMESPACE
