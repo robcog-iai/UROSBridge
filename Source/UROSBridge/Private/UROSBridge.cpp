@@ -1,20 +1,31 @@
 // Copyright 2017, Institute for Artificial Intelligence - University of Bremen
-
-#include "UROSBridge.h"
+#include "IUROSBridge.h"
+#include "CoreMinimal.h"
+#include "Modules/ModuleManager.h"
 
 #define LOCTEXT_NAMESPACE "FUROSBridgeModule"
-
-void FUROSBridgeModule::StartupModule()
+class FUROSBridge : public IUROSBridge
 {
-	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
+	/** IModuleInterface implementation */
+	virtual void StartupModule() override;
+	virtual void ShutdownModule() override;
+};
+
+IMPLEMENT_MODULE( FUROSBridge, UROSBridge )
+
+
+
+void FUROSBridge::StartupModule()
+{
+	// This code will execute after your module is loaded into memory (but after global variables are initialized, of course.)
 }
 
-void FUROSBridgeModule::ShutdownModule()
+
+void FUROSBridge::ShutdownModule()
 {
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
 }
 
+DEFINE_LOG_CATEGORY(LogROS);
 #undef LOCTEXT_NAMESPACE
-	
-IMPLEMENT_MODULE(FUROSBridgeModule, UROSBridge)
