@@ -1,9 +1,9 @@
+#include "ROSBridgeHandler.h"
 #include "IUROSBridge.h"
 #include "Core.h"
 #include "Modules/ModuleManager.h"
 #include "Networking.h"
 #include "Json.h"
-#include "ROSBridgeHandler.h"
 
 static void CallbackOnConnection(FROSBridgeHandler* Handler)
 {
