@@ -12,7 +12,7 @@ Now only `std_msgs`, `sensor_msgs`, `geometry_msgs` and `std_srvs` are supported
 
 See [this documentation](https://github.com/gnoliyil/RobCoG/tree/robosim/Documentation) for tutorials on how to subscribe to topic, publish to topic, call external services and advertise to service calls. 
 
-[ROSBridgeTest](https://github.com/gnoliyil/URoboSim/tree/RI/ROSBridgeTest) is an Unreal Project to test all these functionalities.
+[ROSBridgeTest](https://github.com/robcog-iai/UROSBridge/tree/master/Examples) is an Unreal Project to test all these functionalities.
 
 To add new message / service classes, please refer to `Source/UROSBridge/Public` directory. 
 
