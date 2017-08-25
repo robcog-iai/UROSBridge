@@ -10,17 +10,13 @@ Now only `std_msgs`, `sensor_msgs`, `geometry_msgs` and `std_srvs` are supported
 
 ## Usage 
 
-See [Wiki](https://github.com/gnoliyil/UROSBridge/wiki) for tutorials on how to subscribe to topic, publish to topic, call external services and advertise to service calls. 
+See [this documentation](https://github.com/gnoliyil/RobCoG/tree/robosim/Documentation) for tutorials on how to subscribe to topic, publish to topic, call external services and advertise to service calls. 
 
 [ROSBridgeTest](https://github.com/gnoliyil/URoboSim/tree/RI/ROSBridgeTest) is an Unreal Project to test all these functionalities.
 
 To add new message / service classes, please refer to `Source/UROSBridge/Public` directory. 
 
-## TODO
-
-1. Use smart pointers instead of C++ native pointers. 
-
-2. The library is currently not blueprintable so it could be only used in C++ codes. We need to add UHT-related macros (`UCLASS`, `UFUNCTION`, etc.) to make it work in blueprints.
+## Todo
 
 ## Note
 
