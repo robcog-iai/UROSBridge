@@ -40,6 +40,11 @@ public:
 		return Object;
 	}
 
+	virtual FString ToString() const override
+	{
+		return TEXT("String { data = \"" + data + "\" }");
+	}
+
     /* virtual FString ToYamlString() const override {
         FString OutputString;
         FJsonObject Object;

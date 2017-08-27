@@ -78,7 +78,7 @@ public:
 
         TArray<TSharedPtr<FJsonValue>> CovArray;
         for (auto &val : covariance)
-            CovArray.Add(MakeShareable<FJsonValue>(new FJsonValueNumber(val)));
+            CovArray.Add(MakeShareable(new FJsonValueNumber(val)));
 
         Object->SetObjectField(TEXT("twist"), twist.ToJsonObject());
         Object->SetArrayField(TEXT("covariance"), CovArray);
