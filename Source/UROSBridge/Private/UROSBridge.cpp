@@ -1,4 +1,5 @@
 // Copyright 2017, Institute for Artificial Intelligence - University of Bremen
+
 #include "IUROSBridge.h"
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"

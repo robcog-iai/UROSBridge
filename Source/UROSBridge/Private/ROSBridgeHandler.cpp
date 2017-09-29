@@ -1,3 +1,5 @@
+// Copyright 2017, Institute for Artificial Intelligence - University of Bremen
+
 #include "ROSBridgeHandler.h"
 #include "IUROSBridge.h"
 #include "Core.h"
@@ -51,7 +53,8 @@ bool FROSBridgeHandler::FROSBridgeHandlerRunnable::Init()
 // Process subscribed messages
 uint32 FROSBridgeHandler::FROSBridgeHandlerRunnable::Run()
 {
-    while (StopCounter.GetValue() == 0){
+    while (StopCounter.GetValue() == 0)
+	{
         if (Handler->Client.IsValid() && !Handler->Client->IsDestroyed)
             Handler->Client->Tick();
         FPlatformProcess::Sleep(Handler->GetClientInterval());
