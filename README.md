@@ -10,11 +10,13 @@ Now only `std_msgs`, `sensor_msgs`, `geometry_msgs` and `std_srvs` are supported
 
 ## Usage 
 
-See [this documentation](https://github.com/gnoliyil/RobCoG/tree/robosim/Documentation) for tutorials on how to subscribe to topic, publish to topic, call external services and advertise to service calls. 
+See [this documentation](https://github.com/robcog-iai/RobCoG/tree/robosim/Documentation) for tutorials on how to subscribe to topic, publish to topic, call external services and advertise to service calls. 
 
-[ROSBridgeTest](https://github.com/robcog-iai/UROSBridge/tree/master/Examples) is an Unreal Project to test all these functionalities.
+[ROSBridgeTest](https://github.com/robcog-iai/RobCoG/tree/robosim) is an Unreal Project to test all these functionalities.
 
 To add new message / service classes, please refer to `Source/UROSBridge/Public` directory. 
+
+See [here](https://github.com/gnoliyil/pr2_kinetic_packages/tree/e43479ea6088062b63271c6b94417c266429d439) PR2 Packages for ROS Kinetic Kame.
 
 ## Todo
 
