@@ -1,7 +1,7 @@
 // Copyright 2017, Institute for Artificial Intelligence - University of Bremen
 
-#include "UROSBridge.h"
 #include "ROSBridgeHandler.h"
+#include "UROSBridge.h"
 #include "Core.h"
 #include "Modules/ModuleManager.h"
 #include "Networking.h"
