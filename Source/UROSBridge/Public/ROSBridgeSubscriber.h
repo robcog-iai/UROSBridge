@@ -6,7 +6,8 @@
 #include "Json.h"
 #include "ROSBridgeMsg.h"
 
-class UROSBRIDGE_API FROSBridgeSubscriber {
+class UROSBRIDGE_API FROSBridgeSubscriber 
+{
     FString Type;
     FString Topic;
 
@@ -15,18 +16,19 @@ public:
     FROSBridgeSubscriber(FString Type_, FString Topic_):
         Type(Type_), Topic(Topic_)
     {
-
     }
 
-    virtual ~FROSBridgeSubscriber() {
-
+    virtual ~FROSBridgeSubscriber() 
+	{
     }
 
-    virtual FString GetMessageType() const {
+    virtual FString GetMessageType() const 
+	{
         return Type;
     }
 
-    virtual FString GetMessageTopic() const {
+    virtual FString GetMessageTopic() const 
+	{
         return Topic;
     }
 

@@ -1,7 +1,7 @@
 // Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
 
 #include "WebSocket.h"
-#include "IUROSBridge.h"
+#include "UROSBridge.h"
 #include "HTML5NetworkingPrivate.h"
 #include "IPAddress.h"
 
@@ -56,7 +56,7 @@ FWebSocket::FWebSocket(
 :IsServerSide(false)
 {
 
-#if !PLATFORM_HTML5_BROWSER
+#if !PLATFORM_HTML5
 
 #if !UE_BUILD_SHIPPING
 	lws_set_log_level(LLL_ERR | LLL_WARN | LLL_NOTICE | LLL_DEBUG | LLL_INFO, lws_debugLogS);
@@ -93,14 +93,14 @@ FWebSocket::FWebSocket(
 }
 
 void FWebSocket::Connect(){
-#if !PLATFORM_HTML5_BROWSER
+#if !PLATFORM_HTML5
 	struct lws_client_connect_info ConnectInfo = {
             Context, TCHAR_TO_ANSI(*StrInetAddress), InetPort, false, "/", TCHAR_TO_ANSI(*StrInetAddress), TCHAR_TO_ANSI(*StrInetAddress), Protocols[1].name, -1, this
 	};
 	Wsi = lws_client_connect_via_info(&ConnectInfo);
 	check(Wsi);
 
-#else // PLATFORM_HTML5_BROWSER
+#else // PLATFORM_HTML5
 
 	SockFd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (SockFd == -1) {
@@ -141,7 +141,7 @@ void FWebSocket::Connect(){
 	}
 #endif
 
-#if PLATFORM_HTML5_BROWSER
+#if PLATFORM_HTML5
 	int Ret = connect(SockFd, (struct sockaddr *)&RemoteAddr, sizeof(RemoteAddr));
 	UE_LOG(LogHTML5Networking, Warning, TEXT(" Connect socket returned %d"), Ret);
 #endif
@@ -451,7 +451,7 @@ void FWebSocket::OnRawWebSocketWritable(WebSocketInternal* wsi)
     lws_write_protocol OutType = (lws_write_protocol)OutgoingBufferType[0];
     CriticalSection.Unlock();
 
-#if !PLATFORM_HTML5_BROWSER
+#if !PLATFORM_HTML5
 
 	uint32 TotalDataSize = Packet.Num() - LWS_PRE;
 	uint32 DataToSend = TotalDataSize;
@@ -473,7 +473,7 @@ void FWebSocket::OnRawWebSocketWritable(WebSocketInternal* wsi)
 
 	check(Wsi == wsi);
 
-#else // PLATFORM_HTML5_BROWSER
+#else // PLATFORM_HTML5
 
 	uint32 TotalDataSize = Packet.Num();
 	uint32 DataToSend = TotalDataSize;

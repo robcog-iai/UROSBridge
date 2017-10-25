@@ -1,7 +1,7 @@
 // Copyright 2017, Institute for Artificial Intelligence - University of Bremen
 
+#include "UROSBridge.h"
 #include "ROSBridgeHandler.h"
-#include "IUROSBridge.h"
 #include "Core.h"
 #include "Modules/ModuleManager.h"
 #include "Networking.h"
@@ -175,7 +175,7 @@ void FROSBridgeHandler::OnMessage(void* data, int32 length)
 
         // call service in block mode
         bool bFoundService = false;
-        int FoundServiceIndex;
+        int FoundServiceIndex = -1;
         for (int i = 0; i < ListServiceServer.Num(); i++)
             if (ListServiceServer[i]->GetName() == ServiceName)
             {

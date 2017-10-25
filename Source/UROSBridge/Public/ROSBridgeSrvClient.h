@@ -7,7 +7,8 @@
 
 #include "ROSBridgeSrv.h"
 
-class UROSBRIDGE_API FROSBridgeSrvClient {
+class UROSBRIDGE_API FROSBridgeSrvClient 
+{
 protected:
     FString Name; 
     FString Type; 
@@ -15,7 +16,9 @@ protected:
 public:
     FROSBridgeSrvClient() {} 
 
-    FROSBridgeSrvClient(FString Name_, FString Type_): Name(Name_), Type(Type_) { }
+	virtual ~FROSBridgeSrvClient() {}
+
+    FROSBridgeSrvClient(FString Name_, FString Type_): Name(Name_), Type(Type_) {}
 
     FString GetName() const { return Name; }
 

@@ -15,37 +15,44 @@
 
 #include "WebSocket.h"
 
-class UROSBRIDGE_API FROSBridgeHandler {
+class UROSBRIDGE_API FROSBridgeHandler 
+{
 
 private:
     /* Subclasses */
     /* FRenderTask: Representation of subscribed messages,
      *              can be processed by Render()*/
-    struct FRenderTask {
+    struct FRenderTask 
+	{
         FRenderTask(TSharedPtr<FROSBridgeSubscriber> Subscriber_, FString Topic_,
                     TSharedPtr<FROSBridgeMsg> Message_):
-            Subscriber(Subscriber_), Topic(Topic_), Message(Message_) {
-        }
+            Subscriber(Subscriber_), Topic(Topic_), Message(Message_) 
+		{
+		}
+
         TSharedPtr<FROSBridgeSubscriber> Subscriber;
         FString Topic;
         TSharedPtr<FROSBridgeMsg> Message;
     };
 
     /* FServiceTask: Service call results, can be processed by Render() */
-    struct FServiceTask {
+    struct FServiceTask 
+	{
         FServiceTask(TSharedPtr<FROSBridgeSrvClient> Client_, FString ServiceName_, 
             FString ID_) :
             Client(Client_), Name(ServiceName_), ID(ID_), 
-            bIsResponsed(false), bIsProcessed(false) {
-        }
+            bIsResponsed(false), bIsProcessed(false) 
+		{
+		}
 
         FServiceTask(TSharedPtr<FROSBridgeSrvClient> Client_, FString ServiceName_,
             FString ID_, TSharedPtr<FROSBridgeSrv::SrvRequest> Request_, 
             TSharedPtr<FROSBridgeSrv::SrvResponse> Response_) :
             Client(Client_), Name(ServiceName_), ID(ID_), 
             Request(Request_), Response(Response_),
-            bIsResponsed(false), bIsProcessed(false) {
-        }
+            bIsResponsed(false), bIsProcessed(false) 
+		{
+		}
 
         TSharedPtr<FROSBridgeSrvClient> Client;
         FString Name;
@@ -114,7 +121,6 @@ public:
         Host(Host_), Port(Port_),
         ClientInterval(0.01), bIsClientConnected(false)
     {
-
     }
 
     float GetClientInterval() const

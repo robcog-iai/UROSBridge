@@ -5,7 +5,7 @@
 #pragma  once
 #include "HTML5NetworkingPrivate.h"
 #include "Core.h"
-#if !PLATFORM_HTML5_BROWSER
+#if !PLATFORM_HTML5
 #include "Runtime/Sockets/Private/BSDSockets/SocketSubsystemBSD.h"
 #else
 #include <netinet/in.h>
@@ -75,7 +75,7 @@ public:
     /** Critical Section */
     FCriticalSection CriticalSection;
 
-#if !PLATFORM_HTML5_BROWSER
+#if !PLATFORM_HTML5
 	/** libwebsocket internal context*/
 	WebSocketInternalContext* Context;
 
