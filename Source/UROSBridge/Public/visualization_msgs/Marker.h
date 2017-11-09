@@ -1,5 +1,4 @@
-#ifndef MARKER_H
-#define MARKER_H
+#pragma once
 
 #include "ROSBridgeMsg.h"
 #include "geometry_msgs/Pose.h"
@@ -25,12 +24,12 @@ class FROSBridgeMsgVisualizationmsgsMarker : public FROSBridgeMsg
   action_type action;
   FROSBridgeMsgGeometrymsgsPose pose;
   FROSBridgeMsgGeometrymsgsVector3 scale;
-  TArray<float, TFixedAllocator<4>> color;
+  FROSBridgeMsgStdmsgsColorRGBA color;
   uint32 lifetime;
   bool frame_locked;
 
   TArray<FROSBridgeMsgGeometrymsgsPoint> points;
-  TArray<float> colors;
+  TArray<FROSBridgeMsgStdmsgsColorRGBA> colors;
   FString text;
 
   FString mesh_resource;
@@ -64,12 +63,17 @@ class FROSBridgeMsgVisualizationmsgsMarker : public FROSBridgeMsg
     return ns;
   }
 
+  int32 GetId() const
+  {
+    return id;
+  }
+
   int GetMarkeType() const
   {
     return type;
   }
 
-  int GetActiontupe() const
+  int GetActionTye() const
   {
     return action;
   }
@@ -84,7 +88,7 @@ class FROSBridgeMsgVisualizationmsgsMarker : public FROSBridgeMsg
     return scale;
   }
 
-  TArray<float, TFixedAllocator<4>> GetColor() const
+  FROSBridgeMsgStdmsgsColorRGBA GetColor() const
   {
     return color;
   }
@@ -103,7 +107,7 @@ class FROSBridgeMsgVisualizationmsgsMarker : public FROSBridgeMsg
   {
     return points;
   }
-  TArray<float> GetColors() const
+  TArray<FROSBridgeMsgStdmsgsColorRGBA> GetColors() const
   {
     return colors;
   }
@@ -126,11 +130,32 @@ class FROSBridgeMsgVisualizationmsgsMarker : public FROSBridgeMsg
   virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override {
       header = FROSBridgeMsgStdmsgsHeader::GetFromJson(JsonObject->GetObjectField(TEXT("header")));
       ns = JsonObject->GetStringField(TEXT("ns"));
-      id =
+      id = JsonObject->GetIntegerField(TEXT("id"));
+      type =JsonObject->GetIntegerField(TEXT("type"));
+      action = JsonObject->GetIntegerField(TEXT("action"));
       pose = FROSBridgeMsgGeometrymsgsPose::GetFromJson(JsonObject->GetObjectField(TEXT("pose")));
+      scale = FROSBridgeMsgGeometrymsgsVector3::GetFromJson(JsonObject->GetObjectField(TEXT("scale")));
+      color = FROSBridgeMsgStdmsgsColorRGBA::GetFromJson(JsonObject->GetObjectField(TEXT("color")));
+      lifetime = JsonObject->GetIntegerField(TEXT("lifetimte"));
+      frame_locked = JsonObject->GetBoolField(TEXT("frame_locked"));
 
-//      child_frame_id = JsonObject->GetStringField(TEXT("child_frame_id"));
-//      transform = FROSBridgeMsgGeometrymsgsTransform::GetFromJson(JsonObject->GetObjectField(TEXT("transform")));
+      TArray<TSharedPtr<FJsonValue>> ValuesPtrArray = JsonObject->GetArrayField(TEXT("points"));
+      for (auto &ptr : ValuesPtrArray)
+      {
+          FROSBridgeMsgGeometrymsgsPoint point = FROSBridgeMsgGeometrymsgsPoint::GetFromJson(ptr->AsObject());
+          points.Add(point);
+      }
+
+      ValuesPtrArray = JsonObject->GetArrayField(TEXT("colors"));
+      for (auto &ptr : ValuesPtrArray)
+      {
+        FROSBridgeMsgStdmsgsColorRGBA color = FROSBridgeMsgStdmsgsColorRGBA::GetFromJson(ptr->AsObject());
+        colors.Add(color);
+      }
+
+      text= JsonObject->GetStringField(TEXT("text"));
+      mesh_resource = JsonObject->GetStringField(TEXT("mesh_resource"));
+      mesh_use_embedded_materials = JsonObject->GetBoolField(TEXT("mesh_use_embedded_materials"));
   }
 
   static FROSBridgeMsgVisualizationmsgsMarker GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -142,12 +167,45 @@ class FROSBridgeMsgVisualizationmsgsMarker : public FROSBridgeMsg
 
   virtual FString ToString() const override
   {
+    /*
+     * TODO:IMPLEMENT
+     * */
     return TEXT("Marker { header = ") + header.ToString();
   }
 
   virtual TSharedPtr<FJsonObject> ToJsonObject() const override {
       TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
       Object->SetObjectField(TEXT("header"), header.ToJsonObject());
+      Object->SetStringField(TEXT("ns"),ns);
+      Object->SetNumberField(TEXT("id"),id);
+      Object->SetNumberField(TEXT("type"),type);
+      Object->SetNumberField(TEXT("action"),action);
+      Object->SetObjectField(TEXT("pose"),pose.ToJsonObject());
+      Object->SetObjectField(TEXT("scale"),scale.ToJsonObject());
+      Object->SetObjectField(TEXT("color"),color.ToJsonObject());
+      Object->SetNumberField(TEXT("lifetime"),lifetime);
+      Object->SetBoolField(TEXT("frame_locked"),frame_locked);
+
+      TArray<TSharedPtr<FJsonValue>> PointsPtrArray;
+      for (auto &point : points)
+      {
+          TSharedPtr<FJsonValue> Ptr = MakeShareable(new FJsonValueObject(point.ToJsonObject()));
+          PointsPtrArray.Add(Ptr);
+      }
+      Object->SetArrayField(TEXT("points"), PointsPtrArray);
+
+      TArray<TSharedPtr<FJsonValue>> ColorsPtrArray;
+      for (auto &color : colors)
+      {
+          TSharedPtr<FJsonValue> Ptr = MakeShareable(new FJsonValueObject(color.ToJsonObject()));
+          ColorsPtrArray.Add(Ptr);
+      }
+      Object->SetArrayField(TEXT("colors"), ColorsPtrArray);
+
+      Object->SetStringField(TEXT("text"),text);
+      Object->SetStringField(TEXT("mesh_resource"),mesh_resource);
+      Object->SetBoolField(TEXT("mesh_use_embedded_materials"),mesh_use_embedded_materials);
+
       return Object;
   }
 
@@ -158,6 +216,4 @@ class FROSBridgeMsgVisualizationmsgsMarker : public FROSBridgeMsg
       return OutputString;
   }
 
-
 };
-#endif // MARKER_H

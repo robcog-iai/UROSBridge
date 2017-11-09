@@ -1,7 +1,4 @@
-#ifndef MARKERARRAY_H
-#define MARKERARRAY_H
-
-#endif // MARKERARRAY_H
+#pragma once
 
 #include "ROSBridgeMsg.h"
 #include "visualization_msgs/Marker.h"
@@ -20,10 +17,10 @@ class FROSBridgeMsgVisualizationmsgsMarkerArray : public FROSBridgeMsg
   FROSBridgeMsgVisualizationmsgsMarkerArray
   (const TArray<FROSBridgeMsgVisualizationmsgsMarker> &markers_)
   {
-    Type = "geometry_msgs/Polygon";
-    for(int i = 0; i < points_.Num(); i++)
+    Type = "visualization_msgs/MarkerArray";
+    for(int i = 0; i < markers_.Num(); i++)
     {
-      markers.Add(points_[i]);
+      markers.Add(markers_[i]);
     }
   }
 
@@ -49,17 +46,17 @@ class FROSBridgeMsgVisualizationmsgsMarkerArray : public FROSBridgeMsg
   {
     for (int i = 0; i < markers_.Num(); i++)
     {
-        markers.Add(points_[i]);
+        markers.Add(markers_[i]);
     }
   }
 
   virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override {
-      TArray<TSharedPtr<FJsonValue>> PointsPtrArray = JsonObject->GetArrayField(TEXT("points"));
-      for (auto &ptr : PointsPtrArray)
+      TArray<TSharedPtr<FJsonValue>> MarkersPtrArray = JsonObject->GetArrayField(TEXT("merkers"));
+      for (auto &ptr : MarkersPtrArray)
       {
-          FROSBridgeMsgGeometrymsgsPoint32 point =
-              FROSBridgeMsgGeometrymsgsPoint32::GetFromJson(ptr->AsObject());
-          points.Add(point);
+          FROSBridgeMsgVisualizationmsgsMarker marker =
+              FROSBridgeMsgVisualizationmsgsMarker::GetFromJson(ptr->AsObject());
+          markers.Add(marker);
       }
   }
 
