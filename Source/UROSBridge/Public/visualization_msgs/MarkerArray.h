@@ -8,7 +8,7 @@ class FROSBridgeMsgVisualizationmsgsMarkerArray : public FROSBridgeMsg
 
   TArray<FROSBridgeMsgVisualizationmsgsMarker> markers;
 
-
+public:
   FROSBridgeMsgVisualizationmsgsMarkerArray()
   {
     Type = "visualization_msgs/MarkerArray";

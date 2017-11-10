@@ -14,6 +14,12 @@ public:
         Type = "std_msgs/ColorRGBA";
     }
 
+    FROSBridgeMsgStdmsgsColorRGBA(FVector4 color_)
+    {
+      this->SetColor(color_);
+      Type = "std_msgs/ColorRGBA";
+    }
+
     FROSBridgeMsgStdmsgsColorRGBA(float r_, float g_, float b_, float a_)
     {
         Type = "std_msgs/ColorRGBA";
@@ -40,9 +46,9 @@ public:
         a = (float)(JsonObject->GetNumberField(TEXT("a")));
     }
 
-    static FROSBridgeMsgGeometrymsgsPoint32 GetFromJson(TSharedPtr<FJsonObject> JsonObject)
+    static FROSBridgeMsgStdmsgsColorRGBA GetFromJson(TSharedPtr<FJsonObject> JsonObject)
     {
-        FROSBridgeMsgGeometrymsgsPoint32 Result;
+        FROSBridgeMsgStdmsgsColorRGBA Result;
         Result.FromJson(JsonObject);
         return Result;
     }
