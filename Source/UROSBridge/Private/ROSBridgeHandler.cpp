@@ -295,6 +295,7 @@ void FROSBridgeHandler::Render()
         QueueTask.Dequeue(RenderTask);
 
         TSharedPtr<FROSBridgeMsg> Msg = RenderTask->Message;
+        UE_LOG(LogROS, Log, TEXT("[FROSBridgeHandler::Render] Rendering task [%s]"),*RenderTask->Topic);
         RenderTask->Subscriber->CallBack(Msg);
 
         // delete Msg;

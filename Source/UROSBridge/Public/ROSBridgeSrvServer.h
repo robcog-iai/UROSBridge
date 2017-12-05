@@ -7,8 +7,10 @@
 
 #include "ROSBridgeSrv.h"
 
-class UROSBRIDGE_API FROSBridgeSrvServer 
+
+class UROSBRIDGE_API FROSBridgeSrvServer
 {
+
 protected:
     FString Name; 
     FString Type; 
@@ -26,5 +28,5 @@ public:
 
     virtual TSharedPtr<FROSBridgeSrv::SrvRequest> FromJson(TSharedPtr<FJsonObject> JsonObject) const = 0;
     
-    virtual TSharedPtr<FROSBridgeSrv::SrvResponse> CallBack(TSharedPtr<FROSBridgeSrv::SrvRequest> Request) const = 0;
+    virtual TSharedPtr<FROSBridgeSrv::SrvResponse> CallBack(TSharedPtr<FROSBridgeSrv::SrvRequest> Request) = 0;
 }; 

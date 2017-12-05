@@ -51,7 +51,7 @@ public:
   }
 
   virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override {
-      TArray<TSharedPtr<FJsonValue>> MarkersPtrArray = JsonObject->GetArrayField(TEXT("merkers"));
+      TArray<TSharedPtr<FJsonValue>> MarkersPtrArray = JsonObject->GetArrayField(TEXT("markers"));
       for (auto &ptr : MarkersPtrArray)
       {
           FROSBridgeMsgVisualizationmsgsMarker marker =

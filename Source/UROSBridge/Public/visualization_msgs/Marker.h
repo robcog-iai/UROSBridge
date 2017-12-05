@@ -133,6 +133,7 @@ public:
 
   virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
   {
+
     header = FROSBridgeMsgStdmsgsHeader::GetFromJson(JsonObject->GetObjectField(TEXT("header")));
     ns = JsonObject->GetStringField(TEXT("ns"));
     id = JsonObject->GetIntegerField(TEXT("id"));
@@ -141,7 +142,9 @@ public:
     pose = FROSBridgeMsgGeometrymsgsPose::GetFromJson(JsonObject->GetObjectField(TEXT("pose")));
     scale = FROSBridgeMsgGeometrymsgsVector3::GetFromJson(JsonObject->GetObjectField(TEXT("scale")));
     color = FROSBridgeMsgStdmsgsColorRGBA::GetFromJson(JsonObject->GetObjectField(TEXT("color")));
-    lifetime = JsonObject->GetIntegerField(TEXT("lifetimte"));
+
+    TSharedPtr<FJsonObject> lifeTimeObj = JsonObject->GetObjectField("lifetime");
+    lifetime = lifeTimeObj->GetIntegerField("secs");
     frame_locked = JsonObject->GetBoolField(TEXT("frame_locked"));
 
     TArray<TSharedPtr<FJsonValue>> ValuesPtrArray = JsonObject->GetArrayField(TEXT("points"));
@@ -189,7 +192,12 @@ public:
     Object->SetObjectField(TEXT("pose"), pose.ToJsonObject());
     Object->SetObjectField(TEXT("scale"), scale.ToJsonObject());
     Object->SetObjectField(TEXT("color"), color.ToJsonObject());
-    Object->SetNumberField(TEXT("lifetime"), lifetime);
+
+    TSharedPtr<FJsonObject> lifetime_ = MakeShareable<FJsonObject>(new FJsonObject());
+    lifetime_->SetNumberField(TEXT("secs"),lifetime);
+    lifetime_->SetNumberField(TEXT("nsecs"),0.0);
+    Object->SetObjectField(TEXT("lifetime"), lifetime_);
+
     Object->SetBoolField(TEXT("frame_locked"), frame_locked);
 
     TArray<TSharedPtr<FJsonValue>> PointsPtrArray;

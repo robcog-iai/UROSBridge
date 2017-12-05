@@ -34,5 +34,5 @@ public:
 
     virtual TSharedPtr<FROSBridgeMsg> ParseMessage(TSharedPtr<FJsonObject> JsonObject) const = 0;
 
-    virtual void CallBack(TSharedPtr<FROSBridgeMsg> msg) const = 0;
+    virtual void CallBack(TSharedPtr<FROSBridgeMsg> msg) = 0;
 };
