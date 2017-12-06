@@ -234,7 +234,7 @@ void FROSBridgeHandler::Connect()
     // Advertise all service servers
     for (int i = 0; i < ListServiceServer.Num(); i++)
     {
-        UE_LOG(LogROS, Warning, TEXT("[FROSBridgeHandler::Connect] Advertising Service [%s]"), *ListServiceServer[i]->GetName());
+        UE_LOG(LogROS, Warning, TEXT("[FROSBridgeHandler::Connect] Advertising Service [%s] of type [%s]"), *ListServiceServer[i]->GetName(), *ListServiceServer[i]->GetType());
         FString WebSocketMessage = FROSBridgeSrv::AdvertiseService(ListServiceServer[i]->GetName(), 
                                                                    ListServiceServer[i]->GetType());
         Client->Send(WebSocketMessage); 
@@ -295,6 +295,7 @@ void FROSBridgeHandler::Render()
         QueueTask.Dequeue(RenderTask);
 
         TSharedPtr<FROSBridgeMsg> Msg = RenderTask->Message;
+        UE_LOG(LogROS, Log, TEXT("[FROSBridgeHandler::Render] Rendering task [%s]"),*RenderTask->Topic);
         RenderTask->Subscriber->CallBack(Msg);
 
         // delete Msg;
