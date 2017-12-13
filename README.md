@@ -23,3 +23,5 @@ Not all standard ros msgs are supported currently supported (`std_msgs`, `sensor
 * This plugin is originated from Michael Jenkin and Mathias Ciarlo's [ROSBridgeLib](https://github.com/MathiasCiarlo/ROSBridgeLib), a Unity-based ROS bridge library; This repository could be used as a plugin for UE4 or UE4 projects.
 
 * Thanks to [Yilong Li](https://github.com/gnoliyil) for the contributions during the Google Summer of Code 2017.
+
+### Engine Version 4.18
