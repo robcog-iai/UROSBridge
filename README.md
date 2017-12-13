@@ -1,25 +1,25 @@
 # UROSBridge
 
-A UE4 Plugin for communication with ROS Bridge using WebSockets, which supports subscribing and publishing both ROS messages (topics) and services. 
-
-This plugin is originated from Michael Jenkin and Mathias Ciarlo's [ROSBridgeLib](https://github.com/MathiasCiarlo/ROSBridgeLib), a Unity-based ROS bridge library; This repository could be used as a plugin for UE4 or UE4 projects. 
+A UE4 Plugin for communication with [ROS Bridge](http://wiki.ros.org/rosbridge_suite) using WebSockets, which supports subscribing and publishing both ROS messages (topics) and services. 
 
 ## Messages and Services
 
-Now only `std_msgs`, `sensor_msgs`, `geometry_msgs` and `std_srvs` are supported. If you are going to add new message / service types, please make a pull request. 
+Not all standard ros msgs are supported currently supported (`std_msgs`, `sensor_msgs`, `geometry_msgs`, `std_srvs` etc. are). If you are going to add new message / service types, please make a pull request. To add new message / service classes, please refer to `Source/UROSBridge/Public` directory (see [here](Source/UROSBridge/Public/)).
 
 ## Usage 
 
-See [this documentation](https://github.com/robcog-iai/RobCoG/tree/robosim/Documentation) for tutorials on how to subscribe to topic, publish to topic, call external services and advertise to service calls. 
+* [Tutorials](Documentation/Examples.md) on how to subscribe to topic, publish to topic, call external services and advertise to service calls. 
 
-[ROSBridgeTest](https://github.com/robcog-iai/RobCoG/tree/robosim) is an Unreal Project to test all these functionalities.
+* See the [robosim](https://github.com/robcog-iai/RobCoG/tree/robosim) branch of RobCoG as an Unreal Project example to test all these functionalities.
 
-To add new message / service classes, please refer to `Source/UROSBridge/Public` directory. 
+#### Other projects using UROSBridge:
 
-See [here](https://github.com/gnoliyil/pr2_kinetic_packages/tree/e43479ea6088062b63271c6b94417c266429d439) PR2 Packages for ROS Kinetic Kame.
+ * [UROSActorControl](https://github.com/bbferka/UROSActorControl)
 
-## Todo
+## Note / Credits
 
-## Note
+* This library uses [libwebsockets](http://libwebsockets.org/) as the WebSocket library and uses the WebSocket UE4 Wrapper from [HTML5Networking](https://github.com/ankitkk/HTML5Networking) Plugin.
 
-This library uses [libwebsockets](http://libwebsockets.org/) as the WebSocket library and uses the WebSocket UE4 Wrapper from [HTML5Networking](https://github.com/ankitkk/HTML5Networking) Plugin. 
+* This plugin is originated from Michael Jenkin and Mathias Ciarlo's [ROSBridgeLib](https://github.com/MathiasCiarlo/ROSBridgeLib), a Unity-based ROS bridge library; This repository could be used as a plugin for UE4 or UE4 projects.
+
+* Thanks to [Yilong Li](https://github.com/gnoliyil) for the contributions during the Google Summer of Code 2017.
