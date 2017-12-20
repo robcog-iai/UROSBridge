@@ -56,11 +56,11 @@ public:
     Type = "visualization_msgs/Marker";
   }
 
-  //getters
-  FROSBridgeMsgStdmsgsHeader GetHeader() const
+   FROSBridgeMsgStdmsgsHeader GetHeader() const
   {
     return header;
   }
+
 
   FString GetNamespace() const
   {
@@ -72,12 +72,12 @@ public:
     return id;
   }
 
-  int GetMarkeType() const
+  marker_type GetMarkeType() const
   {
     return type;
   }
 
-  int GetActionTye() const
+  action_type GetActionTye() const
   {
     return action;
   }
@@ -126,10 +126,75 @@ public:
     return text;
   }
 
-  //Setters
-  /*
-   * TODO: Implemente the setters for this ros message
-   * */
+  // Setters
+  void SetHeader(FROSBridgeMsgStdmsgsHeader _header)
+  {
+	header = _header;
+  }
+
+  void SetNamespace(FString _ns)
+  {
+	ns = _ns;
+  }
+
+  void SetId(int32 _id)
+  {
+	id = _id;
+  }
+
+  void SetMarkeType(marker_type _type)
+  {
+	type = _type;
+  }
+
+  void SetActionTye(action_type _action)
+  {
+	action = _action;
+  }
+
+  void SetPose(FROSBridgeMsgGeometrymsgsPose _pose)
+  {
+    pose = _pose;
+  }
+
+  void SetScale(FROSBridgeMsgGeometrymsgsVector3 _scale)
+  {
+    scale = _scale;
+  }
+
+  void SetColor(FROSBridgeMsgStdmsgsColorRGBA _color)
+  {
+	color = _color;
+  }
+
+  void SetDuration(uint32 _lifetime)
+  {
+	lifetime = _lifetime;
+  }
+
+  void SetFrameLocked(bool _frame_locked)
+  {
+	frame_locked = _frame_locked;
+  }
+
+  void SetPoints(TArray<FROSBridgeMsgGeometrymsgsPoint> _points)
+  {
+	  points = _points;
+  }
+  void SetColors(TArray<FROSBridgeMsgStdmsgsColorRGBA> _colors)
+  {
+	  colors = _colors;
+  }
+
+  void SetMeshResource(FString _mesh_resource)
+  {
+	mesh_resource = _mesh_resource;
+  }
+
+  void SetText(FString _text)
+  {
+	  text = _text;
+  }
 
   virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
   {

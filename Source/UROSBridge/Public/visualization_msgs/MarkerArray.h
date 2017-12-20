@@ -31,7 +31,7 @@ public:
     return markers;
   }
 
-  FROSBridgeMsgVisualizationmsgsMarker getmarkerAt(uint32 Index) const
+  FROSBridgeMsgVisualizationmsgsMarker GetmarkerAt(uint32 Index) const
   {
     check(Index < markers.Num());
     return markers[Index];

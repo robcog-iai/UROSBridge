@@ -3,7 +3,7 @@
 	"Version": 1,
 	"VersionName": "1.0",
 	"FriendlyName": "UROSBridge",
-	"Description": "",
+	"Description": "Unreal to ROS websocket based communication",
 	"Category": "RobCoG",
 	"CreatedBy": "Yilong Li",
 	"CreatedByURL": "https://github.com/gnoliyil",
