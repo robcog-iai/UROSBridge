@@ -14,8 +14,8 @@ class UROSBRIDGE_API FROSBridgePublisher
 
 public:
 
-    FROSBridgePublisher(FString Type_, FString Topic_):
-        Type(Type_), Topic(Topic_)
+    FROSBridgePublisher(FString InType, FString InTopic):
+        Type(InType), Topic(InTopic)
     {
     }
 

@@ -65,46 +65,46 @@ public:
 	{
     }
 
-    static FString AdvertiseService(const FString& service, const FString& type) 
+    static FString AdvertiseService(const FString& InService, const FString& InType) 
 	{
-        return TEXT("{\"op\": \"advertise_service\", \"service\": \"") + service + TEXT("\", \"type\": \"") + type + TEXT("\"}");
+        return TEXT("{\"op\": \"advertise_service\", \"service\": \"") + InService + TEXT("\", \"type\": \"") + InType + TEXT("\"}");
     }
 
-    static FString UnadvertiseService(const FString& service) 
+    static FString UnadvertiseService(const FString& InService) 
 	{
-        return TEXT("{\"op\": \"unadvertise_service\", \"service\": \"") + service + TEXT("\"}");
+        return TEXT("{\"op\": \"unadvertise_service\", \"service\": \"") + InService + TEXT("\"}");
     }
 
-    static FString ServiceResponse(const FString& service, const FString& ID, TSharedPtr<FROSBridgeSrv::SrvResponse> Resp) 
+    static FString ServiceResponse(const FString& InService, const FString& InID, TSharedPtr<FROSBridgeSrv::SrvResponse> InResponse) 
 	{
-        return TEXT("{\"op\": \"service_response\", \"service\": \"") + service + TEXT("\", ") +
-            TEXT("\"values\" : ") + Resp->ToYamlString() + TEXT(", ") +
-            TEXT("\"id\" : \"") + ID + TEXT("\" }");
+        return TEXT("{\"op\": \"service_response\", \"service\": \"") + InService + TEXT("\", ") +
+            TEXT("\"values\" : ") + InResponse->ToYamlString() + TEXT(", ") +
+            TEXT("\"id\" : \"") + InID + TEXT("\" }");
     }
 
-    static FString CallService(const FString& service, TSharedPtr<FROSBridgeSrv::SrvRequest> Req) 
+    static FString CallService(const FString& InService, TSharedPtr<FROSBridgeSrv::SrvRequest> InRequest) 
 	{
-        return TEXT("{\"op\": \"call_service\", \"service\": \"") + service + TEXT("\", \"args\" : ") + Req->ToYamlString() + TEXT("}");
+        return TEXT("{\"op\": \"call_service\", \"service\": \"") + InService + TEXT("\", \"args\" : ") + InRequest->ToYamlString() + TEXT("}");
     }
 
-    static FString CallService(const FString& service, TSharedPtr<FROSBridgeSrv::SrvRequest> Req, const FString& ID) 
+    static FString CallService(const FString& InService, TSharedPtr<FROSBridgeSrv::SrvRequest> InRequest, const FString& InID)
 	{
-        return TEXT("{\"op\": \"call_service\", \"service\": \"") + service + TEXT("\", ") +
-                TEXT("\"args\" : ") + Req->ToYamlString() + TEXT(", ") +
-                TEXT("\"id\" : \"") + ID + TEXT("\" }");
+        return TEXT("{\"op\": \"call_service\", \"service\": \"") + InService + TEXT("\", ") +
+                TEXT("\"args\" : ") + InRequest->ToYamlString() + TEXT(", ") +
+                TEXT("\"id\" : \"") + InID + TEXT("\" }");
     }
 
-    static FString CallService(const FString& service, const FString& args) 
+    static FString CallService(const FString& InService, const FString& InArgs) 
 	{
-        if (args == TEXT(""))
-            return TEXT("{\"op\": \"call_service\", \"service\": \"") + service + TEXT("\"}");
+        if (InArgs == TEXT(""))
+            return TEXT("{\"op\": \"call_service\", \"service\": \"") + InService + TEXT("\"}");
         else
-            return TEXT("{\"op\": \"call_service\", \"service\": \"") + service + TEXT("\", \"args\" : ") + args + TEXT("}");
+            return TEXT("{\"op\": \"call_service\", \"service\": \"") + InService + TEXT("\", \"args\" : ") + InArgs + TEXT("}");
     }
 
-    static FString CallService(const FString& service) 
+    static FString CallService(const FString& InService) 
 	{
-        return TEXT("{\"op\": \"call_service\", \"service\": \"") + service + TEXT("\"}");
+        return TEXT("{\"op\": \"call_service\", \"service\": \"") + InService + TEXT("\"}");
     }
 };
 

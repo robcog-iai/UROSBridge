@@ -20,7 +20,7 @@ public:
 
 	virtual ~FROSBridgeSrvServer() {}
 
-    FROSBridgeSrvServer(FString Name_, FString Type_): Name(Name_), Type(Type_) {}
+    FROSBridgeSrvServer(FString InName, FString InType): Name(InName), Type(InType) {}
 
     FString GetName() const { return Name; }
 

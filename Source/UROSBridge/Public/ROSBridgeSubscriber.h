@@ -13,8 +13,8 @@ class UROSBRIDGE_API FROSBridgeSubscriber
 
 public:
 
-    FROSBridgeSubscriber(FString Type_, FString Topic_):
-        Type(Type_), Topic(Topic_)
+    FROSBridgeSubscriber(FString InType, FString InTopic):
+        Type(InType), Topic(InTopic)
     {
     }
 
@@ -34,5 +34,5 @@ public:
 
     virtual TSharedPtr<FROSBridgeMsg> ParseMessage(TSharedPtr<FJsonObject> JsonObject) const = 0;
 
-    virtual void CallBack(TSharedPtr<FROSBridgeMsg> msg) = 0;
+    virtual void CallBack(TSharedPtr<FROSBridgeMsg> Msg) = 0;
 };

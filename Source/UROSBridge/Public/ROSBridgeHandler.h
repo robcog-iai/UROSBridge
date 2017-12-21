@@ -24,9 +24,13 @@ private:
      *              can be processed by Render()*/
     struct FRenderTask 
 	{
-        FRenderTask(TSharedPtr<FROSBridgeSubscriber> Subscriber_, FString Topic_,
-                    TSharedPtr<FROSBridgeMsg> Message_):
-            Subscriber(Subscriber_), Topic(Topic_), Message(Message_) 
+        FRenderTask(
+			TSharedPtr<FROSBridgeSubscriber> InSubscriber,
+			FString InTopic,
+			TSharedPtr<FROSBridgeMsg> InMessage) :
+            Subscriber(InSubscriber),
+			Topic(InTopic),
+			Message(InMessage)
 		{
 		}
 
@@ -38,19 +42,31 @@ private:
     /* FServiceTask: Service call results, can be processed by Render() */
     struct FServiceTask 
 	{
-        FServiceTask(TSharedPtr<FROSBridgeSrvClient> Client_, FString ServiceName_, 
-            FString ID_) :
-            Client(Client_), Name(ServiceName_), ID(ID_), 
-            bIsResponsed(false), bIsProcessed(false) 
+        FServiceTask(
+			TSharedPtr<FROSBridgeSrvClient> InClient,
+			FString InServiceName,
+            FString InID) :
+            Client(InClient),
+			Name(InServiceName),
+			ID(InID),
+            bIsResponsed(false),
+			bIsProcessed(false) 
 		{
 		}
 
-        FServiceTask(TSharedPtr<FROSBridgeSrvClient> Client_, FString ServiceName_,
-            FString ID_, TSharedPtr<FROSBridgeSrv::SrvRequest> Request_, 
-            TSharedPtr<FROSBridgeSrv::SrvResponse> Response_) :
-            Client(Client_), Name(ServiceName_), ID(ID_), 
-            Request(Request_), Response(Response_),
-            bIsResponsed(false), bIsProcessed(false) 
+        FServiceTask(
+			TSharedPtr<FROSBridgeSrvClient> InClient,
+			FString InServiceName,
+            FString InID,
+			TSharedPtr<FROSBridgeSrv::SrvRequest> InRequest,
+            TSharedPtr<FROSBridgeSrv::SrvResponse> InResponse) :
+            Client(InClient),
+			Name(InServiceName),
+			ID(InID),
+            Request(InRequest),
+			Response(InResponse),
+            bIsResponsed(false),
+			bIsProcessed(false) 
 		{
 		}
 
@@ -65,8 +81,10 @@ private:
 
     class FROSBridgeHandlerRunnable : public FRunnable {
     public:
-        FROSBridgeHandlerRunnable(FROSBridgeHandler* ROSBridgeHandler):
-            StopCounter(0), Handler(ROSBridgeHandler)
+        FROSBridgeHandlerRunnable(
+			FROSBridgeHandler* ROSBridgeHandler) :
+            StopCounter(0),
+			Handler(ROSBridgeHandler)
         {
         }
 
@@ -108,7 +126,7 @@ private:
 
     // When message comes, create FRenderTask instances and push it
     // into QueueTask.
-    void OnMessage(void* data, int32 length);
+    void OnMessage(void* Data, int32 Length);
 
     void CallServiceImpl(FString Name,
         TSharedPtr<FROSBridgeSrv::SrvRequest> Request, FString ID);
@@ -117,8 +135,8 @@ private:
     friend class FROSBridgeHandlerRunnable;
 
 public:
-    FROSBridgeHandler(FString Host_, int32 Port_):
-        Host(Host_), Port(Port_),
+    FROSBridgeHandler(FString InHost, int32 InPort):
+        Host(InHost), Port(InPort),
         ClientInterval(0.01), bIsClientConnected(false)
     {
     }
@@ -138,9 +156,9 @@ public:
         return bIsClientConnected;
     }
 
-    void SetClientConnected(bool val)
+    void SetClientConnected(bool bVal)
     {
-        bIsClientConnected.AtomicSet(val);
+        bIsClientConnected.AtomicSet(bVal);
     }
 
     FString GetHost() const
@@ -153,19 +171,19 @@ public:
         return Port;
     }
 
-    void AddSubscriber(TSharedPtr<FROSBridgeSubscriber> Subscriber)
+    void AddSubscriber(TSharedPtr<FROSBridgeSubscriber> InSubscriber)
     {
-        ListSubscribers.Add(Subscriber);
+        ListSubscribers.Add(InSubscriber);
     }
 
-    void AddPublisher(TSharedPtr<FROSBridgePublisher> Publisher)
+    void AddPublisher(TSharedPtr<FROSBridgePublisher> InPublisher)
     {
-        ListPublishers.Add(Publisher);
+        ListPublishers.Add(InPublisher);
     }
 
-    void AddServiceServer(TSharedPtr<FROSBridgeSrvServer> Server)
+    void AddServiceServer(TSharedPtr<FROSBridgeSrvServer> InServer)
     {
-        ListServiceServer.Add(Server); 
+        ListServiceServer.Add(InServer);
     }
 
     // Publish service response, used in service server
