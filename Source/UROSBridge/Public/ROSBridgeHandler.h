@@ -105,6 +105,7 @@ private:
 
     FString Host;
     int32 Port;
+	bool bIsConnected;
 
     float ClientInterval;
 
@@ -137,7 +138,9 @@ private:
 public:
     FROSBridgeHandler(FString InHost, int32 InPort):
         Host(InHost), Port(InPort),
-        ClientInterval(0.01), bIsClientConnected(false)
+        ClientInterval(0.01),
+		bIsClientConnected(false),
+		bIsConnected(false)
     {
     }
 
@@ -150,6 +153,16 @@ public:
     {
         ClientInterval = NewInterval;
     }
+
+	bool IsConnected() const
+	{
+		return bIsConnected;
+	}
+
+	void SetConnected(bool bVal)
+	{
+		bIsConnected = bVal;
+	}
 
     bool IsClientConnected() const
     {

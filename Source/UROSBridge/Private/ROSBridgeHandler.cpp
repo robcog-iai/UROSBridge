@@ -9,20 +9,20 @@
 
 static void CallbackOnConnection(FROSBridgeHandler* Handler)
 {
-    UE_LOG(LogROS, Log, TEXT("[FROSBridgeHandler] Websocket server connected."));
+    UE_LOG(LogROS, Log, TEXT("[%s] Websocket server connected."), *FString(__FUNCTION__));
     Handler->SetClientConnected(true);
 }
 
 static void CallbackOnError()
 {
-    UE_LOG(LogROS, Error, TEXT("[FROSBridgeHandler] Error in Websocket."));
+    UE_LOG(LogROS, Error, TEXT("[%s] Error in Websocket."), *FString(__FUNCTION__));
 }
 
 // Create connection, bind functions to WebSocket Client, and Connect.
 bool FROSBridgeHandler::FROSBridgeHandlerRunnable::Init()
 {
 #if UE_BUILD_DEBUG
-    UE_LOG(LogROS, Log, TEXT("[FROSBridgeHandlerRunnable::Init]"));
+    UE_LOG(LogROS, Log, TEXT("[%s]"), *FString(__FUNCTION__));
 #endif
 
     FIPv4Address IPAddress;
@@ -62,7 +62,7 @@ uint32 FROSBridgeHandler::FROSBridgeHandlerRunnable::Run()
     return 0;
 }
 
-// set the stop counter and disconnect
+// Set the stop counter and disconnect
 void FROSBridgeHandler::FROSBridgeHandlerRunnable::Stop()
 {
     StopCounter.Increment();
@@ -79,7 +79,7 @@ void FROSBridgeHandler::OnMessage(void* data, int32 length)
     delete[] CharMessage;
 
 #if UE_BUILD_DEBUG
-    UE_LOG(LogROS, Error, TEXT("[FROSBridgeHandler::OnMessage] Json Message: %s"), *JsonMessage);
+    UE_LOG(LogROS, Error, TEXT("[%s] Json Message: %s"), *FString(__FUNCTION__), *JsonMessage);
 #endif
 
     // Parse Json Message Here
@@ -89,7 +89,8 @@ void FROSBridgeHandler::OnMessage(void* data, int32 length)
     bool DeserializeState = FJsonSerializer::Deserialize(Reader, JsonObject);
     if (!DeserializeState)
     {
-        UE_LOG(LogROS, Error, TEXT("[FROSBridgeHandler::OnMessage] Deserialization Error. Message Contents: %s"), *JsonMessage);
+        UE_LOG(LogROS, Error, TEXT("[%s] Deserialization Error. Message Contents: %s"),
+			*FString(__FUNCTION__), *JsonMessage);
         return;
     }
 
@@ -98,7 +99,8 @@ void FROSBridgeHandler::OnMessage(void* data, int32 length)
     if (Op == TEXT("publish")) // Message 
     {
         FString Topic = JsonObject->GetStringField(TEXT("topic"));
-        UE_LOG(LogROS, Log, TEXT("[FROSBridgeHandler::OnMessage] Received message at Topic [%s]. "), *Topic);
+        UE_LOG(LogROS, Log, TEXT("[%s] Received message at Topic [%s]."),
+			*FString(__FUNCTION__), *Topic);
 
         TSharedPtr< FJsonObject > MsgObject = JsonObject->GetObjectField(TEXT("msg"));
 
@@ -110,7 +112,7 @@ void FROSBridgeHandler::OnMessage(void* data, int32 length)
             if (ListSubscribers[i]->GetMessageTopic() == Topic)
             {
 #if UE_BUILD_DEBUG
-                UE_LOG(LogROS, Log, TEXT("[FROSBridgeHandler::OnMessage] Subscriber Found. Id = %d. "), i);
+                UE_LOG(LogROS, Log, TEXT("[%s] Subscriber Found. Id = %d. "), *FString(__FUNCTION__), i);
 #endif
                 Subscriber = ListSubscribers[i];
                 IsTopicFound = true; break;
@@ -119,7 +121,8 @@ void FROSBridgeHandler::OnMessage(void* data, int32 length)
 
         if (!IsTopicFound)
         {
-            UE_LOG(LogROS, Error, TEXT("[FROSBridgeHandler::OnMessage] Error: Topic [%s] subscriber not Found. "), *Topic);
+            UE_LOG(LogROS, Error, TEXT("[%s] Error: Topic [%s] subscriber not Found. "),
+				*FString(__FUNCTION__), *Topic);
         }
         else
         {
@@ -159,7 +162,8 @@ void FROSBridgeHandler::OnMessage(void* data, int32 length)
 
         if (!bFoundService)
         {
-            UE_LOG(LogROS, Error, TEXT("[FROSBridgeHandler::OnMessage] Error: Service Name [%s] Id [%s] not found. "), *ServiceName, *ID);
+            UE_LOG(LogROS, Error, TEXT("[%s] Error: Service Name [%s] Id [%s] not found. "),
+				*FString(__FUNCTION__), *ServiceName, *ID);
         } 
     }
     else if (Op == "call_service")
@@ -186,12 +190,14 @@ void FROSBridgeHandler::OnMessage(void* data, int32 length)
 
         if (!bFoundService)
         {
-            UE_LOG(LogROS, Error, TEXT("[FROSBridgeHandler::OnMessage] Error: Service Name [%s] Id [%s] not found. "), *ServiceName, *ID);
+            UE_LOG(LogROS, Error, TEXT("[%s] Error: Service Name [%s] Id [%s] not found. "),
+				*FString(__FUNCTION__), *ServiceName, *ID);
         }
         else
         {
 #if UE_BUILD_DEBUG
-            UE_LOG(LogROS, Log, TEXT("Info: Service Name [%s] Id [%s] found, calling callback function."), *ServiceName, *ID);
+            UE_LOG(LogROS, Log, TEXT("[%s] Info: Service Name [%s] Id [%s] found, calling callback function."),
+				*FString(__FUNCTION__), *ServiceName, *ID);
 #endif
             TSharedPtr<FROSBridgeSrv::SrvRequest> Request = ListServiceServer[FoundServiceIndex]->FromJson(ArgsObj); 
             TSharedPtr<FROSBridgeSrv::SrvResponse > Response = ListServiceServer[FoundServiceIndex]->CallBack(Request); // block 
@@ -209,7 +215,6 @@ void FROSBridgeHandler::Connect()
     Thread = FRunnableThread::Create(Runnable, TEXT("ROSBridgeHandlerRunnable"),
                                      0, TPri_BelowNormal);
 	
-	// TODO thread is still running (add a bIsHandlerConnected flag?)
 	// Stop if could not connect after X trials
 	uint32 ConnTryCounter = 0;
 	while (!IsClientConnected())
@@ -218,9 +223,10 @@ void FROSBridgeHandler::Connect()
 		ConnTryCounter++;
 		if (ConnTryCounter > 100)
 		{
-			UE_LOG(LogROS, Error, TEXT("[%s] Could not connect to the rosbridge server!"), *FString(__FUNCTION__));
+			UE_LOG(LogROS, Error, TEXT("[%s] Could not connect to the rosbridge server!"),
+				*FString(__FUNCTION__));
 			Client->Destroy();
-			//Disconnect(); // TODO thread is still running
+			//Disconnect(); // TODO thread is still running?
 			return;
 		}
 	}
@@ -256,12 +262,23 @@ void FROSBridgeHandler::Connect()
                                                                    ListServiceServer[i]->GetType());
         Client->Send(WebSocketMessage); 
     }
+
+	// Set handler connected flag
+	SetConnected(true);
 }
 
 // Unsubscribe / Unadvertise all topics
 // Stop the thread
 void FROSBridgeHandler::Disconnect()
 {
+	// TODO disconnect handler if no rosbridge is present
+	//if (!IsConnected())
+	//{
+	//	UE_LOG(LogROS, Error, TEXT("[%s] Cannot disconnect, handler is already disconnected"),
+	//		*FString(__FUNCTION__));
+	//	return;
+	//}
+
     // Unsubscribe all topics
     UE_LOG(LogROS, Log, TEXT("[%s] Unsubscribe all topics."), *FString(__FUNCTION__));
     for (int i = 0; i < ListSubscribers.Num(); i++)
@@ -304,6 +321,9 @@ void FROSBridgeHandler::Disconnect()
     Thread = NULL;
     Client = NULL;
     Runnable = NULL;
+
+	// Set handler disconnected flag
+	SetConnected(false);
 }
 
 // Update for each frame / substep
