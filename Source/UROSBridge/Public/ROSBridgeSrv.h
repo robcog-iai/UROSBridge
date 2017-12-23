@@ -65,36 +65,36 @@ public:
 	{
     }
 
-    static FString AdvertiseService(const FString& InService, const FString& InType) 
+	static FORCEINLINE FString AdvertiseService(const FString& InService, const FString& InType)
 	{
         return TEXT("{\"op\": \"advertise_service\", \"service\": \"") + InService + TEXT("\", \"type\": \"") + InType + TEXT("\"}");
     }
 
-    static FString UnadvertiseService(const FString& InService) 
+    static FORCEINLINE FString UnadvertiseService(const FString& InService)
 	{
         return TEXT("{\"op\": \"unadvertise_service\", \"service\": \"") + InService + TEXT("\"}");
     }
 
-    static FString ServiceResponse(const FString& InService, const FString& InID, TSharedPtr<FROSBridgeSrv::SrvResponse> InResponse) 
+    static FORCEINLINE FString ServiceResponse(const FString& InService, const FString& InID, TSharedPtr<FROSBridgeSrv::SrvResponse> InResponse)
 	{
         return TEXT("{\"op\": \"service_response\", \"service\": \"") + InService + TEXT("\", ") +
             TEXT("\"values\" : ") + InResponse->ToYamlString() + TEXT(", ") +
             TEXT("\"id\" : \"") + InID + TEXT("\" }");
     }
 
-    static FString CallService(const FString& InService, TSharedPtr<FROSBridgeSrv::SrvRequest> InRequest) 
+    static FORCEINLINE FString CallService(const FString& InService, TSharedPtr<FROSBridgeSrv::SrvRequest> InRequest)
 	{
         return TEXT("{\"op\": \"call_service\", \"service\": \"") + InService + TEXT("\", \"args\" : ") + InRequest->ToYamlString() + TEXT("}");
     }
 
-    static FString CallService(const FString& InService, TSharedPtr<FROSBridgeSrv::SrvRequest> InRequest, const FString& InID)
+    static FORCEINLINE FString CallService(const FString& InService, TSharedPtr<FROSBridgeSrv::SrvRequest> InRequest, const FString& InID)
 	{
         return TEXT("{\"op\": \"call_service\", \"service\": \"") + InService + TEXT("\", ") +
                 TEXT("\"args\" : ") + InRequest->ToYamlString() + TEXT(", ") +
                 TEXT("\"id\" : \"") + InID + TEXT("\" }");
     }
 
-    static FString CallService(const FString& InService, const FString& InArgs) 
+    static FORCEINLINE FString CallService(const FString& InService, const FString& InArgs)
 	{
         if (InArgs == TEXT(""))
             return TEXT("{\"op\": \"call_service\", \"service\": \"") + InService + TEXT("\"}");
@@ -102,7 +102,7 @@ public:
             return TEXT("{\"op\": \"call_service\", \"service\": \"") + InService + TEXT("\", \"args\" : ") + InArgs + TEXT("}");
     }
 
-    static FString CallService(const FString& InService) 
+    static FORCEINLINE FString CallService(const FString& InService)
 	{
         return TEXT("{\"op\": \"call_service\", \"service\": \"") + InService + TEXT("\"}");
     }

@@ -365,32 +365,32 @@ void FROSBridgeHandler::Render()
     LockArrayService.Unlock(); // unlock mutex of ArrayService
 }
 
-void FROSBridgeHandler::PublishServiceResponse(FString Service, FString ID,
-    TSharedPtr<FROSBridgeSrv::SrvResponse> Response)
+void FROSBridgeHandler::PublishServiceResponse(FString InService, FString InID,
+    TSharedPtr<FROSBridgeSrv::SrvResponse> InResponse)
 {
-    FString MsgToSend = FROSBridgeSrv::ServiceResponse(Service, ID, Response); 
+    FString MsgToSend = FROSBridgeSrv::ServiceResponse(InService, InID, InResponse);
     Client->Send(MsgToSend); 
 }
 
-void FROSBridgeHandler::PublishMsg(FString Topic, TSharedPtr<FROSBridgeMsg> Msg)
+void FROSBridgeHandler::PublishMsg(FString InTopic, TSharedPtr<FROSBridgeMsg> InMsg)
 {
-    FString MsgToSend = FROSBridgeMsg::Publish(Topic, Msg);
+    FString MsgToSend = FROSBridgeMsg::Publish(InTopic, InMsg);
     Client->Send(MsgToSend);
 }
 
-void FROSBridgeHandler::CallService(TSharedPtr<FROSBridgeSrvClient> SrvClient,
-                                    TSharedPtr<FROSBridgeSrv::SrvRequest> Request,
-                                    TSharedPtr<FROSBridgeSrv::SrvResponse> Response)
+void FROSBridgeHandler::CallService(TSharedPtr<FROSBridgeSrvClient> InSrvClient,
+                                    TSharedPtr<FROSBridgeSrv::SrvRequest> InRequest,
+                                    TSharedPtr<FROSBridgeSrv::SrvResponse> InResponse)
 {
-    FString Name = SrvClient->GetName(); 
+    FString Name = InSrvClient->GetName(); 
     FString ID = Name + TEXT("_request_") + FString::FromInt(FMath::RandRange(0, 10000000));
     LockArrayService.Lock(); // lock mutex, when access ArrayService
 
-    TSharedPtr<FServiceTask> ServiceTask = MakeShareable<FServiceTask>(new FServiceTask(SrvClient, Name, ID, Request, Response)); 
+    TSharedPtr<FServiceTask> ServiceTask = MakeShareable<FServiceTask>(new FServiceTask(InSrvClient, Name, ID, InRequest, InResponse)); 
     ArrayService.Add(ServiceTask);
 
     LockArrayService.Unlock(); 
-    CallServiceImpl(Name, Request, ID); 
+    CallServiceImpl(Name, InRequest, ID); 
 }
 
 void FROSBridgeHandler::CallServiceImpl(FString Name, TSharedPtr<FROSBridgeSrv::SrvRequest> Request, FString ID)

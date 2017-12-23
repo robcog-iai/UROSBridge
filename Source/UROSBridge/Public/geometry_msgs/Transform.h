@@ -39,7 +39,7 @@ public:
         translation = translation_; 
     }
 
-    void SetVector3(FROSBridgeMsgGeometrymsgsQuaternion rotation_)
+    void SetRotation(FROSBridgeMsgGeometrymsgsQuaternion rotation_)
     {
         rotation = rotation_; 
     }

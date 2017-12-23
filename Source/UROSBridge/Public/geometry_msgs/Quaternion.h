@@ -48,9 +48,9 @@ public:
         return w;
     }
 
-    FVector4 GetVector() const 
+    FQuat GetQuat() const 
     {
-        return FVector4(x, y, z, w); 
+        return FQuat(x, y, z, w); 
     }
 
     void SetX(double x_)
@@ -73,9 +73,9 @@ public:
         w = w_;
     }
 
-    void SetVector(const FVector4 & Vector)
+    void SetQuat(const FQuat& Quat)
     {
-        x = Vector.X; y = Vector.Y; z = Vector.Z; w = Vector.W; 
+        x = Quat.X; y = Quat.Y; z = Quat.Z; w = Quat.W;
     }
 
     virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override {
