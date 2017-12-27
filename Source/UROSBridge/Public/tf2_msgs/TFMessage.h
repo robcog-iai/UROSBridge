@@ -98,3 +98,106 @@ public:
 		return OutputString;
 	}
 };
+
+
+/************************************************************************/
+/* Namespace version                                                    */
+/************************************************************************/
+namespace tf2_msgs
+{
+	class TFMessage : public FROSBridgeMsg
+	{
+	public:
+		TArray<geometry_msgs::TransformStamped> Transforms;
+
+		TFMessage()
+		{
+			Type = "tf2_msgs/TFMessage";
+		}
+
+		TFMessage(const TArray<geometry_msgs::TransformStamped>& InTransforms)
+		{
+			Type = "tf2_msgs/TFMessage";
+			for (int i = 0; i < InTransforms.Num(); i++)
+			{
+				Transforms.Add(InTransforms[i]);
+			}
+		}
+
+		~TFMessage() override {}
+
+		TArray<geometry_msgs::TransformStamped> GetTFMessages() const
+		{
+			return Transforms;
+		}
+
+		geometry_msgs::TransformStamped GetTFMessageAt(int32 Index)
+		{
+			check(Index < Transforms.Num());
+			return Transforms[Index];
+		}
+
+		void AddTransform(geometry_msgs::TransformStamped InTransform)
+		{
+			Transforms.Add(InTransform);
+		}
+
+		void SetTFMessages(const TArray<geometry_msgs::TransformStamped>& InTransforms)
+		{
+			for (int i = 0; i < InTransforms.Num(); i++)
+			{
+				Transforms.Add(InTransforms[i]);
+			}
+		}
+
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
+		{
+			TArray<TSharedPtr<FJsonValue>> TransformsPtrArray = JsonObject->GetArrayField(TEXT("transforms"));
+			for (auto &ptr : TransformsPtrArray)
+			{
+				geometry_msgs::TransformStamped Transform =
+					geometry_msgs::TransformStamped::GetFromJson(ptr->AsObject());
+				Transforms.Add(Transform);
+			}
+		}
+
+		static TFMessage GetFromJson(TSharedPtr<FJsonObject> JsonObject)
+		{
+			TFMessage Result;
+			Result.FromJson(JsonObject);
+			return Result;
+		}
+
+		virtual FString ToString() const override
+		{
+			FString ArrayString = "[ ";
+			for (auto &Transform : Transforms)
+				ArrayString += Transform.ToString() + TEXT(", ");
+			ArrayString += " ]";
+
+			return TEXT("TFMessage { transforms = ") + ArrayString + TEXT(" } ");
+		}
+
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override 
+		{
+			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
+			TArray<TSharedPtr<FJsonValue>> TransformsPtrArray;
+			for (auto &Transform : Transforms)
+			{
+				TSharedPtr<FJsonValue> Ptr = MakeShareable(new FJsonValueObject(Transform.ToJsonObject()));
+				TransformsPtrArray.Add(Ptr);
+			}
+
+			Object->SetArrayField("transforms", TransformsPtrArray);
+			return Object;
+		}
+
+		virtual FString ToYamlString() const override 
+		{
+			FString OutputString;
+			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
+			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
+			return OutputString;
+		}
+	};
+}; // tf2_msgs namespace

@@ -1,23 +1,23 @@
 {
-	"FileVersion": 3,
-	"Version": 1,
-	"VersionName": "1.0",
-	"FriendlyName": "UROSBridge",
-	"Description": "Unreal to ROS websocket based communication",
-	"Category": "RobCoG",
-	"CreatedBy": "Yilong Li",
-	"CreatedByURL": "https://github.com/gnoliyil",
-	"DocsURL": "https://github.com/robcog-iai/UROSBridge",
-	"MarketplaceURL": "",
-	"SupportURL": "http://robcog.org/",
-	"CanContainContent": true,
-	"IsBetaVersion": false,
-	"Installed": false,
-	"Modules": [
-		{
-			"Name": "UROSBridge",
-			"Type": "Developer",
-			"LoadingPhase": "Default"
-		}
-	]
+  "FileVersion": 3,
+  "Version": 1,
+  "VersionName": "1.0",
+  "FriendlyName": "UROSBridge",
+  "Description": "Unreal to ROS websocket based communication",
+  "Category": "RobCoG",
+  "CreatedBy": "Yilong Li, Andrei Haidu",
+  "CreatedByURL": "https://github.com/gnoliyil , http://haidu.eu",
+  "DocsURL": "https://github.com/robcog-iai/UROSBridge",
+  "MarketplaceURL": "",
+  "SupportURL": "http://robcog.org/",
+  "CanContainContent": true,
+  "IsBetaVersion": false,
+  "Installed": false,
+  "Modules": [
+    {
+      "Name": "UROSBridge",
+      "Type": "Developer",
+      "LoadingPhase": "Default"
+    }
+  ]
 }

@@ -18,12 +18,11 @@ public:
 	
     virtual ~FROSBridgeMsg() {}
 
-    virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) {}
+    virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) { }
 
 	virtual TSharedPtr<FJsonObject> ToJsonObject() const 
 	{
-		TSharedPtr<FJsonObject> NewObject = MakeShareable<FJsonObject>(new FJsonObject());
-		return NewObject; 
+		return MakeShareable<FJsonObject>(new FJsonObject());
 	}
 
     virtual FString ToString() const
@@ -39,60 +38,60 @@ public:
 		return OutputString;
     }
 
-	static FORCEINLINE FString Advertise(const FString& MessageTopic, const FString& MessageType)
+	static FORCEINLINE FString Advertise(const FString& InMessageTopic, const FString& InMessageType)
 	{
-        return TEXT("{\"op\": \"advertise\", \"topic\": \"") + MessageTopic +
-               TEXT("\", \"type\": \"") + MessageType +
+        return TEXT("{\"op\": \"advertise\", \"topic\": \"") + InMessageTopic +
+               TEXT("\", \"type\": \"") + InMessageType +
                TEXT("\"}";)
     }
 
-    static FORCEINLINE FString UnAdvertise(FString MessageTopic)
+    static FORCEINLINE FString UnAdvertise(FString InMessageTopic)
 	{
-        return TEXT("{\"op\": \"unadvertise\", \"topic\": \"") + MessageTopic + TEXT("\"}");
+        return TEXT("{\"op\": \"unadvertise\", \"topic\": \"") + InMessageTopic + TEXT("\"}");
     }
 
-    static FORCEINLINE FString Publish(const FString& MessageTopic, TSharedPtr<FROSBridgeMsg> Message)
+    static FORCEINLINE FString Publish(const FString& InMessageTopic, TSharedPtr<FROSBridgeMsg> Message)
 	{
-        return TEXT("{\"op\": \"publish\", \"topic\": \"") + MessageTopic +
+        return TEXT("{\"op\": \"publish\", \"topic\": \"") + InMessageTopic +
                TEXT("\", \"msg\": ") + Message->ToYamlString() +
                TEXT("}";)
     }
 
-    static FORCEINLINE FString Publish(const FString& MessageTopic, const FString& Message)
+    static FORCEINLINE FString Publish(const FString& InMessageTopic, const FString& Message)
 	{
-        return TEXT("{\"op\": \"publish\", \"topic\": \"") + MessageTopic +
+        return TEXT("{\"op\": \"publish\", \"topic\": \"") + InMessageTopic +
                TEXT("\", \"msg\": \"") + Message +
                TEXT("\"}";)
     }
 
-    static FORCEINLINE FString Subscribe(const FString& MessageTopic)
+    static FORCEINLINE FString Subscribe(const FString& InMessageTopic)
 	{
-        return TEXT("{\"op\": \"subscribe\", \"topic\": \"") + MessageTopic + TEXT("\"}");
+        return TEXT("{\"op\": \"subscribe\", \"topic\": \"") + InMessageTopic + TEXT("\"}");
     }
 
-    static FORCEINLINE FString Subscribe(const FString& MessageTopic, const FString& MessageType)
+    static FORCEINLINE FString Subscribe(const FString& InMessageTopic, const FString& InMessageType)
 	{
-        return TEXT("{\"op\": \"subscribe\", \"topic\": \"") + MessageTopic +
-               TEXT("\", \"type\": \"") + MessageType +
+        return TEXT("{\"op\": \"subscribe\", \"topic\": \"") + InMessageTopic +
+               TEXT("\", \"type\": \"") + InMessageType +
                TEXT("\"}";)
     }
 
-    static FORCEINLINE FString UnSubscribe(const FString& MessageTopic)
+    static FORCEINLINE FString UnSubscribe(const FString& InMessageTopic)
 	{
-        return TEXT("{\"op\": \"unsubscribe\", \"topic\": \"") + MessageTopic + TEXT("\"}";)
+        return TEXT("{\"op\": \"unsubscribe\", \"topic\": \"") + InMessageTopic + TEXT("\"}";)
     }
 
-    static FORCEINLINE FString CallService(const FString& service, const FString& args)
+    static FORCEINLINE FString CallService(const FString& InService, const FString& InArgs)
 	{
-        if (args == TEXT(""))
-            return TEXT("{\"op\": \"call_service\", \"service\": \"") + service +  TEXT("\"}");
+        if (InArgs == TEXT(""))
+            return TEXT("{\"op\": \"call_service\", \"service\": \"") + InService +  TEXT("\"}");
         else
-            return TEXT("{\"op\": \"call_service\", \"service\": \"") + service +  TEXT("\", \"args\" : ") + args + TEXT("}");
+            return TEXT("{\"op\": \"call_service\", \"service\": \"") + InService +  TEXT("\", \"args\" : ") + InArgs + TEXT("}");
     }
 
-    static FORCEINLINE FString CallService(const FString& service)
+    static FORCEINLINE FString CallService(const FString& InService)
 	{
-        return TEXT("{\"op\": \"call_service\", \"service\": \"") + service +  TEXT("\"}");
+        return TEXT("{\"op\": \"call_service\", \"service\": \"") + InService +  TEXT("\"}");
 	}
 };
 

@@ -216,12 +216,12 @@ void FROSBridgeHandler::Connect()
                                      0, TPri_BelowNormal);
 	
 	// Stop if could not connect after X trials
-	uint32 ConnTryCounter = 0;
+	uint32 ConnectionTrialCounter = 0;
 	while (!IsClientConnected())
 	{
         FPlatformProcess::Sleep(0.02);
-		ConnTryCounter++;
-		if (ConnTryCounter > 100)
+		ConnectionTrialCounter++;
+		if (ConnectionTrialCounter > 100)
 		{
 			UE_LOG(LogROS, Error, TEXT("[%s] Could not connect to the rosbridge server!"),
 				*FString(__FUNCTION__));
