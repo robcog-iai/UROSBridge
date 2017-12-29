@@ -326,6 +326,13 @@ void FROSBridgeHandler::Disconnect()
 	SetConnected(false);
 }
 
+// 
+DEPRECATED(4.3, "GetModifiedMaxSpeed() is deprecated, use GetMaxSpeed() instead.")
+void FROSBridgeHandler::Render2()
+{
+	Render();
+}
+
 // Update for each frame / substep
 void FROSBridgeHandler::Render()
 {
@@ -383,19 +390,19 @@ void FROSBridgeHandler::CallService(TSharedPtr<FROSBridgeSrvClient> InSrvClient,
                                     TSharedPtr<FROSBridgeSrv::SrvResponse> InResponse)
 {
     FString Name = InSrvClient->GetName(); 
-    FString ID = Name + TEXT("_request_") + FString::FromInt(FMath::RandRange(0, 10000000));
+    FString Id = Name + TEXT("_request_") + FString::FromInt(FMath::RandRange(0, 10000000));
     LockArrayService.Lock(); // lock mutex, when access ArrayService
 
-    TSharedPtr<FServiceTask> ServiceTask = MakeShareable<FServiceTask>(new FServiceTask(InSrvClient, Name, ID, InRequest, InResponse)); 
+    TSharedPtr<FServiceTask> ServiceTask = MakeShareable<FServiceTask>(new FServiceTask(InSrvClient, Name, Id, InRequest, InResponse)); 
     ArrayService.Add(ServiceTask);
 
     LockArrayService.Unlock(); 
-    CallServiceImpl(Name, InRequest, ID); 
+    CallServiceImpl(Name, InRequest, Id); 
 }
 
-void FROSBridgeHandler::CallServiceImpl(FString Name, TSharedPtr<FROSBridgeSrv::SrvRequest> Request, FString ID)
+void FROSBridgeHandler::CallServiceImpl(FString Name, TSharedPtr<FROSBridgeSrv::SrvRequest> Request, FString Id)
 {
-    FString MsgToSend = FROSBridgeSrv::CallService(Name, Request, ID);
+    FString MsgToSend = FROSBridgeSrv::CallService(Name, Request, Id);
     Client->Send(MsgToSend); 
 }
 

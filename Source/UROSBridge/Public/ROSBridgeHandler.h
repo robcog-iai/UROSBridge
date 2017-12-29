@@ -94,7 +94,7 @@ private:
         // Process subscribed messages using "Send"
         virtual uint32 Run() override;
 
-        // set the stop counter and disconnect
+        // Set the stop counter and disconnect
         virtual void Stop() override;
 
     private:
@@ -106,7 +106,6 @@ private:
     FString Host;
     int32 Port;
 	bool bIsConnected;
-
     float ClientInterval;
 
     // TSharedPtr<FWebSocket> Client;
@@ -130,7 +129,7 @@ private:
     void OnMessage(void* Data, int32 Length);
 
     void CallServiceImpl(FString Name,
-        TSharedPtr<FROSBridgeSrv::SrvRequest> Request, FString ID);
+        TSharedPtr<FROSBridgeSrv::SrvRequest> Request, FString Id);
 
     // friendship declaration
     friend class FROSBridgeHandlerRunnable;
@@ -217,6 +216,9 @@ public:
     // Unsubscribe / Unadvertise all messages
     // Stop the thread
     void Disconnect();
+
+	DEPRECATED(4.18, "Render2() is deprecated, use Render() instead.")
+	void Render2();
 
     // Update for each frame / substep
     void Render();
