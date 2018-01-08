@@ -53,10 +53,15 @@ bool FROSBridgeHandler::FROSBridgeHandlerRunnable::Init()
 // Process subscribed messages
 uint32 FROSBridgeHandler::FROSBridgeHandlerRunnable::Run()
 {
+	//Initial wait before starting
+	FPlatformProcess::Sleep(0.01);
+
     while (StopCounter.GetValue() == 0)
 	{
-        if (Handler->Client.IsValid() && !Handler->Client->IsDestroyed)
+		if (Handler->Client.IsValid() && !Handler->Client->IsDestroyed)
+		{
             Handler->Client->Tick();
+		}
         FPlatformProcess::Sleep(Handler->GetClientInterval());
     }
     return 0;

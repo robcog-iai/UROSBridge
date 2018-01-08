@@ -12,6 +12,22 @@ Not all standard ros msgs are supported currently supported (`std_msgs`, `sensor
 
 * See the [robosim](https://github.com/robcog-iai/RobCoG/tree/robosim) branch of RobCoG as an Unreal Project example to test all these functionalities.
 
+### Include plugin
+
+-   Add the plugin to your project (e.g `MyProject/Plugins/UROSBridge`)      
+
+-   Add the module dependency to your module (Project, Plugin); In the
+    `MyModule.Build.cs` file:  
+
+		PublicDependencyModuleNames.AddRange(  
+		new string[]  
+		{  
+		...  
+		"UROSBridge",
+		...  
+		}  
+		);  
+
 #### Other projects using UROSBridge:
 
  * [UROSActorControl](https://github.com/bbferka/UROSActorControl)

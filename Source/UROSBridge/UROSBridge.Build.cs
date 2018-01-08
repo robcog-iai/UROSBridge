@@ -28,6 +28,8 @@ public class UROSBridge : ModuleRules
 			new string[]
 			{
 				"Core",
+                "Json",
+                "JsonUtilities",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -47,8 +49,6 @@ public class UROSBridge : ModuleRules
 				"libWebSockets",
 				"OpenSSL",
 				"zlib",
-				"Json",
-				"JsonUtilities"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
