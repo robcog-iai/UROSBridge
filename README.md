@@ -1,6 +1,6 @@
 # UROSBridge
 
-A UE4 Plugin for communication with [ROS Bridge](http://wiki.ros.org/rosbridge_suite) using WebSockets, which supports subscribing and publishing both ROS messages (topics) and services. 
+Unereal ROS bridge plugin for communication with [rosbridge](http://wiki.ros.org/rosbridge_suite) using WebSockets. The plugin supports subscribing and publishing both ROS messages (topics) and services. 
 
 ## Messages and Services
 
@@ -12,7 +12,7 @@ Not all standard ros msgs are supported currently supported (`std_msgs`, `sensor
 
 * See the [robosim](https://github.com/robcog-iai/RobCoG/tree/robosim) branch of RobCoG as an Unreal Project example to test all these functionalities.
 
-### Include plugin
+#### How to include the plugin
 
 -   Add the plugin to your project (e.g `MyProject/Plugins/UROSBridge`)      
 
@@ -24,6 +24,8 @@ Not all standard ros msgs are supported currently supported (`std_msgs`, `sensor
 		{  
 		...  
 		"UROSBridge",
+		"Json",
+		"JsonUtilities",
 		...  
 		}  
 		);  
