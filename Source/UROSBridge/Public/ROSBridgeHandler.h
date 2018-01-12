@@ -217,9 +217,9 @@ public:
     // Stop the thread
     void Disconnect();
 
-	DEPRECATED(4.18, "Render2() is deprecated, use Render() instead.")
-	void Render2();
+	DEPRECATED(4.18, "Render() is deprecated, use Update() instead.")
+	void Render();
 
     // Update for each frame / substep
-    void Render();
+    void Update();
 };

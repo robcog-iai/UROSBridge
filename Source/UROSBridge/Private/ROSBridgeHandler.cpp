@@ -332,14 +332,14 @@ void FROSBridgeHandler::Disconnect()
 }
 
 // 
-DEPRECATED(4.3, "GetModifiedMaxSpeed() is deprecated, use GetMaxSpeed() instead.")
-void FROSBridgeHandler::Render2()
+DEPRECATED(4.18, "Render() is deprecated, use Update() instead.")
+void FROSBridgeHandler::Render()
 {
-	Render();
+	Update();
 }
 
 // Update for each frame / substep
-void FROSBridgeHandler::Render()
+void FROSBridgeHandler::Update()
 {
     while (!QueueTask.IsEmpty())
     {
