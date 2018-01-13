@@ -332,14 +332,14 @@ void FROSBridgeHandler::Disconnect()
 }
 
 // 
-DEPRECATED(4.18, "Render() is deprecated, use Update() instead.")
+DEPRECATED(4.18, "Render() is deprecated, use Process() instead.")
 void FROSBridgeHandler::Render()
 {
-	Update();
+	Process();
 }
 
 // Update for each frame / substep
-void FROSBridgeHandler::Update()
+void FROSBridgeHandler::Process()
 {
     while (!QueueTask.IsEmpty())
     {
