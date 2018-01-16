@@ -4,7 +4,7 @@ Unereal ROS bridge plugin for communication with [rosbridge](http://wiki.ros.org
 
 ## Messages and Services
 
-Most standard ros msgs are supported supported (`std_msgs`, `sensor_msgs`, `geometry_msgs`, `std_srvs` etc. are). If you are going to add new message / service types, please make a pull request. To add new message / service classes, please refer to `Source/UROSBridge/Public` directory (see [here](Source/UROSBridge/Public/)).
+Most standard ros msgs are supported (`std_msgs`, `sensor_msgs`, `geometry_msgs`, `std_srvs` etc.). If you are going to add new message / service types, please make a pull request. To add new message / service classes, please refer to `Source/UROSBridge/Public` directory (see [here](Source/UROSBridge/Public/)).
 
 ## Usage
 
