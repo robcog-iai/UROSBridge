@@ -2,7 +2,8 @@
 
 #include "ROSBridgeSrv.h"
 
-class UROSBRIDGE_API FROSBridgeSrvRospytutorialsAddTwoInts : public FROSBridgeSrv {
+class UROSBRIDGE_API FROSBridgeSrvRospytutorialsAddTwoInts : public FROSBridgeSrv 
+{
 
 protected:
     FString Type;

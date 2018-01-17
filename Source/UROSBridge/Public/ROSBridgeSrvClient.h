@@ -18,11 +18,11 @@ public:
 
 	virtual ~FROSBridgeSrvClient() {}
 
-    FROSBridgeSrvClient(FString Name_, FString Type_): Name(Name_), Type(Type_) {}
+    FROSBridgeSrvClient(FString InName, FString InType): Name(InName), Type(InType) {}
 
     FString GetName() const { return Name; }
 
     FString GetType() const { return Type; }
     
-    virtual void CallBack(TSharedPtr<FROSBridgeSrv::SrvRequest> Request, TSharedPtr<FROSBridgeSrv::SrvResponse> Response) const = 0;
+    virtual void Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> InRequest, TSharedPtr<FROSBridgeSrv::SrvResponse> InResponse) = 0;
 }; 

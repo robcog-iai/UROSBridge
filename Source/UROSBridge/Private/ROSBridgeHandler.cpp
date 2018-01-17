@@ -205,7 +205,7 @@ void FROSBridgeHandler::OnMessage(void* data, int32 length)
 				*FString(__FUNCTION__), *ServiceName, *ID);
 #endif
             TSharedPtr<FROSBridgeSrv::SrvRequest> Request = ListServiceServer[FoundServiceIndex]->FromJson(ArgsObj); 
-            TSharedPtr<FROSBridgeSrv::SrvResponse > Response = ListServiceServer[FoundServiceIndex]->CallBack(Request); // block 
+            TSharedPtr<FROSBridgeSrv::SrvResponse > Response = ListServiceServer[FoundServiceIndex]->Callback(Request); // block 
             PublishServiceResponse(ServiceName, ID, Response); 
         }
     }
@@ -349,7 +349,7 @@ void FROSBridgeHandler::Process()
         TSharedPtr<FROSBridgeMsg> Msg = RenderTask->Message;
         UE_LOG(LogROS, Log, TEXT("[%s] Rendering task [%s]"),
 			*FString(__FUNCTION__), *RenderTask->Topic);
-        RenderTask->Subscriber->CallBack(Msg);
+        RenderTask->Subscriber->Callback(Msg);
 
         // delete Msg;
     }
@@ -359,7 +359,7 @@ void FROSBridgeHandler::Process()
     {
         if (ArrayService[i]->bIsResponsed)
         {
-            ArrayService[i]->Client->CallBack(
+            ArrayService[i]->Client->Callback(
                 ArrayService[i]->Request,
                 ArrayService[i]->Response
             ); 

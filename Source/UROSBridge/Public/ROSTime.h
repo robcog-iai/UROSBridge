@@ -1,4 +1,4 @@
-// Copyright 2017, Institute for Artificial Intelligence - University of Bremen
+// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
 
 #pragma once
 
@@ -8,46 +8,46 @@
 class UROSBRIDGE_API FROSTime 
 {
 public:
-    uint32 secs, nsecs;
+    uint32 Secs, NSecs;
 
-    FROSTime(uint32 secs_, uint32 nsecs_) :
-        secs(secs_), nsecs(nsecs_) 
+    FROSTime(uint32 InSecs, uint32 InNSecs) :
+        Secs(InSecs), NSecs(InNSecs) 
 	{
 	}
 
 	FROSTime()
 	{
 		auto NowTime = FROSTime::Now();
-        secs = NowTime.secs;
-        nsecs = NowTime.nsecs;
+        Secs = NowTime.Secs;
+        NSecs = NowTime.NSecs;
 	}
 
 	static FROSTime Now() 
 	{
 		FDateTime NowDateTime = FDateTime::Now(); 
-        uint32 secs = (uint32)NowDateTime.ToUnixTimestamp();
-        uint32 nsecs = (uint32)NowDateTime.GetMillisecond() * 1000000;
-        return FROSTime(secs, nsecs);
+        uint32 Secs = (uint32)NowDateTime.ToUnixTimestamp();
+        uint32 NSecs = (uint32)NowDateTime.GetMillisecond() * 1000000;
+        return FROSTime(Secs, NSecs);
 	}
 
 	static FROSTime GetFromJson(TSharedPtr<FJsonObject> JsonObject) 
 	{
-        uint32 secs = (uint32)(JsonObject->GetNumberField("secs"));
-        uint32 nsecs = (uint32)(JsonObject->GetNumberField("nsecs"));
-        return FROSTime(secs, nsecs);
+        uint32 Secs = (uint32)(JsonObject->GetNumberField("secs"));
+        uint32 NSecs = (uint32)(JsonObject->GetNumberField("nsecs"));
+        return FROSTime(Secs, NSecs);
 	}
 
 	FString ToString() const
 	{
-        return TEXT("Time { secs = ") + FString::FromInt(secs)
-                 + TEXT(", nsecs = ") + FString::FromInt(nsecs) + TEXT(" }");
+        return TEXT("Time { secs = ") + FString::FromInt(Secs)
+                 + TEXT(", nsecs = ") + FString::FromInt(NSecs) + TEXT(" }");
 	}
 	
 	TSharedPtr<FJsonObject> ToJsonObject() const 
 	{
 		TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-        Object->SetNumberField(TEXT("secs"), secs);
-        Object->SetNumberField(TEXT("nsecs"), nsecs);
+        Object->SetNumberField(TEXT("secs"), Secs);
+        Object->SetNumberField(TEXT("nsecs"), NSecs);
 		return Object;
 	}
 
@@ -55,8 +55,8 @@ public:
 	{
 		FString OutputString;
 		FJsonObject Object;
-        Object.SetNumberField(TEXT("secs"), secs);
-        Object.SetNumberField(TEXT("nsecs"), nsecs);
+        Object.SetNumberField(TEXT("secs"), Secs);
+        Object.SetNumberField(TEXT("nsecs"), NSecs);
 
 		TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
 		FJsonSerializer::Serialize(MakeShared<FJsonObject>(Object), Writer);
