@@ -92,3 +92,10 @@ public:
         return OutputString;
     }
 };
+
+/************************************************************************/
+/* Namespace version                                                    */
+/************************************************************************/
+namespace geometry_msgs
+{
+} // namespace geometry_msgs

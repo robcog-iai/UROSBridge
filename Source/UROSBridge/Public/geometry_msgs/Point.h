@@ -102,3 +102,114 @@ public:
         return OutputString;
     }
 };
+
+/************************************************************************/
+/* Namespace version                                                    */
+/************************************************************************/
+namespace geometry_msgs
+{
+	class Point : public FROSBridgeMsg
+	{
+		double X;
+		double Y;
+		double Z;
+
+	public:
+		Point()
+		{
+			Type = "geometry_msgs/Point";
+		}
+
+		Point(double InX, double InY, double InZ)
+		{
+			Type = "geometry_msgs/Point";
+			X = InX; Y = InY; Z = InZ;
+		}
+
+		Point(FVector InVector)
+		{
+			Type = "geometry_msgs/Point";
+			X = InVector.X; Y = InVector.Y; Z = InVector.Z;
+		}
+
+		~Point() override {}
+
+		double GetX() const
+		{
+			return X;
+		}
+
+		double GetY() const
+		{
+			return Y;
+		}
+
+		double GetZ() const
+		{
+			return Z;
+		}
+
+		FVector GetVector() const
+		{
+			return FVector(X, Y, Z);
+		}
+
+		void SetX(double InX)
+		{
+			X = InX;
+		}
+
+		void SetY(double InY)
+		{
+			Y = InY;
+		}
+
+		void SetZ(double InZ)
+		{
+			Z = InZ;
+		}
+
+		void SetVector(const FVector& InVector)
+		{
+			X = InVector.X; Y = InVector.Y; Z = InVector.Z;
+		}
+
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
+		{
+			X = (double)(JsonObject->GetNumberField(TEXT("x")));
+			Y = (double)(JsonObject->GetNumberField(TEXT("y")));
+			Z = (double)(JsonObject->GetNumberField(TEXT("z")));
+		}
+
+		static Point GetFromJson(TSharedPtr<FJsonObject> JsonObject)
+		{
+			Point Result;
+			Result.FromJson(JsonObject);
+			return Result;
+		}
+
+		virtual FString ToString() const override
+		{
+			return TEXT("Point { x = ") + FString::SanitizeFloat(X) +
+				TEXT(", y = ") + FString::SanitizeFloat(Y) +
+				TEXT(", z = ") + FString::SanitizeFloat(Z) + TEXT(" } ");
+		}
+
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override 
+		{
+			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
+			Object->SetNumberField(TEXT("x"), X);
+			Object->SetNumberField(TEXT("y"), Y);
+			Object->SetNumberField(TEXT("z"), Z);
+			return Object;
+		}
+
+		virtual FString ToYamlString() const override 
+		{
+			FString OutputString;
+			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
+			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
+			return OutputString;
+		}
+	};
+} // geometry_msgs

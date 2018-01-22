@@ -253,4 +253,4 @@ namespace geometry_msgs
 			return OutputString;
 		}
 	};
-}
+} // namespace geometry_msgs
