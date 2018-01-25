@@ -107,9 +107,9 @@ namespace tf2_msgs
 {
 	class TFMessage : public FROSBridgeMsg
 	{
-	public:
 		TArray<geometry_msgs::TransformStamped> Transforms;
-
+	
+	public:
 		TFMessage()
 		{
 			Type = "tf2_msgs/TFMessage";
@@ -126,15 +126,20 @@ namespace tf2_msgs
 
 		~TFMessage() override {}
 
-		TArray<geometry_msgs::TransformStamped> GetTFMessages() const
+		TArray<geometry_msgs::TransformStamped> GetTransforms() const
 		{
 			return Transforms;
 		}
 
-		geometry_msgs::TransformStamped GetTFMessageAt(int32 Index)
+		geometry_msgs::TransformStamped GetTransformAt(int32 Index)
 		{
 			check(Index < Transforms.Num());
 			return Transforms[Index];
+		}
+
+		void SetTransforms(const TArray<geometry_msgs::TransformStamped>& InTransforms)
+		{
+			Transforms = InTransforms;
 		}
 
 		void AddTransform(geometry_msgs::TransformStamped InTransform)
@@ -142,12 +147,9 @@ namespace tf2_msgs
 			Transforms.Add(InTransform);
 		}
 
-		void SetTFMessages(const TArray<geometry_msgs::TransformStamped>& InTransforms)
+		void AppendTransforms(const TArray<geometry_msgs::TransformStamped>& InTransforms)
 		{
-			for (int i = 0; i < InTransforms.Num(); i++)
-			{
-				Transforms.Add(InTransforms[i]);
-			}
+			Transforms.Append(InTransforms);
 		}
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
