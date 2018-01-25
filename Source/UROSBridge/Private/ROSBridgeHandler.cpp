@@ -75,11 +75,11 @@ void FROSBridgeHandler::FROSBridgeHandlerRunnable::Stop()
 
 
 // Callback function when message comes from WebSocket
-void FROSBridgeHandler::OnMessage(void* data, int32 length)
+void FROSBridgeHandler::OnMessage(void* InData, int32 InLength)
 {
-    char * CharMessage = new char [length + 1];
-    memcpy(CharMessage, data, length);
-    CharMessage[length] = 0;
+    char * CharMessage = new char [InLength + 1];
+    memcpy(CharMessage, InData, InLength);
+    CharMessage[InLength] = 0;
     FString JsonMessage = UTF8_TO_TCHAR(CharMessage);
     delete[] CharMessage;
 
@@ -140,7 +140,7 @@ void FROSBridgeHandler::OnMessage(void* data, int32 length)
     }
     else if (Op == TEXT("service_response"))
     {
-        FString ID = JsonObject->GetStringField(TEXT("id"));
+        FString Id = JsonObject->GetStringField(TEXT("id"));
         FString ServiceName = JsonObject->GetStringField(TEXT("service"));
         TSharedPtr< FJsonObject > ValuesObj; 
         if (JsonObject->HasField("values")) // has values
@@ -154,7 +154,7 @@ void FROSBridgeHandler::OnMessage(void* data, int32 length)
         for (int i = 0; i < ArrayService.Num(); i++)
         {
             if (ArrayService[i]->Name == ServiceName &&
-                ArrayService[i]->ID == ID)
+                ArrayService[i]->Id == Id)
             {
                 ArrayService[i]->bIsResponsed = true; 
                 check(ArrayService[i]->Response.IsValid());
@@ -168,12 +168,12 @@ void FROSBridgeHandler::OnMessage(void* data, int32 length)
         if (!bFoundService)
         {
             UE_LOG(LogROS, Error, TEXT("[%s] Error: Service Name [%s] Id [%s] not found. "),
-				*FString(__FUNCTION__), *ServiceName, *ID);
+				*FString(__FUNCTION__), *ServiceName, *Id);
         } 
     }
     else if (Op == "call_service")
     {
-        FString ID = JsonObject->GetStringField(TEXT("id")); 
+        FString Id = JsonObject->GetStringField(TEXT("id")); 
         // there is always an Id for rosbridge_server generated service call
         FString ServiceName = JsonObject->GetStringField(TEXT("service"));
         TSharedPtr< FJsonObject > ArgsObj;
@@ -196,17 +196,17 @@ void FROSBridgeHandler::OnMessage(void* data, int32 length)
         if (!bFoundService)
         {
             UE_LOG(LogROS, Error, TEXT("[%s] Error: Service Name [%s] Id [%s] not found. "),
-				*FString(__FUNCTION__), *ServiceName, *ID);
+				*FString(__FUNCTION__), *ServiceName, *Id);
         }
         else
         {
 #if UE_BUILD_DEBUG
             UE_LOG(LogROS, Log, TEXT("[%s] Info: Service Name [%s] Id [%s] found, calling callback function."),
-				*FString(__FUNCTION__), *ServiceName, *ID);
+				*FString(__FUNCTION__), *ServiceName, *Id);
 #endif
             TSharedPtr<FROSBridgeSrv::SrvRequest> Request = ListServiceServer[FoundServiceIndex]->FromJson(ArgsObj); 
             TSharedPtr<FROSBridgeSrv::SrvResponse > Response = ListServiceServer[FoundServiceIndex]->Callback(Request); // block 
-            PublishServiceResponse(ServiceName, ID, Response); 
+            PublishServiceResponse(ServiceName, Id, Response); 
         }
     }
 }
@@ -377,10 +377,10 @@ void FROSBridgeHandler::Process()
     LockArrayService.Unlock(); // unlock mutex of ArrayService
 }
 
-void FROSBridgeHandler::PublishServiceResponse(FString InService, FString InID,
+void FROSBridgeHandler::PublishServiceResponse(FString InService, FString InId,
     TSharedPtr<FROSBridgeSrv::SrvResponse> InResponse)
 {
-    FString MsgToSend = FROSBridgeSrv::ServiceResponse(InService, InID, InResponse);
+    FString MsgToSend = FROSBridgeSrv::ServiceResponse(InService, InId, InResponse);
     Client->Send(MsgToSend); 
 }
 

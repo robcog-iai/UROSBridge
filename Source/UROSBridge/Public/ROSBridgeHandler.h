@@ -1,4 +1,4 @@
-// Copyright 2017, Institute for Artificial Intelligence - University of Bremen
+// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
 
 #pragma once
 
@@ -20,8 +20,8 @@ class UROSBRIDGE_API FROSBridgeHandler
 
 private:
     /* Subclasses */
-    /* FRenderTask: Representation of subscribed messages,
-     *              can be processed by Render()*/
+    /* FProcessTask: Representation of subscribed messages,
+     *              can be processed by Process()*/
     struct FProcessTask 
 	{
         FProcessTask(
@@ -39,7 +39,7 @@ private:
         TSharedPtr<FROSBridgeMsg> Message;
     };
 
-    /* FServiceTask: Service call results, can be processed by Render() */
+    /* FServiceTask: Service call results, can be processed by Process() */
     struct FServiceTask 
 	{
         FServiceTask(
@@ -79,7 +79,8 @@ private:
         bool bIsProcessed; 
     };
 
-    class FROSBridgeHandlerRunnable : public FRunnable {
+    class FROSBridgeHandlerRunnable : public FRunnable 
+	{
     public:
         FROSBridgeHandlerRunnable(
 			FROSBridgeHandler* ROSBridgeHandler) :
@@ -128,8 +129,7 @@ private:
     // into QueueTask.
     void OnMessage(void* Data, int32 Length);
 
-    void CallServiceImpl(FString Name,
-        TSharedPtr<FROSBridgeSrv::SrvRequest> Request, FString Id);
+    void CallServiceImpl(FString Name, TSharedPtr<FROSBridgeSrv::SrvRequest> Request, FString Id);
 
     // friendship declaration
     friend class FROSBridgeHandlerRunnable;
@@ -199,7 +199,7 @@ public:
     }
 
     // Publish service response, used in service server
-    void PublishServiceResponse(FString Service, FString ID,
+    void PublishServiceResponse(FString Service, FString Id,
         TSharedPtr<FROSBridgeSrv::SrvResponse> Response); 
 
     // Publish ROS message to topics

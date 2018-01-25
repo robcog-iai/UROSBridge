@@ -14,15 +14,27 @@ protected:
     FString Type; 
 
 public:
-    FROSBridgeSrvClient() {} 
+    FROSBridgeSrvClient() 
+	{
+	} 
 
-	virtual ~FROSBridgeSrvClient() {}
+	virtual ~FROSBridgeSrvClient() 
+	{
+	}
 
-    FROSBridgeSrvClient(FString InName, FString InType): Name(InName), Type(InType) {}
+    FROSBridgeSrvClient(FString InName, FString InType): Name(InName), Type(InType) 
+	{
+	}
 
-    FString GetName() const { return Name; }
+    FString GetName() const 
+	{ 
+		return Name; 
+	}
 
-    FString GetType() const { return Type; }
+    FString GetType() const 
+	{ 
+		return Type; 
+	}
     
     virtual void Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> InRequest, TSharedPtr<FROSBridgeSrv::SrvResponse> InResponse) = 0;
 }; 
