@@ -133,7 +133,7 @@ void FROSBridgeHandler::OnMessage(void* data, int32 length)
         {
             TSharedPtr<FROSBridgeMsg> ROSBridgeMsg;
             ROSBridgeMsg = Subscriber->ParseMessage(MsgObject);
-            TSharedPtr<FRenderTask> RenderTask = MakeShareable<FRenderTask>(new FRenderTask(Subscriber, Topic, ROSBridgeMsg));
+            TSharedPtr<FProcessTask> RenderTask = MakeShareable<FProcessTask>(new FProcessTask(Subscriber, Topic, ROSBridgeMsg));
 
             QueueTask.Enqueue(RenderTask);
         }
@@ -343,7 +343,7 @@ void FROSBridgeHandler::Process()
 {
     while (!QueueTask.IsEmpty())
     {
-        TSharedPtr<FRenderTask> RenderTask;
+        TSharedPtr<FProcessTask> RenderTask;
         QueueTask.Dequeue(RenderTask);
 
         TSharedPtr<FROSBridgeMsg> Msg = RenderTask->Message;

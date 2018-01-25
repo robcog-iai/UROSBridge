@@ -22,9 +22,9 @@ private:
     /* Subclasses */
     /* FRenderTask: Representation of subscribed messages,
      *              can be processed by Render()*/
-    struct FRenderTask 
+    struct FProcessTask 
 	{
-        FRenderTask(
+        FProcessTask(
 			TSharedPtr<FROSBridgeSubscriber> InSubscriber,
 			FString InTopic,
 			TSharedPtr<FROSBridgeMsg> InMessage) :
@@ -45,10 +45,10 @@ private:
         FServiceTask(
 			TSharedPtr<FROSBridgeSrvClient> InClient,
 			FString InServiceName,
-            FString InID) :
+            FString InId) :
             Client(InClient),
 			Name(InServiceName),
-			ID(InID),
+			Id(InId),
             bIsResponsed(false),
 			bIsProcessed(false) 
 		{
@@ -57,12 +57,12 @@ private:
         FServiceTask(
 			TSharedPtr<FROSBridgeSrvClient> InClient,
 			FString InServiceName,
-            FString InID,
+            FString InId,
 			TSharedPtr<FROSBridgeSrv::SrvRequest> InRequest,
             TSharedPtr<FROSBridgeSrv::SrvResponse> InResponse) :
             Client(InClient),
 			Name(InServiceName),
-			ID(InID),
+			Id(InId),
             Request(InRequest),
 			Response(InResponse),
             bIsResponsed(false),
@@ -72,7 +72,7 @@ private:
 
         TSharedPtr<FROSBridgeSrvClient> Client;
         FString Name;
-        FString ID; 
+        FString Id; 
         TSharedPtr<FROSBridgeSrv::SrvRequest> Request; 
         TSharedPtr<FROSBridgeSrv::SrvResponse> Response;
         bool bIsResponsed; 
@@ -115,7 +115,7 @@ private:
     TArray< TSharedPtr<FROSBridgeSubscriber> > ListSubscribers;
     TArray< TSharedPtr<FROSBridgePublisher> >  ListPublishers;
     TArray< TSharedPtr<FROSBridgeSrvServer> > ListServiceServer;
-    TQueue< TSharedPtr<FRenderTask> > QueueTask;
+    TQueue< TSharedPtr<FProcessTask> > QueueTask;
     TArray< TSharedPtr<FServiceTask> > ArrayService;
 
     FROSBridgeHandlerRunnable* Runnable;
