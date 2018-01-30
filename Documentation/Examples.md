@@ -106,17 +106,18 @@ This plugin uses `FROSBridgeSubscriber` class interface to subscribe to topics. 
 
 ##### Include Messages
 
-In class header, the UROSBridge Message class header should be included. 
+In class header, the UROSBridge Message class header should be included. Then, define a 'Subscriber' subclass you will use to receive the topic messages.
 
 ```
 #include "ROSBridgeSubscriber.h"
 #include "std_msgs/String.h"
 #include "Core.h"
+
 class FROSStringSubScriber : public FROSBridgeSubscriber {
    FROSStringSubScriber(FString Topic_); 
    ~FROSStringSubScriber() override; 
    TSharedPtr<FROSBridgeMsg> ParseMessage(TSharedPtr<FJsonObject> JsonObject) const override; 
-   void CallBack(TSharedPtr<FROSBridgeMsg> msg) const override; 
+   void Callback(TSharedPtr<FROSBridgeMsg> msg) override; 
 }
 ```
 
@@ -154,10 +155,10 @@ TSharedPtr<FROSBridgeMsg> FROSStringSubScriber::ParseMessage
 
 ##### CallBack
 
-`CallBack` is the callback function called when a new message comes and is successfully parsed to a `ROSBridgeMsg` instance. In this function, we need to first down-cast the `FROSBridgeMsg` pointer to a pointer of its subclass. 
+`Callback` is the callback function called when a new message comes and is successfully parsed to a `ROSBridgeMsg` instance. In this function, we need to first down-cast the `FROSBridgeMsg` pointer to a pointer of its subclass. 
 
 ```
-void CallBack(TSharedPtr<FROSBridgeMsg> msg) const 
+void Callback(TSharedPtr<FROSBridgeMsg> msg) 
 {
     TSharedPtr<FROSBridgeMsgStdmsgsString> StringMessage = StaticCastSharedPtr<FROSBridgeMsgStdmsgsString>(msg);
     // downcast to subclass using StaticCastSharedPtr function
