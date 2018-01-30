@@ -1,5 +1,5 @@
 #pragma once
-#include "ROSBridgeMsg.h"=
+#include "ROSBridgeMsg.h"
 
 
 class FROSBridgeMsgSensormsgsPointField : public FROSBridgeMsg
@@ -94,7 +94,7 @@ public:
 	{
 		name = JsonObject->GetStringField(TEXT("name"));
 		offset = JsonObject->GetNumberField(TEXT("offset"));
-		datatype = (EDataType)(JsonObject->GetNumberField(TEXT("datatype")));
+		datatype = (EDataType) ((uint8)(JsonObject->GetNumberField(TEXT("datatype"))));
 		count = JsonObject->GetNumberField(TEXT("count"));
     }
 

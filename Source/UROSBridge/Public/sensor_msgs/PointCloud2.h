@@ -3,7 +3,7 @@
 
 #include "std_msgs/Header.h"
 #include "sensor_msgs/PointField.h"
-
+#include "Base64.h"
 
 class FROSBridgeMsgSensormsgsPointCloud2 : public FROSBridgeMsg
 {
@@ -15,6 +15,7 @@ class FROSBridgeMsgSensormsgsPointCloud2 : public FROSBridgeMsg
 	bool is_bigendian;
 	uint32 point_step;
 	uint32 row_step;
+	// NB: ROSBridge encodes uint8[] as a Base64 string
 	TArray<uint8> data;
 	bool is_dense;
 
@@ -73,14 +74,12 @@ public:
 		fields.Empty();
 		TArray<TSharedPtr<FJsonValue>> FieldsPtrArr = JsonObject->GetArrayField(TEXT("fields"));
 		for (auto &ptr : FieldsPtrArr)
-			fields.Add(FROSBridgeMsgSensormsgsPointField::GetFromJson(ptr->AsObject));
+			fields.Add(FROSBridgeMsgSensormsgsPointField::GetFromJson(ptr->AsObject()));
 		is_bigendian = JsonObject->GetBoolField(TEXT("is_bigendian"));
 		point_step = JsonObject->GetNumberField(TEXT("point_step"));
 		row_step = JsonObject->GetNumberField(TEXT("row_step"));
 		data.Empty();
-		TArray<TSharedPtr<FJsonValue>> DataPtrArr = JsonObject->GetArrayField(TEXT("data"));
-		for (auto &ptr : DataPtrArr)
-			data.Add(ptr->AsNumber);
+		FBase64::Decode(JsonObject->GetStringField(TEXT("data")), data);
 		is_dense = JsonObject->GetBoolField(TEXT("is_dense"));
     }
 
@@ -118,22 +117,28 @@ public:
     virtual TSharedPtr<FJsonObject> ToJsonObject() const override {
         TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
-		TArray<TSharedPtr<FJsonValue>> FieldsArray;
+		TArray<TSharedPtr<FJsonValue>> FieldsPtrArray;
 		for (auto &field : fields)
-			FieldsArray.Add(MakeShareable<FJsonValue>(new FJsonValueObject(field.ToJsonObject())));
+		{
+			TSharedPtr<FJsonValue> Ptr = MakeShareable(new FJsonValueObject(field.ToJsonObject()));
+			FieldsPtrArray.Add(Ptr);
+		}
 
 		TArray<TSharedPtr<FJsonValue>> DataArray;
 		for (auto &datum : data)
-			DataArray.Add(MakeShareable<FJsonValue>(new FJsonValueNumber(datum)));
+		{
+			TSharedPtr<FJsonValue> Ptr = MakeShareable(new FJsonValueNumber(datum));
+			DataArray.Add(Ptr);
+		}
 
 		Object->SetObjectField(TEXT("header"), header.ToJsonObject());
         Object->SetNumberField(TEXT("height"), height);
 		Object->SetNumberField(TEXT("width"), width);
-		Object->SetArrayField(TEXT("fields"), FieldsArray);
+		Object->SetArrayField(TEXT("fields"), FieldsPtrArray);
 		Object->SetBoolField(TEXT("is_bigendian"), is_bigendian);
 		Object->SetNumberField(TEXT("point_step"), point_step);
 		Object->SetNumberField(TEXT("row_step"), row_step);
-		Object->SetArrayField(TEXT("data"), DataArray);
+		Object->SetStringField(TEXT("data"), *(FBase64::Encode(data)));
 		Object->SetBoolField(TEXT("is_dense"), is_dense);
 
         return Object;
