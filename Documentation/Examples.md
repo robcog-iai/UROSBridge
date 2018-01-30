@@ -140,14 +140,14 @@ FROSStringSubScriber::~FROSStringSubScriber() {};
 
 ##### ParseMessage
 
-`ParseMessage` function is used by ROSBridgeHandler to convert a `JSONObject` to `FROSBridgeMsg` instance. Create a ROSBridgeMessage class with specified message type (e.g. `FROSBridgeMsgStdmsgsString`) and call its `FromJson` method to parse the JSON message. Finally convert the pointer to a `FROSBridgeMsg` pointer. 
+`ParseMessage` function is used by ROSBridgeHandler to convert a `JSONObject` to `FROSBridgeMsg` instance. Create a ROSBridgeMessage class with specified message type (e.g. `std_msgs::String`) and call its `FromJson` method to parse the JSON message. Finally convert the pointer to a `FROSBridgeMsg` pointer. 
 
 ```
 TSharedPtr<FROSBridgeMsg> FROSStringSubScriber::ParseMessage
 (TSharedPtr<FJsonObject> JsonObject) const
 {
-    TSharedPtr<FROSBridgeMsgStdmsgsString> StringMessage =
-        MakeShareable<FROSBridgeMsgStdmsgsString>(new FROSBridgeMsgStdmsgsString());
+    TSharedPtr<std_msgs::String> StringMessage =
+        MakeShareable<std_msgs::String>(new std_msgs::String());
     StringMessage->FromJson(JsonObject);
     return StaticCastSharedPtr<FROSBridgeMsg>(StringMessage);
 }
@@ -158,9 +158,9 @@ TSharedPtr<FROSBridgeMsg> FROSStringSubScriber::ParseMessage
 `Callback` is the callback function called when a new message comes and is successfully parsed to a `ROSBridgeMsg` instance. In this function, we need to first down-cast the `FROSBridgeMsg` pointer to a pointer of its subclass. 
 
 ```
-void Callback(TSharedPtr<FROSBridgeMsg> msg) 
+void Callback(TSharedPtr<FROSBridgeMsg> InMsg) 
 {
-    TSharedPtr<FROSBridgeMsgStdmsgsString> StringMessage = StaticCastSharedPtr<FROSBridgeMsgStdmsgsString>(msg);
+    TSharedPtr<std_msgs::String> StringMessage = StaticCastSharedPtr<std_msgs::String>(InMsg);
     // downcast to subclass using StaticCastSharedPtr function
     
     UE_LOG(LogTemp, Log, TEXT("Message received! Content: %s"), *StringMessage->GetData());
@@ -211,12 +211,11 @@ public:
         FROSBridgeSrvClient(Name, TEXT("beginner_tutorials/AddTwoInts")) {}
     void CallBack(TSharedPtr<FROSBridgeSrv::SrvRequest> Request, TSharedPtr<FROSBridgeSrv::SrvResponse> Response) const override
     {
-        TSharedPtr<FROSBridgeSrvRospytutorialsAddTwoInts::Request> Request_ =
-            StaticCastSharedPtr<FROSBridgeSrvRospytutorialsAddTwoInts::Request>(Request);
-        TSharedPtr<FROSBridgeSrvRospytutorialsAddTwoInts::Response> Response_=
-            StaticCastSharedPtr<FROSBridgeSrvRospytutorialsAddTwoInts::Response>(Response);
+        TSharedPtr<beginner_tutorials::AddTwoInts::Request> Request_ =
+            StaticCastSharedPtr<beginner_tutorials::AddTwoInts::Request>(Request);
+        TSharedPtr<beginner_tutorials::AddTwoInts::Response> Response_=
+            StaticCastSharedPtr<beginner_tutorials::AddTwoInts::Response>(Response);
         // Do downcast to convert Request and Response to corresponding types
-        //        
         UE_LOG(LogTemp, Log, TEXT("Add Two Ints: %d + %d = %d"), Request_->GetA(), Request_->GetB(), Response_->GetSum());
     }
 };
@@ -230,9 +229,9 @@ TSharedPtr<FROSAddTwoIntsClient> ServiceClient =
 
 int NumA = FMath::RandRange(1, 10000);
 int NumB = FMath::RandRange(1, 10000);
-TSharedPtr<FROSBridgeSrv::SrvRequest> Request = MakeShareable(new FROSBridgeSrvRospytutorialsAddTwoInts::Request(NumA, NumB));
+TSharedPtr<FROSBridgeSrv::SrvRequest> Request = MakeShareable(new beginner_tutorials::AddTwoInts::Request(NumA, NumB));
 // Create a request instance with request parameters
-TSharedPtr<FROSBridgeSrv::SrvResponse> Response = MakeShareable(new FROSBridgeSrvRospytutorialsAddTwoInts::Response());
+TSharedPtr<FROSBridgeSrv::SrvResponse> Response = MakeShareable(new beginner_tutorials::AddTwoInts::Response());
 // Create an empty response instance 
 Handler->CallService(ServiceClient, Request, Response);
 ```
@@ -259,21 +258,21 @@ To process service requests in UROSBridge, we need to create a service server cl
           
      TSharedPtr<FROSBridgeSrv::SrvRequest> FromJson(TSharedPtr<FJsonObject> JsonObject) const override
      {
-         TSharedPtr<FROSBridgeSrvRospytutorialsAddTwoInts::Request> Request_ =
-             MakeShareable(new FROSBridgeSrvRospytutorialsAddTwoInts::Request());
+         TSharedPtr<beginner_tutorials::AddTwoInts::Request> Request_ =
+             MakeShareable(beginner_tutorials::AddTwoInts::Request());
          Request_->FromJson(JsonObject);
          return TSharedPtr<FROSBridgeSrv::SrvRequest>(Request_);
      } 
      
-     TSharedPtr<FROSBridgeSrv::SrvResponse> CallBack(TSharedPtr<FROSBridgeSrv::SrvRequest> Request) const override
+     TSharedPtr<FROSBridgeSrv::SrvResponse> Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> Request) override
      {
-         TSharedPtr<FROSBridgeSrvRospytutorialsAddTwoInts::Request> Request_ =
-             StaticCastSharedPtr<FROSBridgeSrvRospytutorialsAddTwoInts::Request>(Request);
+         TSharedPtr<beginner_tutorials::AddTwoInts::Request> Request_ =
+             StaticCastSharedPtr<beginner_tutorials::AddTwoInts::Request>(Request);
  
          int64 Sum = Request_->GetA() + Request_->GetB();
          UE_LOG(LogTemp, Log, TEXT("Service [%s] Server: Add Two Ints: %d + %d = %d"), *Name, Request_->GetA(), Request_->GetB(), Sum);
          return MakeShareable<FROSBridgeSrv::SrvResponse>
-                   (new FROSBridgeSrvRospytutorialsAddTwoInts::Response(Sum));
+                   (new beginner_tutorials::AddTwoInts::Response(Sum));
      }
 
  }
@@ -300,7 +299,7 @@ void AROSActor::BeginPlay()
 
 #### Add More Message / Service Types
 
-This plugin already has support for `std_msgs`, `geometry_msgs` and `std_srvs`, but sometimes other types of message / service will be required. We can add new message classes to the plugin or directly to the project source folder.   
+This plugin already has support for `std_msgs`, `geometry_msgs`, `std_srvs`, etc. but sometimes other types of message / service will be required. We can add new message classes to the plugin or directly to the project source folder.   
 
 ##### Message / Topic 
 
