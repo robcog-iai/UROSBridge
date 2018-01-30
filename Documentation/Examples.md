@@ -5,6 +5,12 @@
 UROSBridge could be used in Unreal Actors or in timers. To use it in actors, we need to add a smart pointer to ROSBridgeHandler first: 
 
 ```
+
+// NB: Your #include "AROSActor.generated.h" must be the last include in the actor header
+#include "ROSBRidgeHandler.h"
+
+/// ...
+
 UCLASS()
 class PROJECT_API AROSActor : public AActor
 {
@@ -34,7 +40,7 @@ void AROSActor::BeginPlay()
 }
 ```
 
-In Actor's `Tick(float)` function, add `Handler->Render()` function to let handler process incoming messages in the message queue. 
+In Actor's `Tick(float)` function, add `Handler->Process()` function to let handler process incoming messages in the message queue. 
 
 ```
 void AROSActor::Tick(float DeltaSeconds)
@@ -42,7 +48,7 @@ void AROSActor::Tick(float DeltaSeconds)
     Super::Tick(DeltaSeconds);
     // Do something
     
-    Handler->Render();
+    Handler->Process();
 }
 ```
 
