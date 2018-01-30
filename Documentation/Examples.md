@@ -4,7 +4,7 @@
 
 UROSBridge could be used in Unreal Actors or in timers. To use it in actors, we need to add a smart pointer to ROSBridgeHandler first: 
 
-```
+```cpp
 
 // NB: Your #include "AROSActor.generated.h" must be the last include in the actor header
 #include "ROSBRidgeHandler.h"
@@ -24,7 +24,7 @@ public:
 
 In Actor's `BeginPlay()` function, create handler instance and connect to the websocket server:
 
-```
+```cpp
 void AROSActor::BeginPlay()
 {
     Super::BeginPlay();
@@ -42,7 +42,7 @@ void AROSActor::BeginPlay()
 
 In Actor's `Tick(float)` function, add `Handler->Process()` function to let handler process incoming messages in the message queue. 
 
-```
+```cpp
 void AROSActor::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
@@ -54,7 +54,7 @@ void AROSActor::Tick(float DeltaSeconds)
 
 In Actor's `Logout` or `EndPlay` function, add `Handler->Disconnect()` function before the parent class ends. 
 
-```
+```cpp
 void AROSActor::EndPlay(const EEndPlayReason::Type Reason)
 {
     Handler->Disconnect(); 
@@ -68,7 +68,7 @@ void AROSActor::EndPlay(const EEndPlayReason::Type Reason)
 
 To publish message to a topic, we need to first advertise the topic in ROS bridge. In AROSActor's class definition, Add a ROSBridgePublisher smart pointer. 
 
-```
+```cpp
 UCLASS()
 class PROJECT_API AROSActor : public AActor
 {
@@ -83,7 +83,7 @@ public:
 
 In AROSActor's `BeginPlay()` function, create the publisher using its **type** and **topic**, and then register it to the ROSBridgeHandler. 
 
-```
+```cpp
 void AROSActor::BeginPlay()
 {
     Super::BeginPlay();
@@ -102,13 +102,13 @@ void AROSActor::BeginPlay()
 
 #### Subscribe to Topics
 
-This plugin uses `FROSBridgeSubscriber` class interface to subscribe to topics. We need to extend a `FROSBridgeSubscriber` subclass for each topic we would like to subscribe to, implementing the constructor, destructor, `ParseMessage` function and `CallBack` function. 
+This plugin uses `FROSBridgeSubscriber` class interface to subscribe to topics. We need to extend a `FROSBridgeSubscriber` subclass for each topic we would like to subscribe to, implementing the constructor, destructor, `ParseMessage` function and `Callback` function. 
 
 ##### Include Messages
 
 In class header, the UROSBridge Message class header should be included. Then, define a 'Subscriber' subclass you will use to receive the topic messages.
 
-```
+```cpp
 #include "ROSBridgeSubscriber.h"
 #include "std_msgs/String.h"
 #include "Core.h"
@@ -125,7 +125,7 @@ class FROSStringSubScriber : public FROSBridgeSubscriber {
 
 In class constructor, we need to call the parent class constructor to set type and topic for this subscriber. 
 
-```
+```cpp
 FROSStringSubScriber::FROSStringSubScriber(FString Topic_):
     FROSBridgeSubscriber(TEXT("std_msgs/String"), Topic_) {}
 ``` 
@@ -142,7 +142,7 @@ FROSStringSubScriber::~FROSStringSubScriber() {};
 
 `ParseMessage` function is used by ROSBridgeHandler to convert a `JSONObject` to `FROSBridgeMsg` instance. Create a ROSBridgeMessage class with specified message type (e.g. `std_msgs::String`) and call its `FromJson` method to parse the JSON message. Finally convert the pointer to a `FROSBridgeMsg` pointer. 
 
-```
+```cpp
 TSharedPtr<FROSBridgeMsg> FROSStringSubScriber::ParseMessage
 (TSharedPtr<FJsonObject> JsonObject) const
 {
@@ -157,7 +157,7 @@ TSharedPtr<FROSBridgeMsg> FROSStringSubScriber::ParseMessage
 
 `Callback` is the callback function called when a new message comes and is successfully parsed to a `ROSBridgeMsg` instance. In this function, we need to first down-cast the `FROSBridgeMsg` pointer to a pointer of its subclass. 
 
-```
+```cpp
 void Callback(TSharedPtr<FROSBridgeMsg> InMsg) 
 {
     TSharedPtr<std_msgs::String> StringMessage = StaticCastSharedPtr<std_msgs::String>(InMsg);
@@ -174,7 +174,7 @@ void Callback(TSharedPtr<FROSBridgeMsg> InMsg)
 
 In Unreal Actors, before the ROS Bridge Handler connects to the server, we need to add pointer to subscriber to the subscriber list first. 
 
-```
+```cpp
 void AROSActor::BeginPlay()
 {
     Super::BeginPlay();
@@ -200,7 +200,7 @@ A service consists of two parts: Request and Response. Clients send out requests
 
 To send service requests in UROSBridge, we need to create a service client class first. This class should extend the FROSBridgeSrvClient and implement the constructor and a callback function. Below is an example of service "AddTwoInts" client.  
 
-```
+```cpp
 #pragma once
 #include "ROSBridgeSrvClient.h"
 #include "tutorial_srvs/AddTwoInts.h"
@@ -223,7 +223,7 @@ public:
 
 Then in ROSActor, we can send service requests using the following function: 
 
-```
+```cpp
 TSharedPtr<FROSAddTwoIntsClient> ServiceClient = 
     MakeShareable<FROSAddTwoIntsClient>(new FROSAddTwoIntsClient(TEXT("add_two_ints")));
 
@@ -244,7 +244,7 @@ The plugin can also works as a "server" side who receives ros service requests f
 
 To process service requests in UROSBridge, we need to create a service server class first. This class should extend the FROSBridgeSrvServer and implement the constructor, `FromJson`, and `CallBack` function. It is very similar to ROS Bridge Subscriber classes but the only difference is that the return type of `CallBack` is `TSharedPtr<FROSBridgeSrv::SrvResponse>` rather than `void`. Below is an example of service AddTwoInts server. 
 
-```
+```cpp
  #pragma once
  
  #include "ROSBridgeSrvServer.h"
@@ -280,7 +280,7 @@ To process service requests in UROSBridge, we need to create a service server cl
 
 In Actor, before connection, first register the server to ROS bridge, then it will process incoming service requests automatically. After disconnection, the server will be automatically destroyed. 
 
-```
+```cpp
 void AROSActor::BeginPlay()
 {
     Super::BeginPlay();
