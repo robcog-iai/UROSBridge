@@ -99,7 +99,7 @@ public:
 
 		FString DataString = "[ ";
 		for (auto &value : data)
-			DataString += FString::SanitizeFloat(value) + TEXT(", ");
+			DataString += FString::FromInt(value) + TEXT(", ");
 		DataString += " ]";
 
 		return TEXT("PointCloud2 { header = ") + header.ToString() +
