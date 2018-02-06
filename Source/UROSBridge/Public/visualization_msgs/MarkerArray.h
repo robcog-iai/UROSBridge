@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ROSBridgeMsg.h"
+
 #include "visualization_msgs/Marker.h"
 
 class FROSBridgeMsgVisualizationmsgsMarkerArray : public FROSBridgeMsg

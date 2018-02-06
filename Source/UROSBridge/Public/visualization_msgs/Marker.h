@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ROSBridgeMsg.h"
+
 #include "geometry_msgs/Pose.h"
 #include "geometry_msgs/Vector3.h"
 #include "std_msgs/Header.h"
@@ -305,36 +306,42 @@ namespace visualization_msgs
 {
 	class Marker : public FROSBridgeMsg
 	{
-
-		enum class EMarkerType : uint8
+		enum EType : uint8
 		{
 			ARROW = 0,
-			CUBE, SPHERE, CYLINDER, LINE_STRIP,
-			LINE_LIST, CUBE_LIST, SPHERE_LIST,
-			POINTS, TEXT_VIEW_FACING, MESH_RESOURCE, TRIANGLE_LIST
-		} Type;
+			CUBE = 1,
+			SPHERE = 2,
+			CYLINDER = 3,
+			LINE_STRIP = 4,
+			LINE_LIST = 5,
+			CUBE_LIST = 6,
+			SPHERE_LIST = 7,
+			POINTS = 8,
+			TEXT_VIEW_FACING = 9,
+			MESH_RESOURCE = 10,
+			TRIANGLE_LIST = 11
+		};
 
-		enum class EActionType : uint8
+		enum EAction : uint8
 		{
 			ADD = 0,
 			MODIFY = 0,
 			DELETE = 2
-		} Action;
+		};
 
 		std_msgs::Header Header;
 		FString Ns;
 		int32 Id;
-
+		EType Type;
+		EAction Action;
 		geometry_msgs::Pose Pose;
 		geometry_msgs::Vector3 Scale;
 		std_msgs::ColorRGBA Color;
 		uint32 Lifetime;
 		bool bFrameLocked;
-
 		TArray<geometry_msgs::Point> Points;
 		TArray<std_msgs::ColorRGBA> Colors;
 		FString Text;
-
 		FString MeshResource;
 		bool bMeshUseEmbeddedMaterials;
 
@@ -346,7 +353,7 @@ namespace visualization_msgs
 
 		//check what is the minimum requirement for a marker
 		Marker(std_msgs::Header InHeader, FString InNs,
-			EMarkerType InMarkerType, EActionType InActionType,
+			EType InMarkerType, EAction InActionType,
 			geometry_msgs::Pose InPose, geometry_msgs::Vector3 InScale,
 			std_msgs::ColorRGBA InColor, uint32 InLifetime,
 			bool bInFrameLocked) :
@@ -373,12 +380,12 @@ namespace visualization_msgs
 			return Id;
 		}
 
-		EMarkerType GetMarkeType() const
+		EType GetMarkeType() const
 		{
 			return Type;
 		}
 
-		EActionType GetActionTye() const
+		EAction GetActionTye() const
 		{
 			return Action;
 		}
@@ -442,12 +449,12 @@ namespace visualization_msgs
 			Id = InId;
 		}
 
-		void SetMarkeType(EMarkerType InMarkerType)
+		void SetMarkeType(EType InMarkerType)
 		{
 			Type = InMarkerType;
 		}
 
-		void SetActionTye(EActionType InActionType)
+		void SetActionTye(EAction InActionType)
 		{
 			Action = InActionType;
 		}
@@ -502,8 +509,8 @@ namespace visualization_msgs
 			Header = std_msgs::Header::GetFromJson(JsonObject->GetObjectField(TEXT("header")));
 			Ns = JsonObject->GetStringField(TEXT("ns"));
 			Id = JsonObject->GetIntegerField(TEXT("id"));
-			Type = (EMarkerType)JsonObject->GetIntegerField(TEXT("type"));
-			Action = (EActionType)JsonObject->GetIntegerField(TEXT("action"));
+			Type = (EType)JsonObject->GetIntegerField(TEXT("type"));
+			Action = (EAction)JsonObject->GetIntegerField(TEXT("action"));
 			Pose = geometry_msgs::Pose::GetFromJson(JsonObject->GetObjectField(TEXT("pose")));
 			Scale = geometry_msgs::Vector3::GetFromJson(JsonObject->GetObjectField(TEXT("scale")));
 			Color = std_msgs::ColorRGBA::GetFromJson(JsonObject->GetObjectField(TEXT("color")));
