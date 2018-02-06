@@ -10,13 +10,13 @@ public:
 
     FROSBridgeMsgGeometrymsgsPolygon()
     {
-        Type = "geometry_msgs/Polygon";
+        MsgType = "geometry_msgs/Polygon";
     }
 
     FROSBridgeMsgGeometrymsgsPolygon
     (const TArray<FROSBridgeMsgGeometrymsgsPoint32>& points_) 
     {
-        Type = "geometry_msgs/Polygon";
+        MsgType = "geometry_msgs/Polygon";
         for (int i = 0; i < points_.Num(); i++)
         {
             points.Add(points_[i]); 

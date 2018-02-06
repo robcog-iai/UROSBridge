@@ -12,14 +12,14 @@ class FROSBridgeMsgGeometrymsgsPoseStamped : public FROSBridgeMsg
 public:
     FROSBridgeMsgGeometrymsgsPoseStamped()
     {
-        Type = "geometry_msgs/PoseStamped";
+        MsgType = "geometry_msgs/PoseStamped";
     }
 
     FROSBridgeMsgGeometrymsgsPoseStamped
     (FROSBridgeMsgStdmsgsHeader header_, FROSBridgeMsgGeometrymsgsPose pose_) :
         header(header_), pose(pose_)
     {
-        Type = "geometry_msgs/PoseStamped";
+        MsgType = "geometry_msgs/PoseStamped";
     }
     
     ~FROSBridgeMsgGeometrymsgsPoseStamped() override {}
@@ -90,14 +90,14 @@ namespace geometry_msgs
 	public:
 		PoseStamped()
 		{
-			Type = "geometry_msgs/PoseStamped";
+			MsgType = "geometry_msgs/PoseStamped";
 		}
 
 		PoseStamped
 		(std_msgs::Header InHeader, geometry_msgs::Pose InPose) :
 			Header(InHeader), Pose(InPose)
 		{
-			Type = "geometry_msgs/PoseStamped";
+			MsgType = "geometry_msgs/PoseStamped";
 		}
 
 		~PoseStamped() override {}

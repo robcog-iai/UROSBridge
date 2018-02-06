@@ -8,12 +8,12 @@ class FROSBridgeMsgStdmsgsString : public FROSBridgeMsg
 public:
     FROSBridgeMsgStdmsgsString()
     {
-        Type = "std_msgs/String";
+        MsgType = "std_msgs/String";
     }
 
     FROSBridgeMsgStdmsgsString(FString data_)
     {
-        Type = "std_msgs/String";
+        MsgType = "std_msgs/String";
         data = data_;
     }
 
@@ -68,12 +68,12 @@ namespace std_msgs
 	public:
 		String()
 		{
-			Type = "std_msgs/String";
+			MsgType = "std_msgs/String";
 		}
 
 		String(FString InData)
 		{
-			Type = "std_msgs/String";
+			MsgType = "std_msgs/String";
 			Data = InData;
 		}
 
@@ -114,5 +114,4 @@ namespace std_msgs
 			return OutputString;
 		}
 	};
-
-}
+} // namespace std_msgs

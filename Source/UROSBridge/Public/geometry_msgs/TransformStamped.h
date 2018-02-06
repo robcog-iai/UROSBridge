@@ -13,7 +13,7 @@ class FROSBridgeMsgGeometrymsgsTransformStamped : public FROSBridgeMsg
 public:
     FROSBridgeMsgGeometrymsgsTransformStamped()
     {
-        Type = "geometry_msgs/TransformStamped";
+        MsgType = "geometry_msgs/TransformStamped";
     }
 
     FROSBridgeMsgGeometrymsgsTransformStamped
@@ -21,7 +21,7 @@ public:
      FROSBridgeMsgGeometrymsgsTransform transform_) :
         header(header_), child_frame_id(child_frame_id_), transform(transform_)
     {
-        Type = "geometry_msgs/TransformStamped";
+        MsgType = "geometry_msgs/TransformStamped";
     }
     
     ~FROSBridgeMsgGeometrymsgsTransformStamped() override {}
@@ -106,7 +106,7 @@ namespace geometry_msgs
 	public:
 		TransformStamped()
 		{
-			Type = "geometry_msgs/TransformStamped";
+			MsgType = "geometry_msgs/TransformStamped";
 		}
 
 		TransformStamped(
@@ -117,7 +117,7 @@ namespace geometry_msgs
 			ChildFrameId(InChildFrameId),
 			Transform(Transform)
 		{
-			Type = "geometry_msgs/TransformStamped";
+			MsgType = "geometry_msgs/TransformStamped";
 		}
 
 		~TransformStamped() override {}

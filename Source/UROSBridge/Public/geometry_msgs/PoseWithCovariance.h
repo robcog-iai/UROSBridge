@@ -12,7 +12,7 @@ public:
 
     FROSBridgeMsgGeometrymsgsPoseWithCovariance()
     {
-        Type = "geometry_msgs/PoseWithCovariance";
+        MsgType = "geometry_msgs/PoseWithCovariance";
         covariance.SetNumZeroed(36);
     }
 
@@ -20,7 +20,7 @@ public:
     (FROSBridgeMsgGeometrymsgsPose pose_, const TArray<double>& covariance_) :
         pose(pose_), covariance(covariance_)
     {
-        Type = "geometry_msgs/PoseWithCovariance";
+        MsgType = "geometry_msgs/PoseWithCovariance";
     }
     
     ~FROSBridgeMsgGeometrymsgsPoseWithCovariance() override {}
@@ -106,7 +106,7 @@ namespace geometry_msgs
 	public:
 		PoseWithCovariance()
 		{
-			Type = "geometry_msgs/PoseWithCovariance";
+			MsgType = "geometry_msgs/PoseWithCovariance";
 			Covariance.SetNumZeroed(36);
 		}
 
@@ -114,7 +114,7 @@ namespace geometry_msgs
 		(geometry_msgs::Pose InPose, const TArray<double>& InCovariance) :
 			Pose(InPose), Covariance(InCovariance)
 		{
-			Type = "geometry_msgs/PoseWithCovariance";
+			MsgType = "geometry_msgs/PoseWithCovariance";
 		}
 
 		~PoseWithCovariance() override {}

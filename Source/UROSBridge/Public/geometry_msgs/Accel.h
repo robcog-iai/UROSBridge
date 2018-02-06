@@ -11,14 +11,14 @@ class FROSBridgeMsgGeometrymsgsAccel : public FROSBridgeMsg
 public:
     FROSBridgeMsgGeometrymsgsAccel()
     {
-        Type = "geometry_msgs/Accel";
+        MsgType = "geometry_msgs/Accel";
     }
 
     FROSBridgeMsgGeometrymsgsAccel
     (FROSBridgeMsgGeometrymsgsVector3 linear_, FROSBridgeMsgGeometrymsgsVector3 angular_) :
         linear(linear_), angular(angular_)
     {
-        Type = "geometry_msgs/Accel";
+        MsgType = "geometry_msgs/Accel";
     }
     
     ~FROSBridgeMsgGeometrymsgsAccel() override {}
@@ -89,14 +89,14 @@ namespace geometry_msgs
 	public:
 		Accel()
 		{
-			Type = "geometry_msgs/Accel";
+			MsgType = "geometry_msgs/Accel";
 		}
 
 		Accel
 		(FROSBridgeMsgGeometrymsgsVector3 InLinear, FROSBridgeMsgGeometrymsgsVector3 InAngular) :
 			Linear(InLinear), Angular(InAngular)
 		{
-			Type = "geometry_msgs/Accel";
+			MsgType = "geometry_msgs/Accel";
 		}
 
 		~Accel() override {}

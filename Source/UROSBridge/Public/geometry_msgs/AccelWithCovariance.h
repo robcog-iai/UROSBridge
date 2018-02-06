@@ -12,7 +12,7 @@ public:
 
     FROSBridgeMsgGeometrymsgsAccelWithCovariance()
     {
-        Type = "geometry_msgs/AccelWithCovariance";
+        MsgType = "geometry_msgs/AccelWithCovariance";
         covariance.SetNumZeroed(36);
     }
 
@@ -20,7 +20,7 @@ public:
     (FROSBridgeMsgGeometrymsgsAccel accel_, const TArray<double>& covariance_) :
         accel(accel_), covariance(covariance_)
     {
-        Type = "geometry_msgs/AccelWithCovariance";
+        MsgType = "geometry_msgs/AccelWithCovariance";
     }
 
     ~FROSBridgeMsgGeometrymsgsAccelWithCovariance() override {}
@@ -107,7 +107,7 @@ namespace geometry_msgs
 
 		AccelWithCovariance()
 		{
-			Type = "geometry_msgs/AccelWithCovariance";
+			MsgType = "geometry_msgs/AccelWithCovariance";
 			Covariance.SetNumZeroed(36);
 		}
 
@@ -115,7 +115,7 @@ namespace geometry_msgs
 		(geometry_msgs::Accel InAccel, const TArray<double>& InCovariance) :
 			Accel(InAccel), Covariance(InCovariance)
 		{
-			Type = "geometry_msgs/AccelWithCovariance";
+			MsgType = "geometry_msgs/AccelWithCovariance";
 		}
 
 		~AccelWithCovariance() override {}

@@ -10,18 +10,18 @@ class FROSBridgeMsgGeometrymsgsVector3 : public FROSBridgeMsg
 public:
     FROSBridgeMsgGeometrymsgsVector3()
     {
-        Type = "geometry_msgs/Vector3";
+        MsgType = "geometry_msgs/Vector3";
     }
 
     FROSBridgeMsgGeometrymsgsVector3(double x_, double y_, double z_)
     {
-        Type = "geometry_msgs/Vector3";
+        MsgType = "geometry_msgs/Vector3";
         x = x_; y = y_; z = z_; 
     }
 
     FROSBridgeMsgGeometrymsgsVector3(FVector Vector)
     {
-        Type = "geometry_msgs/Vector3";
+        MsgType = "geometry_msgs/Vector3";
         x = Vector.X; y = Vector.Y; z = Vector.Z; 
     }
 
@@ -117,7 +117,7 @@ namespace geometry_msgs
 	public:
 		Vector3()
 		{
-			Type = "geometry_msgs/Vector3";
+			MsgType = "geometry_msgs/Vector3";
 		}
 
 		Vector3(
@@ -128,12 +128,12 @@ namespace geometry_msgs
 			Y(InY),
 			Z(InZ)
 		{
-			Type = "geometry_msgs/Vector3";
+			MsgType = "geometry_msgs/Vector3";
 		}
 
 		Vector3(const FVector& InVector)
 		{
-			Type = "geometry_msgs/Vector3";
+			MsgType = "geometry_msgs/Vector3";
 			X = InVector.X;
 			Y = InVector.Y;
 			Z = InVector.Z;
@@ -221,4 +221,4 @@ namespace geometry_msgs
 			return OutputString;
 		}
 	};
-}
+} // namespace geometry_msgs

@@ -12,14 +12,14 @@ class FROSBridgeMsgGeometrymsgsPoseWithCovarianceStamped : public FROSBridgeMsg
 public:
     FROSBridgeMsgGeometrymsgsPoseWithCovarianceStamped()
     {
-        Type = "geometry_msgs/PoseWithCovarianceStamped";
+        MsgType = "geometry_msgs/PoseWithCovarianceStamped";
     }
 
     FROSBridgeMsgGeometrymsgsPoseWithCovarianceStamped
     (FROSBridgeMsgStdmsgsHeader header_, FROSBridgeMsgGeometrymsgsPoseWithCovariance pose_) :
         header(header_), pose(pose_)
     {
-        Type = "geometry_msgs/PoseWithCovarianceStamped";
+        MsgType = "geometry_msgs/PoseWithCovarianceStamped";
     }
     
     ~FROSBridgeMsgGeometrymsgsPoseWithCovarianceStamped() override {}
@@ -90,14 +90,14 @@ namespace geometry_msgs
 	public:
 		PoseWithCovarianceStamped()
 		{
-			Type = "geometry_msgs/PoseWithCovarianceStamped";
+			MsgType = "geometry_msgs/PoseWithCovarianceStamped";
 		}
 
 		PoseWithCovarianceStamped
 		(std_msgs::Header InHeader, geometry_msgs::PoseWithCovariance InPose) :
 			Header(InHeader), Pose(InPose)
 		{
-			Type = "geometry_msgs/PoseWithCovarianceStamped";
+			MsgType = "geometry_msgs/PoseWithCovarianceStamped";
 		}
 
 		~PoseWithCovarianceStamped() override {}

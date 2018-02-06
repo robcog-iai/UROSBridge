@@ -8,12 +8,12 @@ class FROSBridgeMsgRosgraphmsgsClock : public FROSBridgeMsg
 public:
     FROSBridgeMsgRosgraphmsgsClock()
     {
-        Type = "rosgraph_msgs/Clock";
+        MsgType = "rosgraph_msgs/Clock";
     }
 
     FROSBridgeMsgRosgraphmsgsClock(FROSTime clock_)
     {
-        Type = "rosgraph_msgs/Clock";
+        MsgType = "rosgraph_msgs/Clock";
         clock = clock_; 
     }
 
@@ -71,12 +71,12 @@ namespace rosgraph_msgs
 	public:
 		Clock()
 		{
-			Type = "rosgraph_msgs/Clock";
+			MsgType = "rosgraph_msgs/Clock";
 		}
 
 		Clock(FROSTime InTime)
 		{
-			Type = "rosgraph_msgs/Clock";
+			MsgType = "rosgraph_msgs/Clock";
 			Time = InTime;
 		}
 
@@ -124,4 +124,4 @@ namespace rosgraph_msgs
 			return OutputString;
 		}
 	};
-}
+} // namespace rosgraph_msgs

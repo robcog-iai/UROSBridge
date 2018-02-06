@@ -12,13 +12,13 @@ public:
 
 	FROSBridgeMsgTF2msgsTFMessage()
 	{
-		Type = "tf2_msgs/TFMessage";
+		MsgType = "tf2_msgs/TFMessage";
 	}
 
 	FROSBridgeMsgTF2msgsTFMessage
 	(const TArray<FROSBridgeMsgGeometrymsgsTransformStamped>& InTransforms)
 	{
-		Type = "tf2_msgs/TFMessage";
+		MsgType = "tf2_msgs/TFMessage";
 		for (int i = 0; i < InTransforms.Num(); i++)
 		{
 			Transforms.Add(InTransforms[i]);
@@ -112,12 +112,12 @@ namespace tf2_msgs
 	public:
 		TFMessage()
 		{
-			Type = "tf2_msgs/TFMessage";
+			MsgType = "tf2_msgs/TFMessage";
 		}
 
 		TFMessage(const TArray<geometry_msgs::TransformStamped>& InTransforms)
 		{
-			Type = "tf2_msgs/TFMessage";
+			MsgType = "tf2_msgs/TFMessage";
 			for (int i = 0; i < InTransforms.Num(); i++)
 			{
 				Transforms.Add(InTransforms[i]);

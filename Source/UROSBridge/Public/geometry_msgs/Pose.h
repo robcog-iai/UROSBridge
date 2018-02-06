@@ -12,14 +12,14 @@ class FROSBridgeMsgGeometrymsgsPose : public FROSBridgeMsg
 public:
     FROSBridgeMsgGeometrymsgsPose()
     {
-        Type = "geometry_msgs/Pose";
+        MsgType = "geometry_msgs/Pose";
     }
 
     FROSBridgeMsgGeometrymsgsPose
     (FROSBridgeMsgGeometrymsgsPoint position_, FROSBridgeMsgGeometrymsgsQuaternion orientation_) :
         position(position_), orientation(orientation_)
     {
-        Type = "geometry_msgs/Pose";
+        MsgType = "geometry_msgs/Pose";
     }
     
     ~FROSBridgeMsgGeometrymsgsPose() override {}
@@ -90,14 +90,14 @@ namespace geometry_msgs
 	public:
 		Pose()
 		{
-			Type = "geometry_msgs/Pose";
+			MsgType = "geometry_msgs/Pose";
 		}
 
 		Pose
 		(geometry_msgs::Point Inposition, geometry_msgs::Quaternion InOrientation) :
 			Position(Inposition), Orientation(InOrientation)
 		{
-			Type = "geometry_msgs/Pose";
+			MsgType = "geometry_msgs/Pose";
 		}
 
 		~Pose() override {}

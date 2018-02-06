@@ -12,14 +12,14 @@ class FROSBridgeMsgGeometrymsgsPolygonStamped : public FROSBridgeMsg
 public:
     FROSBridgeMsgGeometrymsgsPolygonStamped()
     {
-        Type = "geometry_msgs/PolygonStamped";
+        MsgType = "geometry_msgs/PolygonStamped";
     }
 
     FROSBridgeMsgGeometrymsgsPolygonStamped
     (FROSBridgeMsgStdmsgsHeader header_, FROSBridgeMsgGeometrymsgsPolygon polygon_) :
         header(header_), polygon(polygon_)
     {
-        Type = "geometry_msgs/PolygonStamped";
+        MsgType = "geometry_msgs/PolygonStamped";
     }
     
     ~FROSBridgeMsgGeometrymsgsPolygonStamped() override {}

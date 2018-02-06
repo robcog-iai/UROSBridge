@@ -12,14 +12,14 @@ class FROSBridgeMsgGeometrymsgsAccelWithCovarianceStamped : public FROSBridgeMsg
 public:
     FROSBridgeMsgGeometrymsgsAccelWithCovarianceStamped()
     {
-        Type = "geometry_msgs/AccelWithCovarianceStamped";
+        MsgType = "geometry_msgs/AccelWithCovarianceStamped";
     }
 
     FROSBridgeMsgGeometrymsgsAccelWithCovarianceStamped
     (FROSBridgeMsgStdmsgsHeader header_, FROSBridgeMsgGeometrymsgsAccelWithCovariance accel_) :
         header(header_), accel(accel_)
     {
-        Type = "geometry_msgs/AccelWithCovarianceStamped";
+        MsgType = "geometry_msgs/AccelWithCovarianceStamped";
     }
     
     ~FROSBridgeMsgGeometrymsgsAccelWithCovarianceStamped() override {}
@@ -90,14 +90,14 @@ namespace geometry_msgs
 	public:
 		AccelWithCovarianceStamped()
 		{
-			Type = "geometry_msgs/AccelWithCovarianceStamped";
+			MsgType = "geometry_msgs/AccelWithCovarianceStamped";
 		}
 
 		AccelWithCovarianceStamped
 		(std_msgs::Header InHeader, geometry_msgs::AccelWithCovariance InAccelWithCovariance) :
 			Header(InHeader), AccelWithCovariance(InAccelWithCovariance)
 		{
-			Type = "geometry_msgs/AccelWithCovarianceStamped";
+			MsgType = "geometry_msgs/AccelWithCovarianceStamped";
 		}
 
 		~AccelWithCovarianceStamped() override {}

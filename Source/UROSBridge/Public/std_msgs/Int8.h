@@ -8,12 +8,12 @@ class FROSBridgeMsgStdmsgsInt8 : public FROSBridgeMsg
 public:
     FROSBridgeMsgStdmsgsInt8()
     {
-        Type = "std_msgs/Int8";
+        MsgType = "std_msgs/Int8";
     }
 
     FROSBridgeMsgStdmsgsInt8(int8 data_)
     {
-        Type = "std_msgs/Int8";
+        MsgType = "std_msgs/Int8";
         data = data_;
     }
 
@@ -54,3 +54,10 @@ public:
         return OutputString;
     }
 };
+
+/************************************************************************/
+/* Namespace version                                                    */
+/************************************************************************/
+namespace std_msgs
+{
+} // namespace std_msgs

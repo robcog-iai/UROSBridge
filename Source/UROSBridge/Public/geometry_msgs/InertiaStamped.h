@@ -12,14 +12,14 @@ class FROSBridgeMsgGeometrymsgsInertiaStamped : public FROSBridgeMsg
 public:
     FROSBridgeMsgGeometrymsgsInertiaStamped()
     {
-        Type = "geometry_msgs/InertiaStamped";
+        MsgType = "geometry_msgs/InertiaStamped";
     }
 
     FROSBridgeMsgGeometrymsgsInertiaStamped
     (FROSBridgeMsgStdmsgsHeader header_, FROSBridgeMsgGeometrymsgsInertia inertia_) :
         header(header_), inertia(inertia_)
     {
-        Type = "geometry_msgs/InertiaStamped";
+        MsgType = "geometry_msgs/InertiaStamped";
     }
     
     ~FROSBridgeMsgGeometrymsgsInertiaStamped() override {}
@@ -90,14 +90,14 @@ namespace geometry_msgs
 	public:
 		InertiaStamped()
 		{
-			Type = "geometry_msgs/InertiaStamped";
+			MsgType = "geometry_msgs/InertiaStamped";
 		}
 
 		InertiaStamped
 		(std_msgs::Header InHeader, geometry_msgs::Inertia InInertia) :
 			Header(InHeader), Inertia(InInertia)
 		{
-			Type = "geometry_msgs/InertiaStamped";
+			MsgType = "geometry_msgs/InertiaStamped";
 		}
 
 		~InertiaStamped() override {}

@@ -10,12 +10,12 @@ class FROSBridgeMsgStdmsgsHeader : public FROSBridgeMsg
 public:
     FROSBridgeMsgStdmsgsHeader()
     {
-        Type = "std_msgs/Header";
+        MsgType = "std_msgs/Header";
     }
 
     FROSBridgeMsgStdmsgsHeader(uint32 seq_, FROSTime stamp_, FString frame_id_)
     {
-        Type = "std_msgs/Header";
+        MsgType = "std_msgs/Header";
 		seq = seq_; 
 		stamp = stamp_; 
 		frame_id = frame_id_; 
@@ -103,7 +103,7 @@ namespace std_msgs
 	public:
 		Header()
 		{
-			Type = "std_msgs/Header";
+			MsgType = "std_msgs/Header";
 		}
 
 		Header(
@@ -114,7 +114,7 @@ namespace std_msgs
 			Stamp(InStamp),
 			FrameId(InFrameId)
 		{
-			Type = "std_msgs/Header";
+			MsgType = "std_msgs/Header";
 		}
 
 		~Header() override {}

@@ -11,18 +11,18 @@ class FROSBridgeMsgGeometrymsgsQuaternion : public FROSBridgeMsg
 public:
     FROSBridgeMsgGeometrymsgsQuaternion()
     {
-        Type = "geometry_msgs/Quaternion";
+        MsgType = "geometry_msgs/Quaternion";
     }
 
     FROSBridgeMsgGeometrymsgsQuaternion(double x_, double y_, double z_, double w_)
     {
-        Type = "geometry_msgs/Quaternion";
+        MsgType = "geometry_msgs/Quaternion";
         x = x_; y = y_; z = z_;  w = w_; 
     }
 
     FROSBridgeMsgGeometrymsgsQuaternion(const FQuat& Quat)
     {
-        Type = "geometry_msgs/Quaternion";
+        MsgType = "geometry_msgs/Quaternion";
         x = Quat.X; y = Quat.Y; z = Quat.Z; w = Quat.W;
     }
 
@@ -132,7 +132,7 @@ namespace geometry_msgs
 	public:
 		Quaternion()
 		{
-			Type = "geometry_msgs/Quaternion";
+			MsgType = "geometry_msgs/Quaternion";
 		}
 
 		Quaternion(
@@ -145,12 +145,12 @@ namespace geometry_msgs
 			Z(InZ),
 			W(InW)
 		{
-			Type = "geometry_msgs/Quaternion";
+			MsgType = "geometry_msgs/Quaternion";
 		}
 
 		Quaternion(const FQuat& Quat)
 		{
-			Type = "geometry_msgs/Quaternion";
+			MsgType = "geometry_msgs/Quaternion";
 			X = Quat.X;
 			Y = Quat.Y;
 			Z = Quat.Z;

@@ -1,6 +1,7 @@
 #pragma once
 #include "ROSBridgeMsg.h"
 
+#include "std_msgs/String.h"
 #include "std_msgs/Header.h"
 
 class FROSBridgeMsgSensormsgsJointState : public FROSBridgeMsg
@@ -15,7 +16,7 @@ public:
 
     FROSBridgeMsgSensormsgsJointState()
     {
-        Type = "sensor_msgs/JointState";
+        MsgType = "sensor_msgs/JointState";
     }
 
     FROSBridgeMsgSensormsgsJointState
@@ -23,7 +24,7 @@ public:
         const TArray<double>& velocity_, const TArray<double>& effort_) :
         header(header_), name(name_), position(position_), velocity(velocity_), effort(effort_)
     {
-        Type = "sensor_msgs/JointState";
+        MsgType = "sensor_msgs/JointState";
     }
 
     ~FROSBridgeMsgSensormsgsJointState() override {}
@@ -134,6 +135,7 @@ public:
 /************************************************************************/
 /* Namespace version                                                    */
 /************************************************************************/
+// TODO
 namespace sensor_msgs
 {
 	class JointState : public FROSBridgeMsg
@@ -148,7 +150,7 @@ namespace sensor_msgs
 
 		JointState()
 		{
-			Type = "sensor_msgs/JointState";
+			MsgType = "sensor_msgs/JointState";
 		}
 
 		JointState(
@@ -163,7 +165,7 @@ namespace sensor_msgs
 			Velocities(InVelocities),
 			Efforts(InEfforts)
 		{
-			Type = "sensor_msgs/JointState";
+			MsgType = "sensor_msgs/JointState";
 		}
 
 		~JointState() override {}
@@ -287,7 +289,7 @@ namespace sensor_msgs
 
 			TArray<TSharedPtr<FJsonValue>> NameArray, PositionArray, VelocityArray, EffortArray;
 			for (auto &str : Names)
-				NameArray.Add(MakeShareable(new FJsonValueString(str)));
+				NameArray.Add(MakeShareable(new FJsonValueString(str))); // TODO check if FJsonValueString should be used
 			for (auto &val : Positions)
 				PositionArray.Add(MakeShareable(new FJsonValueNumber(val)));
 			for (auto &val : Velocities)
@@ -311,4 +313,4 @@ namespace sensor_msgs
 			return OutputString;
 		}
 	};
-}
+} // namespace sensor_msgs

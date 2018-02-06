@@ -12,7 +12,7 @@ class FROSBridgeMsgGeometrymsgsInertia : public FROSBridgeMsg
 public:
     FROSBridgeMsgGeometrymsgsInertia()
     {
-        Type = "geometry_msgs/Inertia";
+        MsgType = "geometry_msgs/Inertia";
     }
 
     FROSBridgeMsgGeometrymsgsInertia
@@ -20,7 +20,7 @@ public:
         double ixx_, double ixy_, double ixz_, double iyy_, double iyz_, double izz_) :
         m(m_), com(com_), ixx(ixx_), ixy(ixy_), ixz(ixz_), iyy(iyy_), iyz(iyz_), izz(izz_) 
     {
-        Type = "geometry_msgs/Inertia";
+        MsgType = "geometry_msgs/Inertia";
     }
     
     ~FROSBridgeMsgGeometrymsgsInertia() override {}
@@ -116,7 +116,7 @@ namespace geometry_msgs
 	public:
 		Inertia()
 		{
-			Type = "geometry_msgs/Inertia";
+			MsgType = "geometry_msgs/Inertia";
 		}
 
 		Inertia
@@ -124,7 +124,7 @@ namespace geometry_msgs
 			double InIxx, double InIxy, double InIxz, double InIyy, double InIyz, double InIzz) :
 			M(InM), Com(InCom), Ixx(InIxx), Ixy(InIxy), Ixz(InIxz), Iyy(InIyy), Iyz(InIyz), Izz(InIzz)
 		{
-			Type = "geometry_msgs/Inertia";
+			MsgType = "geometry_msgs/Inertia";
 		}
 
 		~Inertia() override {}

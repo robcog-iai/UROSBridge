@@ -12,14 +12,14 @@ class FROSBridgeMsgGeometrymsgsTransform : public FROSBridgeMsg
 public:
     FROSBridgeMsgGeometrymsgsTransform()
     {
-        Type = "geometry_msgs/Transform";
+        MsgType = "geometry_msgs/Transform";
     }
 
     FROSBridgeMsgGeometrymsgsTransform
     (FROSBridgeMsgGeometrymsgsVector3 translation_, FROSBridgeMsgGeometrymsgsQuaternion rotation_) :
         translation(translation_), rotation(rotation_)
     {
-        Type = "geometry_msgs/Transform";
+        MsgType = "geometry_msgs/Transform";
     }
     
     ~FROSBridgeMsgGeometrymsgsTransform() override {}
@@ -90,7 +90,7 @@ namespace geometry_msgs
 	public:
 		Transform()
 		{
-			Type = "geometry_msgs/Transform";
+			MsgType = "geometry_msgs/Transform";
 		}
 
 		Transform(
@@ -99,7 +99,7 @@ namespace geometry_msgs
 			Translation(InTranslation),
 			Rotation(InRotation)
 		{
-			Type = "geometry_msgs/Transform";
+			MsgType = "geometry_msgs/Transform";
 		}
 
 		~Transform() override {}

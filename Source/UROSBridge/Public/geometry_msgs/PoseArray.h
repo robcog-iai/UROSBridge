@@ -17,14 +17,14 @@ namespace geometry_msgs
 
 		PoseArray()
 		{
-			Type = "geometry_msgs/PoseArray";
+			MsgType = "geometry_msgs/PoseArray";
 		}
 
 		PoseArray
 		(std_msgs::Header InHeader, const TArray<geometry_msgs::Pose>& InPoses) :
 			Header(InHeader), Poses(InPoses)
 		{
-			Type = "geometry_msgs/PoseArray";
+			MsgType = "geometry_msgs/PoseArray";
 		}
 
 		~PoseArray() override {}

@@ -10,18 +10,18 @@ class FROSBridgeMsgGeometrymsgsPose2D : public FROSBridgeMsg
 public:
     FROSBridgeMsgGeometrymsgsPose2D()
     {
-        Type = "geometry_msgs/Pose2D";
+        MsgType = "geometry_msgs/Pose2D";
     }
 
     FROSBridgeMsgGeometrymsgsPose2D(double x_, double y_, double theta_)
     {
-        Type = "geometry_msgs/Pose2D";
+        MsgType = "geometry_msgs/Pose2D";
         x = x_; y = y_; theta = theta_; 
     }
 
     FROSBridgeMsgGeometrymsgsPose2D(FVector Vector)
     {
-        Type = "geometry_msgs/Pose2D";
+        MsgType = "geometry_msgs/Pose2D";
         x = Vector.X; y = Vector.Y; theta = Vector.Z; 
     }
 
@@ -117,18 +117,18 @@ namespace geometry_msgs
 	public:
 		Pose2D()
 		{
-			Type = "geometry_msgs/Pose2D";
+			MsgType = "geometry_msgs/Pose2D";
 		}
 
 		Pose2D(double InX, double InY, double InTheta)
 		{
-			Type = "geometry_msgs/Pose2D";
+			MsgType = "geometry_msgs/Pose2D";
 			X = InX; Y = InY; Theta = InTheta;
 		}
 
 		Pose2D(FVector InVector)
 		{
-			Type = "geometry_msgs/Pose2D";
+			MsgType = "geometry_msgs/Pose2D";
 			X = InVector.X; Y = InVector.Y; Theta = InVector.Z;
 		}
 

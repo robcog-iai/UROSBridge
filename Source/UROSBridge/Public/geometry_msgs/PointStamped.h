@@ -12,14 +12,14 @@ class FROSBridgeMsgGeometrymsgsPointStamped : public FROSBridgeMsg
 public:
     FROSBridgeMsgGeometrymsgsPointStamped()
     {
-        Type = "geometry_msgs/PointStamped";
+        MsgType = "geometry_msgs/PointStamped";
     }
 
     FROSBridgeMsgGeometrymsgsPointStamped
     (FROSBridgeMsgStdmsgsHeader header_, FROSBridgeMsgGeometrymsgsPoint point_) :
         header(header_), point(point_)
     {
-        Type = "geometry_msgs/PointStamped";
+        MsgType = "geometry_msgs/PointStamped";
     }
     
     ~FROSBridgeMsgGeometrymsgsPointStamped() override {}

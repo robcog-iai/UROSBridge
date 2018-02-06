@@ -10,18 +10,18 @@ class FROSBridgeMsgGeometrymsgsPoint : public FROSBridgeMsg
 public:
     FROSBridgeMsgGeometrymsgsPoint()
     {
-        Type = "geometry_msgs/Point";
+        MsgType = "geometry_msgs/Point";
     }
 
     FROSBridgeMsgGeometrymsgsPoint(double x_, double y_, double z_)
     {
-        Type = "geometry_msgs/Point";
+        MsgType = "geometry_msgs/Point";
         x = x_; y = y_; z = z_; 
     }
 
     FROSBridgeMsgGeometrymsgsPoint(FVector Vector)
     {
-        Type = "geometry_msgs/Point";
+        MsgType = "geometry_msgs/Point";
         x = Vector.X; y = Vector.Y; z = Vector.Z; 
     }
 
@@ -117,18 +117,18 @@ namespace geometry_msgs
 	public:
 		Point()
 		{
-			Type = "geometry_msgs/Point";
+			MsgType = "geometry_msgs/Point";
 		}
 
 		Point(double InX, double InY, double InZ)
 		{
-			Type = "geometry_msgs/Point";
+			MsgType = "geometry_msgs/Point";
 			X = InX; Y = InY; Z = InZ;
 		}
 
 		Point(FVector InVector)
 		{
-			Type = "geometry_msgs/Point";
+			MsgType = "geometry_msgs/Point";
 			X = InVector.X; Y = InVector.Y; Z = InVector.Z;
 		}
 

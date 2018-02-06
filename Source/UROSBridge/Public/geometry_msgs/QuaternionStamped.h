@@ -12,14 +12,14 @@ class FROSBridgeMsgGeometrymsgsQuaternionStamped : public FROSBridgeMsg
 public:
     FROSBridgeMsgGeometrymsgsQuaternionStamped()
     {
-        Type = "geometry_msgs/QuaternionStamped";
+        MsgType = "geometry_msgs/QuaternionStamped";
     }
 
     FROSBridgeMsgGeometrymsgsQuaternionStamped
     (FROSBridgeMsgStdmsgsHeader header_, FROSBridgeMsgGeometrymsgsQuaternion quaternion_) :
         header(header_), quaternion(quaternion_)
     {
-        Type = "geometry_msgs/QuaternionStamped";
+        MsgType = "geometry_msgs/QuaternionStamped";
     }
     
     ~FROSBridgeMsgGeometrymsgsQuaternionStamped() override {}
