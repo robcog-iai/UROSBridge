@@ -4,9 +4,6 @@
 #include "std_msgs/Header.h"
 #include "geometry_msgs/Pose.h"
 
-/************************************************************************/
-/* Namespace version                                                    */
-/************************************************************************/
 namespace geometry_msgs
 {
 	class PoseArray : FROSBridgeMsg
@@ -17,14 +14,14 @@ namespace geometry_msgs
 
 		PoseArray()
 		{
-			Type = "geometry_msgs/PoseArray";
+			MsgType = "geometry_msgs/PoseArray";
 		}
 
 		PoseArray
 		(std_msgs::Header InHeader, const TArray<geometry_msgs::Pose>& InPoses) :
 			Header(InHeader), Poses(InPoses)
 		{
-			Type = "geometry_msgs/PoseArray";
+			MsgType = "geometry_msgs/PoseArray";
 		}
 
 		~PoseArray() override {}
@@ -69,10 +66,10 @@ namespace geometry_msgs
 		{
 			Header = std_msgs::Header::GetFromJson(JsonObject->GetObjectField(TEXT("header")));
 			TArray<TSharedPtr<FJsonValue>> PosesPtrArray = JsonObject->GetArrayField(TEXT("poses"));
-			for (auto &ptr : PosesPtrArray)
+			for (auto &PoseItr : PosesPtrArray)
 			{
 				geometry_msgs::Pose Pose =
-					geometry_msgs::Pose::GetFromJson(ptr->AsObject());
+					geometry_msgs::Pose::GetFromJson(PoseItr->AsObject());
 				Poses.Add(Pose);
 			}
 		}

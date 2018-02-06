@@ -12,8 +12,7 @@ public:
     class SrvResponse; 
 
 protected:
-    FString Type;
-    FString Name; 
+    FString SrvType;
     TSharedPtr<SrvRequest> Request;
     TSharedPtr<SrvResponse> Response;
 

@@ -1,56 +1,63 @@
 #pragma once
 #include "ROSBridgeMsg.h"
 
-class FROSBridgeMsgStdmsgsUInt16 : public FROSBridgeMsg
+namespace std_msgs
 {
-    uint16 data;
+	class UInt16 : public FROSBridgeMsg
+	{
+		uint16 Data;
 
-public:
-    FROSBridgeMsgStdmsgsUInt16()
-    {
-        Type = "std_msgs/UInt16";
-    }
+	public:
+		UInt16()
+		{
+			MsgType = "std_msgs/UInt16";
+		}
 
-    FROSBridgeMsgStdmsgsUInt16(uint16 data_)
-    {
-        Type = "std_msgs/UInt16";
-        data = data_;
-    }
+		UInt16(uint16 InData)
+		{
+			MsgType = "std_msgs/UInt16";
+			Data = InData;
+		}
 
-    ~FROSBridgeMsgStdmsgsUInt16() override {}
+		~UInt16() override {}
 
-    uint16 GetData()
-    {
-        return data;
-    }
+		uint16 GetData()
+		{
+			return Data;
+		}
 
-    void SetData(uint16 data_)
-    {
-        data = data_;
-    }
+		void SetData(uint16 InData)
+		{
+			Data = InData;
+		}
 
-    virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override {
-        data = (int16)(JsonObject->GetIntegerField("data"));
-    }
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
+		{
+			Data = (uint16)(JsonObject->GetIntegerField("data"));
+		}
 
-    virtual FString ToString () const override
-    {
-        return TEXT("UInt16 { data = \"" + FString::FromInt(data) + "\" }");
-    }
+		virtual FString ToString() const override
+		{
+			return TEXT("UInt16 { data = \"" + FString::FromInt(Data) + "\" }");
+		}
 
-    virtual TSharedPtr<FJsonObject> ToJsonObject() const override {
-        TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-        Object->SetNumberField(TEXT("data"), data);
-        return Object;
-    }
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override 
+		{
+			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
+			Object->SetNumberField(TEXT("data"), Data);
+			return Object;
+		}
 
-    virtual FString ToYamlString() const override {
-        FString OutputString;
-        FJsonObject Object;
-        Object.SetNumberField(TEXT("data"), data);
+		virtual FString ToYamlString() const override 
+		{
+			FString OutputString;
+			FJsonObject Object;
+			Object.SetNumberField(TEXT("data"), Data);
 
-        TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
-        FJsonSerializer::Serialize(Object, Writer);
-        return OutputString;
-    }
-};
+			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
+			FJsonSerializer::Serialize(Object, Writer);
+			return OutputString;
+		}
+	};
+
+} // namespace std_msgs

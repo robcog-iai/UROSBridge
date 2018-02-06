@@ -4,75 +4,81 @@
 #include "std_msgs/Header.h"
 #include "geometry_msgs/Vector3.h"
 
-class FROSBridgeMsgGeometrymsgsVector3Stamped : public FROSBridgeMsg
+namespace geometry_msgs
 {
-    FROSBridgeMsgStdmsgsHeader header; 
-    FROSBridgeMsgGeometrymsgsVector3 vector;
+	class Vector3Stamped : public FROSBridgeMsg
+	{
+		std_msgs::Header Header;
+		geometry_msgs::Vector3 Vector;
 
-public:
-    FROSBridgeMsgGeometrymsgsVector3Stamped()
-    {
-        Type = "geometry_msgs/Vector3Stamped";
-    }
+	public:
+		Vector3Stamped()
+		{
+			MsgType = "geometry_msgs/Vector3Stamped";
+		}
 
-    FROSBridgeMsgGeometrymsgsVector3Stamped
-    (FROSBridgeMsgStdmsgsHeader header_, FROSBridgeMsgGeometrymsgsVector3 vector_) :
-        header(header_), vector(vector_)
-    {
-        Type = "geometry_msgs/Vector3Stamped";
-    }
-    
-    ~FROSBridgeMsgGeometrymsgsVector3Stamped() override {}
+		Vector3Stamped
+		(std_msgs::Header InHeader, geometry_msgs::Vector3 InVector) :
+			Header(InHeader), Vector(InVector)
+		{
+			MsgType = "geometry_msgs/Vector3Stamped";
+		}
 
-    FROSBridgeMsgStdmsgsHeader GetHeader() const 
-    {
-        return header; 
-    }
+		~Vector3Stamped() override {}
 
-    FROSBridgeMsgGeometrymsgsVector3 GetVector() const
-    {
-        return vector; 
-    }
+		std_msgs::Header GetHeader() const
+		{
+			return Header;
+		}
 
-    void SetHeader(FROSBridgeMsgStdmsgsHeader header_)
-    {
-        header = header_; 
-    }
+		geometry_msgs::Vector3 GetVector() const
+		{
+			return Vector;
+		}
 
-    void SetVector(FROSBridgeMsgGeometrymsgsVector3 vector_)
-    {
-        vector = vector_;
-    }
+		void SetHeader(std_msgs::Header header_)
+		{
+			Header = header_;
+		}
 
-    virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override {
-        header = FROSBridgeMsgStdmsgsHeader::GetFromJson(JsonObject->GetObjectField(TEXT("header")));
-        vector = FROSBridgeMsgGeometrymsgsVector3::GetFromJson(JsonObject->GetObjectField(TEXT("vector")));
-    }
+		void SetVector(geometry_msgs::Vector3 vector_)
+		{
+			Vector = vector_;
+		}
 
-    static FROSBridgeMsgGeometrymsgsVector3Stamped GetFromJson(TSharedPtr<FJsonObject> JsonObject)
-    {
-        FROSBridgeMsgGeometrymsgsVector3Stamped Result;
-        Result.FromJson(JsonObject); 
-        return Result; 
-    }
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
+		{
+			Header = std_msgs::Header::GetFromJson(JsonObject->GetObjectField(TEXT("header")));
+			Vector = geometry_msgs::Vector3::GetFromJson(JsonObject->GetObjectField(TEXT("vector")));
+		}
 
-    virtual FString ToString () const override
-    {
-        return TEXT("Vector3Stamped { header = ") + header.ToString() + 
-                     TEXT(", vector = ") + vector.ToString() + TEXT(" } ");
-    }
+		static Vector3Stamped GetFromJson(TSharedPtr<FJsonObject> JsonObject)
+		{
+			Vector3Stamped Result;
+			Result.FromJson(JsonObject);
+			return Result;
+		}
 
-    virtual TSharedPtr<FJsonObject> ToJsonObject() const override {
-        TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-        Object->SetObjectField(TEXT("header"), header.ToJsonObject());
-        Object->SetObjectField(TEXT("vector"), vector.ToJsonObject());
-        return Object;
-    }
+		virtual FString ToString() const override
+		{
+			return TEXT("Vector3Stamped { header = ") + Header.ToString() +
+				TEXT(", vector = ") + Vector.ToString() + TEXT(" } ");
+		}
 
-    virtual FString ToYamlString() const override {
-        FString OutputString; 
-        TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
-        FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
-        return OutputString;
-    }
-};
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override 
+		{
+			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
+			Object->SetObjectField(TEXT("header"), Header.ToJsonObject());
+			Object->SetObjectField(TEXT("vector"), Vector.ToJsonObject());
+			return Object;
+		}
+
+		virtual FString ToYamlString() const override 
+		{
+			FString OutputString;
+			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
+			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
+			return OutputString;
+		}
+	};
+} // namespace geometry_msgs

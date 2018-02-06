@@ -11,7 +11,7 @@ class UROSBRIDGE_API FROSBridgeMsg
 {
 
 protected:
-    FString Type;
+    FString MsgType;
 
 public:
     FROSBridgeMsg() {}

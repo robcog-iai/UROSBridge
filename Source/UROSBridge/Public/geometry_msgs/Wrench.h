@@ -3,75 +3,81 @@
 
 #include "geometry_msgs/Vector3.h"
 
-class FROSBridgeMsgGeometrymsgsWrench : public FROSBridgeMsg
+namespace geometry_msgs
 {
-    FROSBridgeMsgGeometrymsgsVector3 force;
-    FROSBridgeMsgGeometrymsgsVector3 torque;
+	class Wrench : public FROSBridgeMsg
+	{
+		geometry_msgs::Vector3 Force;
+		geometry_msgs::Vector3 Torque;
 
-public:
-    FROSBridgeMsgGeometrymsgsWrench()
-    {
-        Type = "geometry_msgs/Wrench";
-    }
+	public:
+		Wrench()
+		{
+			MsgType = "geometry_msgs/Wrench";
+		}
 
-    FROSBridgeMsgGeometrymsgsWrench
-    (FROSBridgeMsgGeometrymsgsVector3 force_, FROSBridgeMsgGeometrymsgsVector3 torque_) :
-        force(force_), torque(torque_)
-    {
-        Type = "geometry_msgs/Wrench";
-    }
-    
-    ~FROSBridgeMsgGeometrymsgsWrench() override {}
+		Wrench
+		(geometry_msgs::Vector3 InForce, geometry_msgs::Vector3 InTorque) :
+			Force(InForce), Torque(InTorque)
+		{
+			MsgType = "geometry_msgs/Wrench";
+		}
 
-    FROSBridgeMsgGeometrymsgsVector3 GetForce() const
-    {
-        return force; 
-    }
+		~Wrench() override {}
 
-    FROSBridgeMsgGeometrymsgsVector3 GetTorque() const
-    {
-        return torque; 
-    }
+		geometry_msgs::Vector3 GetForce() const
+		{
+			return Force;
+		}
 
-    void SetForce(FROSBridgeMsgGeometrymsgsVector3 force_)
-    {
-        force = force_; 
-    }
+		geometry_msgs::Vector3 GetTorque() const
+		{
+			return Torque;
+		}
 
-    void SetTorque(FROSBridgeMsgGeometrymsgsVector3 torque_)
-    {
-        torque = torque_; 
-    }
+		void SetForce(geometry_msgs::Vector3 InForce)
+		{
+			Force = InForce;
+		}
 
-    virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override {
-        force = FROSBridgeMsgGeometrymsgsVector3::GetFromJson(JsonObject->GetObjectField(TEXT("force")));
-        torque = FROSBridgeMsgGeometrymsgsVector3::GetFromJson(JsonObject->GetObjectField(TEXT("torque")));
-    }
+		void SetTorque(geometry_msgs::Vector3 InTorque)
+		{
+			Torque = InTorque;
+		}
 
-    static FROSBridgeMsgGeometrymsgsWrench GetFromJson(TSharedPtr<FJsonObject> JsonObject)
-    {
-        FROSBridgeMsgGeometrymsgsWrench Result;
-        Result.FromJson(JsonObject); 
-        return Result; 
-    }
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
+		{
+			Force = geometry_msgs::Vector3::GetFromJson(JsonObject->GetObjectField(TEXT("force")));
+			Torque = geometry_msgs::Vector3::GetFromJson(JsonObject->GetObjectField(TEXT("torque")));
+		}
 
-    virtual FString ToString () const override
-    {
-        return TEXT("Wrench { force = ") + force.ToString() + 
-                     TEXT(", torque = ") + torque.ToString() + TEXT(" } ");
-    }
+		static Wrench GetFromJson(TSharedPtr<FJsonObject> JsonObject)
+		{
+			Wrench Result;
+			Result.FromJson(JsonObject);
+			return Result;
+		}
 
-    virtual TSharedPtr<FJsonObject> ToJsonObject() const override {
-        TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-        Object->SetObjectField(TEXT("force"), force.ToJsonObject());
-        Object->SetObjectField(TEXT("torque"), torque.ToJsonObject());
-        return Object;
-    }
+		virtual FString ToString() const override
+		{
+			return TEXT("Wrench { force = ") + Force.ToString() +
+				TEXT(", torque = ") + Torque.ToString() + TEXT(" } ");
+		}
 
-    virtual FString ToYamlString() const override {
-        FString OutputString; 
-        TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
-        FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
-        return OutputString;
-    }
-};
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override 
+		{
+			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
+			Object->SetObjectField(TEXT("force"), Force.ToJsonObject());
+			Object->SetObjectField(TEXT("torque"), Torque.ToJsonObject());
+			return Object;
+		}
+
+		virtual FString ToYamlString() const override 
+		{
+			FString OutputString;
+			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
+			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
+			return OutputString;
+		}
+	};
+} // namespace geometry_msgs

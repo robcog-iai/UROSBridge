@@ -2,87 +2,90 @@
 
 #include "ROSBridgeSrv.h"
 
-class UROSBRIDGE_API FROSBridgeSrvRospytutorialsAddTwoInts : public FROSBridgeSrv 
+namespace tutorial_srvs
 {
+	class AddTwoInts : public FROSBridgeSrv
+	{
+	public:
+		AddTwoInts()
+		{
+			SrvType = TEXT("rospy_tutorials/AddTwoInts");
+		}
 
-protected:
-    FString Type;
+		class Request : public SrvRequest 
+		{
+		private:
+			int64 A;
+			int64 B;
 
-public:
-    FROSBridgeSrvRospytutorialsAddTwoInts()
-    {
-        Type = TEXT("rospy_tutorials/AddTwoInts");
-    }
+		public:
+			Request() { }
+			Request(int64 InA, int64 InB) : A(InA), B(InB) {}
+			int64 GetA() const { return A; }
+			void SetA(int64 InA) { A = InA; }
+			int64 GetB() const { return B; }
+			void SetB(int64 InB) { B = InB; }
 
-    class Request : public SrvRequest {
-    private:
-        int64 a;
-        int64 b; 
+			virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
+			{
+				A = JsonObject->GetNumberField("a");
+				B = JsonObject->GetNumberField("b");
+			}
 
-    public:
-        Request() { }
-        Request(int64 a_, int64 b_) : a(a_), b(b_) {}
-        int64 GetA() const { return a; }
-        void SetA(int64 a_) { a = a_; }
-        int64 GetB() const { return b; }
-        void SetB(int64 b_) { b = b_; }
+			static Request GetFromJson(TSharedPtr<FJsonObject> JsonObject)
+			{
+				Request req; req.FromJson(JsonObject);
+				return req;
+			}
 
-        virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override {
-            a = JsonObject->GetNumberField("a");
-            b = JsonObject->GetNumberField("b");
-        }
+			virtual FString ToString() const override
+			{
+				return TEXT("AddTwoInts::Request { a = ") + FString::FromInt(A) +
+					TEXT(", b = ") + FString::FromInt(B) + TEXT("} ");
+			}
 
-        static Request GetFromJson(TSharedPtr<FJsonObject> JsonObject)
-        {
-            Request req; req.FromJson(JsonObject);
-            return req;
-        }
+			virtual TSharedPtr<FJsonObject> ToJsonObject() const 
+			{
+				TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
+				Object->SetNumberField(TEXT("a"), A);
+				Object->SetNumberField(TEXT("b"), B);
+				return Object;
+			}
+		};
 
-        virtual FString ToString() const override
-        {
-            return TEXT("AddTwoInts::Request { a = ") + FString::FromInt(a) +
-                                       TEXT(", b = ") + FString::FromInt(b) + TEXT("} ");
-        }
+		class Response : public SrvResponse 
+		{
+		private:
+			int64 Sum;
 
-        virtual TSharedPtr<FJsonObject> ToJsonObject() const {
-            TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-            Object->SetNumberField(TEXT("a"), a);
-            Object->SetNumberField(TEXT("b"), b);
-            return Object;
-        }
-    };
+		public:
+			Response() {}
+			Response(int64 InSum) : Sum(InSum) {}
+			int64 GetSum() const { return Sum; }
+			void SetSum(int64 InSum) { Sum = InSum; }
 
-    class Response : public SrvResponse {
-    private:
-        int64 sum;
+			virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
+			{
+				Sum = JsonObject->GetNumberField("sum");
+			}
 
-    public:
-        Response() {}
-        Response(int64 sum_) : sum(sum_) {}
-        int64 GetSum() const { return sum; }
-        void SetSum(int64 sum_) { sum = sum_; }
+			static Response GetFromJson(TSharedPtr<FJsonObject> JsonObject)
+			{
+				Response rep; rep.FromJson(JsonObject);
+				return rep;
+			}
 
-        virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override {
-            sum = JsonObject->GetNumberField("sum");
-        }
+			virtual FString ToString() const override
+			{
+				return TEXT("AddTwoInts::Response { sum = ") + FString::SanitizeFloat(Sum) + TEXT(" } ");
+			}
 
-        static Response GetFromJson(TSharedPtr<FJsonObject> JsonObject)
-        {
-            Response rep; rep.FromJson(JsonObject);
-            return rep;
-        }
-
-        virtual FString ToString() const override
-        {
-            return TEXT("AddTwoInts::Response { sum = ") + FString::SanitizeFloat(sum) + TEXT(" } ");
-        }
-
-        virtual TSharedPtr<FJsonObject> ToJsonObject() const {
-            TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-            Object->SetNumberField("sum", sum);
-            return Object;
-        }
-    };
-
-};
-
+			virtual TSharedPtr<FJsonObject> ToJsonObject() const 
+			{
+				TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
+				Object->SetNumberField("sum", Sum);
+				return Object;
+			}
+		};
+	};
+} // namespace tutorial_srvs

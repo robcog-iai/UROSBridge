@@ -2,21 +2,15 @@
 
 #include "ROSBridgeSrv.h"
 
-/************************************************************************/
-/* Namespace version                                                    */
-/************************************************************************/
 namespace beginner_tutorials
 {
 	class AddTwoInts : public FROSBridgeSrv 
 	{
 
-	protected:
-		FString Type;
-
 	public:
 		AddTwoInts()
 		{
-			Type = TEXT("beginner_tutorials/AddTwoInts");
+			SrvType = TEXT("beginner_tutorials/AddTwoInts");
 		}
 
 		class Request : public SrvRequest 
@@ -28,10 +22,26 @@ namespace beginner_tutorials
 		public:
 			Request() { }
 			Request(int64 InA, int64 InB) : A(InA), B(InB) {}
-			int64 GetA() const { return A; }
-			void SetA(int64 InA) { A = InA; }
-			int64 GetB() const { return B; }
-			void SetB(int64 InB) { B = InB; }
+
+			int64 GetA() const 
+			{ 
+				return A; 
+			}
+
+			void SetA(int64 InA) 
+			{ 
+				A = InA; 
+			}
+
+			int64 GetB() const 
+			{ 
+				return B; 
+			}
+
+			void SetB(int64 InB) 
+			{
+				B = InB; 
+			}
 
 			virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
 			{
@@ -41,7 +51,8 @@ namespace beginner_tutorials
 
 			static Request GetFromJson(TSharedPtr<FJsonObject> JsonObject)
 			{
-				Request Req; Req.FromJson(JsonObject);
+				Request Req;
+				Req.FromJson(JsonObject);
 				return Req;
 			}
 
@@ -68,8 +79,17 @@ namespace beginner_tutorials
 		public:
 			Response() {}
 			Response(int64 InSum) : Sum(InSum) {}
-			int64 GetSum() const { return Sum; }
-			void SetSum(int64 InSum) { Sum = InSum; }
+			
+			int64 GetSum() const 
+			{
+				return Sum;
+			}
+
+			void SetSum(int64 InSum) 
+			{
+				Sum = InSum; 
+			}
+
 
 			virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
 			{
@@ -95,4 +115,4 @@ namespace beginner_tutorials
 			}
 		};
 	};
-} // beginner_tutorials namespace
+} // namespace beginner_tutorials 
