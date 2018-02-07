@@ -48,7 +48,7 @@ namespace sensor_msgs
 
 		~PointField() override {}
 
-		static FString EDataTypeAsString(EDatatype InDatatype)
+		static FString EDatatypeAsString(EDatatype InDatatype)
 		{
 			switch (InDatatype)
 			{
@@ -140,7 +140,7 @@ namespace sensor_msgs
 		{
 			return TEXT("PointField { name = ") + Name +
 				TEXT(", offset = ") + FString::FromInt(Offset) +
-				TEXT(", datatype = ") + EDataTypeAsString(Datatype) +
+				TEXT(", datatype = ") + EDatatypeAsString(Datatype) +
 				TEXT(", count = ") + FString::FromInt(Count) +
 				TEXT(" } ");
 		}
