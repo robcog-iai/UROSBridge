@@ -1,11 +1,5 @@
 ### UROSBridge
 
-#### A note on ROSBridgeHandler
-
-Connections to ROSBridge work via a [`ROSBridgeHandler`](UROSBridge/Source/UROSBridge/Public/ROSBridgeHandler.h) object. There should only be one of these in your project.
-If you have multiple actors that need to connect to ROS, a good pattern is to create a custom [GameInstance](https://docs.unrealengine.com/latest/INT/API/Runtime/Engine/Engine/UGameInstance/index.html), and store the `ROSBridgeHandler` object there as a public member.
-Your actors can then access the `ROSBridgeHandler` by calling e.g. `this->GetGameInstance().Handler`
-
 #### Connection and disconnection
 
 UROSBridge could be used in Unreal Actors or in timers. To use it in actors, we need to add a smart pointer to ROSBridgeHandler first: 
