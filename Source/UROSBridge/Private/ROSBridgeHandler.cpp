@@ -398,12 +398,18 @@ void FROSBridgeHandler::Process()
 void FROSBridgeHandler::PublishServiceResponse(FString InService, FString InId,
     TSharedPtr<FROSBridgeSrv::SrvResponse> InResponse)
 {
+	if (!Client.IsValid()) return;
+	if (!bIsClientConnected) return;
+
     FString MsgToSend = FROSBridgeSrv::ServiceResponse(InService, InId, InResponse);
     Client->Send(MsgToSend); 
 }
 
 void FROSBridgeHandler::PublishMsg(FString InTopic, TSharedPtr<FROSBridgeMsg> InMsg)
 {
+	if (!Client.IsValid()) return;
+	if (!bIsClientConnected) return;
+
     FString MsgToSend = FROSBridgeMsg::Publish(InTopic, InMsg);
     Client->Send(MsgToSend);
 }
@@ -425,6 +431,9 @@ void FROSBridgeHandler::CallService(TSharedPtr<FROSBridgeSrvClient> InSrvClient,
 
 void FROSBridgeHandler::CallServiceImpl(FString Name, TSharedPtr<FROSBridgeSrv::SrvRequest> Request, FString Id)
 {
+	if (!Client.IsValid()) return;
+	if (!bIsClientConnected) return;
+
     FString MsgToSend = FROSBridgeSrv::CallService(Name, Request, Id);
     Client->Send(MsgToSend); 
 }
