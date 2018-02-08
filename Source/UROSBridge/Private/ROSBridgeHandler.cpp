@@ -228,6 +228,9 @@ void FROSBridgeHandler::Connect()
 		ConnectionTrialCounter++;
 		if (ConnectionTrialCounter > 100)
 		{
+			Runnable->Stop();
+			Thread->WaitForCompletion();
+
 			UE_LOG(LogROS, Error, TEXT("[%s] Could not connect to the rosbridge server!"),
 				*FString(__FUNCTION__));
 			Client->Destroy();
