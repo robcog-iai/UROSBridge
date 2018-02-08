@@ -125,9 +125,13 @@ private:
     FCriticalSection LockTask; 
     FCriticalSection LockArrayService;
 
+	// Called when the WebSocket connection succeeds
+	void OnConnection();
+
     // When message comes, create FRenderTask instances and push it
     // into QueueTask.
     void OnMessage(void* Data, int32 Length);
+
 
     void CallServiceImpl(FString Name, TSharedPtr<FROSBridgeSrv::SrvRequest> Request, FString Id);
 
