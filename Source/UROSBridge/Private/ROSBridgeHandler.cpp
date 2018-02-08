@@ -230,11 +230,22 @@ void FROSBridgeHandler::Connect()
 		{
 			Runnable->Stop();
 			Thread->WaitForCompletion();
+			Runnable->Exit();
 
 			UE_LOG(LogROS, Error, TEXT("[%s] Could not connect to the rosbridge server!"),
 				*FString(__FUNCTION__));
+
 			Client->Destroy();
-			//Disconnect(); // TODO thread is still running?
+
+			delete Thread;
+			delete Runnable;
+
+			Thread = NULL;
+			Client = NULL;
+			Runnable = NULL;
+
+			SetConnected(false);
+
 			return;
 		}
 	}
@@ -287,41 +298,45 @@ void FROSBridgeHandler::Disconnect()
 	//	return;
 	//}
 
-    // Unsubscribe all topics
-    UE_LOG(LogROS, Log, TEXT("[%s] Unsubscribe all topics."), *FString(__FUNCTION__));
-    for (int i = 0; i < ListSubscribers.Num(); i++)
-    {
-        UE_LOG(LogROS, Log, TEXT("[%s] Unsubscribing Topic %s"),
-			*FString(__FUNCTION__), *ListSubscribers[i]->GetMessageTopic());
-        FString WebSocketMessage = FROSBridgeMsg::UnSubscribe(ListSubscribers[i]->GetMessageTopic());
-        Client->Send(WebSocketMessage);
-    }
+	if (Client.IsValid())
+	{
+		// Unsubscribe all topics
+		UE_LOG(LogROS, Log, TEXT("[%s] Unsubscribe all topics."), *FString(__FUNCTION__));
+		for (int i = 0; i < ListSubscribers.Num(); i++)
+		{
+			UE_LOG(LogROS, Log, TEXT("[%s] Unsubscribing Topic %s"),
+				*FString(__FUNCTION__), *ListSubscribers[i]->GetMessageTopic());
+			FString WebSocketMessage = FROSBridgeMsg::UnSubscribe(ListSubscribers[i]->GetMessageTopic());
+			Client->Send(WebSocketMessage);
+		}
 
-    // Unadvertise all topics
-    UE_LOG(LogROS, Log, TEXT("[%s] Unadvertise all topics."), *FString(__FUNCTION__));
-    for (int i = 0; i < ListPublishers.Num(); i++)
-    {
-        UE_LOG(LogROS, Log, TEXT("[%s] Unadvertising Topic %s"),
-			*FString(__FUNCTION__), *ListPublishers[i]->GetMessageTopic());
-        FString WebSocketMessage = FROSBridgeMsg::UnAdvertise(ListPublishers[i]->GetMessageTopic());
-        Client->Send(WebSocketMessage);
-    }
+		// Unadvertise all topics
+		UE_LOG(LogROS, Log, TEXT("[%s] Unadvertise all topics."), *FString(__FUNCTION__));
+		for (int i = 0; i < ListPublishers.Num(); i++)
+		{
+			UE_LOG(LogROS, Log, TEXT("[%s] Unadvertising Topic %s"),
+				*FString(__FUNCTION__), *ListPublishers[i]->GetMessageTopic());
+			FString WebSocketMessage = FROSBridgeMsg::UnAdvertise(ListPublishers[i]->GetMessageTopic());
+			Client->Send(WebSocketMessage);
+		}
 
-    // Unadvertise all service servers
-    UE_LOG(LogROS, Log, TEXT("[%s] Unadvertise all services."), *FString(__FUNCTION__));
-    for (int i = 0; i < ListServiceServer.Num(); i++)
-    {
-        UE_LOG(LogROS, Log, TEXT("[%s] Unadvertising Service [%s]"),
-			*FString(__FUNCTION__), *ListServiceServer[i]->GetName());
-        FString WebSocketMessage = FROSBridgeSrv::UnadvertiseService(ListServiceServer[i]->GetName());
-        Client->Send(WebSocketMessage);
-    }
+		// Unadvertise all service servers
+		UE_LOG(LogROS, Log, TEXT("[%s] Unadvertise all services."), *FString(__FUNCTION__));
+		for (int i = 0; i < ListServiceServer.Num(); i++)
+		{
+			UE_LOG(LogROS, Log, TEXT("[%s] Unadvertising Service [%s]"),
+				*FString(__FUNCTION__), *ListServiceServer[i]->GetName());
+			FString WebSocketMessage = FROSBridgeSrv::UnadvertiseService(ListServiceServer[i]->GetName());
+			Client->Send(WebSocketMessage);
+		}
+	}
 
     // Kill the thread and the Runnable
-    Runnable->Stop(); 
-    Thread->WaitForCompletion();
+    if(Runnable) Runnable->Stop(); 
+    if(Thread) Thread->WaitForCompletion();
+	if(Runnable) Runnable->Exit();
 
-	Client->Destroy();
+	if(Client.IsValid()) Client->Destroy();
 
     delete Thread;
     delete Runnable;
