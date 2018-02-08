@@ -7,10 +7,53 @@
 #include "Networking.h"
 #include "Json.h"
 
-static void CallbackOnConnection(FROSBridgeHandler* Handler)
+void FROSBridgeHandler::OnConnection()
 {
     UE_LOG(LogROS, Log, TEXT("[%s] Websocket server connected."), *FString(__FUNCTION__));
-    Handler->SetClientConnected(true);
+    SetClientConnected(true);
+
+	// Run post-connection registrations
+
+	// Subscribe all topics
+	UE_LOG(LogROS, Log, TEXT("[%s] Subscribe all topics."), *FString(__FUNCTION__));
+	for (int i = 0; i < ListSubscribers.Num(); i++)
+	{
+#if UE_BUILD_DEBUG
+		UE_LOG(LogROS, Warning, TEXT("[%s] Subscribing Topic %s"),
+			*FString(__FUNCTION__), *ListSubscribers[i]->GetMessageTopic());
+#endif
+		FString WebSocketMessage = FROSBridgeMsg::Subscribe(ListSubscribers[i]->GetMessageTopic(),
+			ListSubscribers[i]->GetMessageType());
+		Client->Send(WebSocketMessage);
+	}
+
+	// Advertise all topics
+	UE_LOG(LogROS, Log, TEXT("[%s] Advertise all topics."), *FString(__FUNCTION__));
+	for (int i = 0; i < ListPublishers.Num(); i++)
+	{
+#if UE_BUILD_DEBUG
+		UE_LOG(LogROS, Warning, TEXT("[%s] Advertising Topic %s"),
+			*FString(__FUNCTION__), *ListPublishers[i]->GetMessageTopic());
+#endif
+		FString WebSocketMessage = FROSBridgeMsg::Advertise(ListPublishers[i]->GetMessageTopic(),
+			ListPublishers[i]->GetMessageType());
+		Client->Send(WebSocketMessage);
+	}
+
+	// Advertise all service servers
+	for (int i = 0; i < ListServiceServer.Num(); i++)
+	{
+#if UE_BUILD_DEBUG
+		UE_LOG(LogROS, Warning, TEXT("[%s] Advertising Service [%s] of type [%s]"),
+			*FString(__FUNCTION__), *ListServiceServer[i]->GetName(), *ListServiceServer[i]->GetType());
+#endif
+		FString WebSocketMessage = FROSBridgeSrv::AdvertiseService(ListServiceServer[i]->GetName(),
+			ListServiceServer[i]->GetType());
+		Client->Send(WebSocketMessage);
+	}
+
+	// Set handler connected flag
+	SetConnected(true);
 }
 
 static void CallbackOnError()
@@ -38,7 +81,7 @@ bool FROSBridgeHandler::FROSBridgeHandlerRunnable::Init()
 
     // Bind Connected callback
     FWebsocketInfoCallBack ConnectedCallback;
-    ConnectedCallback.BindStatic(&CallbackOnConnection, this->Handler);
+    ConnectedCallback.BindRaw(this->Handler, &FROSBridgeHandler::OnConnection);
     Handler->Client->SetConnectedCallBack(ConnectedCallback);
 
     // Bind Error callback
@@ -47,6 +90,7 @@ bool FROSBridgeHandler::FROSBridgeHandlerRunnable::Init()
     Handler->Client->SetErrorCallBack(ErrorCallback);
 
     Handler->Client->Connect();
+
     return true;
 }
 
@@ -56,14 +100,41 @@ uint32 FROSBridgeHandler::FROSBridgeHandlerRunnable::Run()
 	//Initial wait before starting
 	FPlatformProcess::Sleep(0.01);
 
-    while (StopCounter.GetValue() == 0)
+	// Counter for re-trying an initially unsuccessful connection
+	uint32 ConnectionTrialCounter = 0;
+
+	// Main loop for the thread
+	while (StopCounter.GetValue() == 0)
 	{
 		if (Handler->Client.IsValid() && !Handler->Client->IsDestroyed)
 		{
-            Handler->Client->Tick();
+			Handler->Client->Tick();
 		}
-        FPlatformProcess::Sleep(Handler->GetClientInterval());
-    }
+
+		if (!Handler->IsClientConnected())
+		{
+			// We aren't yet connected
+
+			if (++ConnectionTrialCounter > 100)
+			{
+				// After many tries, were unable to connect
+				Handler->SetConnected(false);
+
+				Stop();
+
+				UE_LOG(LogROS, Error, TEXT("[%s] Could not connect to the rosbridge server (IP %s, port %d)!"),
+					*FString(__FUNCTION__),
+					*(Handler->GetHost()),
+					Handler->GetPort());
+
+				continue;
+			}
+		}
+
+		// Sleep the main loop
+		FPlatformProcess::Sleep(Handler->GetClientInterval());
+	}
+
     return 0;
 }
 
@@ -214,91 +285,16 @@ void FROSBridgeHandler::OnMessage(void* InData, int32 InLength)
 // Create runnable instance and run the thread;
 void FROSBridgeHandler::Connect()
 {
-    Runnable = //  MakeShareable(
-        new FROSBridgeHandlerRunnable(this);
-    // );
-    Thread = FRunnableThread::Create(Runnable, TEXT("ROSBridgeHandlerRunnable"),
-                                     0, TPri_BelowNormal);
-	
-	// Stop if could not connect after X trials
-	uint32 ConnectionTrialCounter = 0;
-	while (!IsClientConnected())
-	{
-        FPlatformProcess::Sleep(0.02);
-		ConnectionTrialCounter++;
-		if (ConnectionTrialCounter > 100)
-		{
-			Runnable->Stop();
-			Thread->WaitForCompletion();
-			Runnable->Exit();
-
-			UE_LOG(LogROS, Error, TEXT("[%s] Could not connect to the rosbridge server!"),
-				*FString(__FUNCTION__));
-
-			Client->Destroy();
-
-			delete Thread;
-			delete Runnable;
-
-			Thread = NULL;
-			Client = NULL;
-			Runnable = NULL;
-
-			SetConnected(false);
-
-			return;
-		}
-	}
-
-    // Subscribe all topics
-    UE_LOG(LogROS, Log, TEXT("[%s] Subscribe all topics."), *FString(__FUNCTION__));
-    for (int i = 0; i < ListSubscribers.Num(); i++)
-    {
-        UE_LOG(LogROS, Warning, TEXT("[%s] Subscribing Topic %s"),
-			*FString(__FUNCTION__), *ListSubscribers[i]->GetMessageTopic());
-        FString WebSocketMessage = FROSBridgeMsg::Subscribe(ListSubscribers[i]->GetMessageTopic(),
-                                                            ListSubscribers[i]->GetMessageType());
-        Client->Send(WebSocketMessage);
-    }
-
-    // Advertise all topics
-    UE_LOG(LogROS, Log, TEXT("[%s] Advertise all topics."), *FString(__FUNCTION__));
-    for (int i = 0; i < ListPublishers.Num(); i++)
-    {
-        UE_LOG(LogROS, Warning, TEXT("[%s] Advertising Topic %s"),
-			*FString(__FUNCTION__), *ListPublishers[i]->GetMessageTopic());
-        FString WebSocketMessage = FROSBridgeMsg::Advertise(ListPublishers[i]->GetMessageTopic(),
-                                                            ListPublishers[i]->GetMessageType());
-        Client->Send(WebSocketMessage);
-    }
-
-    // Advertise all service servers
-    for (int i = 0; i < ListServiceServer.Num(); i++)
-    {
-        UE_LOG(LogROS, Warning, TEXT("[%s] Advertising Service [%s] of type [%s]"),
-			*FString(__FUNCTION__), *ListServiceServer[i]->GetName(), *ListServiceServer[i]->GetType());
-        FString WebSocketMessage = FROSBridgeSrv::AdvertiseService(ListServiceServer[i]->GetName(), 
-                                                                   ListServiceServer[i]->GetType());
-        Client->Send(WebSocketMessage); 
-    }
-
-	// Set handler connected flag
-	SetConnected(true);
+    Runnable = new FROSBridgeHandlerRunnable(this);
+    Thread = FRunnableThread::Create(Runnable, TEXT("ROSBridgeHandlerRunnable"), 0, TPri_BelowNormal);
 }
 
 // Unsubscribe / Unadvertise all topics
 // Stop the thread
 void FROSBridgeHandler::Disconnect()
 {
-	// TODO disconnect handler if no rosbridge is present
-	//if (!IsConnected())
-	//{
-	//	UE_LOG(LogROS, Error, TEXT("[%s] Cannot disconnect, handler is already disconnected"),
-	//		*FString(__FUNCTION__));
-	//	return;
-	//}
-
-	if (Client.IsValid())
+	// Un-register everything
+	if (Client.IsValid() && IsClientConnected() && IsConnected())
 	{
 		// Unsubscribe all topics
 		UE_LOG(LogROS, Log, TEXT("[%s] Unsubscribe all topics."), *FString(__FUNCTION__));
