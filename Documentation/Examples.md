@@ -32,11 +32,11 @@ void AROSActor::BeginPlay()
     // Set websocket server address to ws://127.0.0.1:9001
     Handler = MakeShareable<FROSBridgeHandler>(new FROSBridgeHandler(TEXT("127.0.0.1"), 9001));
     
-    // Add topic subscribers and publishers
-    // Add service clients and servers
-    
     // Connect to ROSBridge Websocket server.
     Handler->Connect();
+    
+    // Add topic subscribers and publishers
+    // Add service clients and servers
 }
 ```
 
@@ -91,12 +91,12 @@ void AROSActor::BeginPlay()
     // Set websocket server address to ws://127.0.0.1:9001
     Handler = MakeShareable<FROSBridgeHandler>(new FROSBridgeHandler(TEXT("127.0.0.1"), 9001));
     
+    // Connect to ROSBridge Websocket server.
+    Handler->Connect();
+    
     // **** Create publishers here ****
     Publisher = MakeShareable<FROSBridgePublisher>(new FROSBridgePublisher(TEXT("sensor_msgs/JointState"), TEXT("/talker")));
     Handler->AddPublisher(Publisher); 
-    
-    // Connect to ROSBridge Websocket server.
-    Handler->Connect();
 }
 ```
 
@@ -172,7 +172,7 @@ void Callback(TSharedPtr<FROSBridgeMsg> InMsg)
 
 ##### In Unreal Actor
 
-In Unreal Actors, before the ROS Bridge Handler connects to the server, we need to add pointer to subscriber to the subscriber list first. 
+In Unreal Actors we need to add pointer to subscriber to the subscriber list
 
 ```cpp
 void AROSActor::BeginPlay()
@@ -182,23 +182,24 @@ void AROSActor::BeginPlay()
     // Set websocket server address to ws://127.0.0.1:9001
     Handler = MakeShareable<FROSBridgeHandler>(new FROSBridgeHandler(TEXT("127.0.0.1"), 9001));
     
+    // Connect to ROSBridge Websocket server.
+    Handler->Connect();
+    
     // Add topic subscribers and publishers
     TSharedPtr<FROSStringSubScriber> Subscriber = 
         MakeShareable<FROSStringSubScriber>(new FROSStringSubScriber(TEXT("/chatter")));
     Handler->AddSubscriber(Subscriber);
-    
-    // Connect to ROSBridge Websocket server.
-    Handler->Connect();
 }
 ```
 
 #### A note on ROSBridgeHandler
 
-Connections to ROSBridge work via a [`ROSBridgeHandler`](../Source/UROSBridge/Public/ROSBridgeHandler.h) object. There should only be one of these in your project.
+Connections to ROSBridge work via a [`ROSBridgeHandler`](../Source/UROSBridge/Public/ROSBridgeHandler.h) object.
+There should only be one of these in your project.
 If you have multiple actors that need to connect to ROS, a good pattern is to create a custom [GameInstance](https://docs.unrealengine.com/latest/INT/API/Runtime/Engine/Engine/UGameInstance/index.html), and store the `ROSBridgeHandler` object there as a public member.
 Your actors can then access the `ROSBridgeHandler` by calling e.g. `this->GetGameInstance().Handler`
 
-When the ROS Bridge Handler disconnects to server, it automatically destroys all subscriber instances. 
+When the ROS Bridge Handler disconnects to server, it automatically destroys all subscriber instances.
 
 #### Request Service
 
@@ -284,7 +285,7 @@ To process service requests in UROSBridge, we need to create a service server cl
  }
 ```
 
-In Actor, before connection, first register the server to ROS bridge, then it will process incoming service requests automatically. After disconnection, the server will be automatically destroyed. 
+In Actor, register the server to ROS bridge, then it will process incoming service requests automatically. After disconnection, the server will be automatically destroyed. 
 
 ```cpp
 void AROSActor::BeginPlay()
@@ -294,12 +295,12 @@ void AROSActor::BeginPlay()
     // Set websocket server address to ws://127.0.0.1:9001
     Handler = MakeShareable<FROSBridgeHandler>(new FROSBridgeHandler(TEXT("127.0.0.1"), 9001));
     
+    // Connect to ROSBridge Websocket server.
+    Handler->Connect();
+    
     // Add service clients and servers
     TSharedPtr<FROSAddTwoIntsServer> ServiceServer = MakeShareable<FROSAddTwoIntsServer>(new FROSAddTwoIntsServer(TEXT("add_two_ints_2")));
     Handler->AddServiceServer(ServiceServer);
-    
-    // Connect to ROSBridge Websocket server.
-    Handler->Connect();
 }
 ```
 
