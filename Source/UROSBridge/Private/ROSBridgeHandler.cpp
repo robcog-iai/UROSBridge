@@ -95,8 +95,8 @@ uint32 FROSBridgeHandler::FROSBridgeHandlerRunnable::Run()
 			while (Handler->ListPendingSubscribers.Num() > 0)
 			{
 				auto Subscriber = Handler->ListPendingSubscribers.Pop();
-				UE_LOG(LogROS, Warning, TEXT("[%s] Subscribing Topic %s"), *FString(__FUNCTION__), *Subscriber->GetMessageTopic());
-				FString WebSocketMessage = FROSBridgeMsg::Subscribe(Subscriber->GetMessageTopic(), Subscriber->GetMessageType());
+				UE_LOG(LogROS, Warning, TEXT("[%s] Subscribing Topic %s"), *FString(__FUNCTION__), *Subscriber->GetTopic());
+				FString WebSocketMessage = FROSBridgeMsg::Subscribe(Subscriber->GetTopic(), Subscriber->GetType());
 				Handler->Client->Send(WebSocketMessage);
 
 				Handler->ListSubscribers.Push(Subscriber);
@@ -106,8 +106,8 @@ uint32 FROSBridgeHandler::FROSBridgeHandlerRunnable::Run()
 			while (Handler->ListPendingPublishers.Num() > 0)
 			{
 				auto Publisher = Handler->ListPendingPublishers.Pop();
-				UE_LOG(LogROS, Warning, TEXT("[%s] Advertising Topic %s"), *FString(__FUNCTION__), *Publisher->GetMessageTopic());
-				FString WebSocketMessage = FROSBridgeMsg::Advertise(Publisher->GetMessageTopic(), Publisher->GetMessageType());
+				UE_LOG(LogROS, Warning, TEXT("[%s] Advertising Topic %s"), *FString(__FUNCTION__), *Publisher->GetTopic());
+				FString WebSocketMessage = FROSBridgeMsg::Advertise(Publisher->GetTopic(), Publisher->GetType());
 				Handler->Client->Send(WebSocketMessage);
 
 				Handler->ListPublishers.Push(Publisher);
@@ -181,7 +181,7 @@ void FROSBridgeHandler::OnMessage(void* InData, int32 InLength)
         TSharedPtr<FROSBridgeSubscriber> Subscriber;
         for (int i = 0; i < ListSubscribers.Num(); i++)
         {
-            if (ListSubscribers[i]->GetMessageTopic() == Topic)
+            if (ListSubscribers[i]->GetTopic() == Topic)
             {
 #if UE_BUILD_DEBUG
                 UE_LOG(LogROS, Log, TEXT("[%s] Subscriber Found. Id = %d. "), *FString(__FUNCTION__), i);
@@ -296,8 +296,8 @@ void FROSBridgeHandler::Disconnect()
 		for (int i = 0; i < ListSubscribers.Num(); i++)
 		{
 			UE_LOG(LogROS, Log, TEXT("[%s] Unsubscribing Topic %s"),
-				*FString(__FUNCTION__), *ListSubscribers[i]->GetMessageTopic());
-			FString WebSocketMessage = FROSBridgeMsg::UnSubscribe(ListSubscribers[i]->GetMessageTopic());
+				*FString(__FUNCTION__), *ListSubscribers[i]->GetTopic());
+			FString WebSocketMessage = FROSBridgeMsg::UnSubscribe(ListSubscribers[i]->GetTopic());
 			Client->Send(WebSocketMessage);
 		}
 
@@ -305,8 +305,8 @@ void FROSBridgeHandler::Disconnect()
 		for (int i = 0; i < ListPublishers.Num(); i++)
 		{
 			UE_LOG(LogROS, Log, TEXT("[%s] Unadvertising Topic %s"),
-				*FString(__FUNCTION__), *ListPublishers[i]->GetMessageTopic());
-			FString WebSocketMessage = FROSBridgeMsg::UnAdvertise(ListPublishers[i]->GetMessageTopic());
+				*FString(__FUNCTION__), *ListPublishers[i]->GetTopic());
+			FString WebSocketMessage = FROSBridgeMsg::UnAdvertise(ListPublishers[i]->GetTopic());
 			Client->Send(WebSocketMessage);
 		}
 

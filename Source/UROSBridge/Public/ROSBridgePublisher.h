@@ -9,24 +9,25 @@
 
 class UROSBRIDGE_API FROSBridgePublisher 
 {
-    FString Type;
+protected:
     FString Topic;
+    FString Type;
 
 public:
 
-    FROSBridgePublisher(FString InType, FString InTopic):
-        Type(InType), Topic(InTopic)
+    FROSBridgePublisher(FString InTopic, FString InType):
+		Topic(InTopic), Type(InType)
     {
     }
 
     virtual ~FROSBridgePublisher() {}
 
-    virtual FString GetMessageType() const 
+    virtual FString GetType() const 
 	{
         return Type;
     }
 
-    virtual FString GetMessageTopic() const 
+    virtual FString GetTopic() const 
 	{
         return Topic;
     }

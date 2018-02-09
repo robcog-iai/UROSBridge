@@ -8,13 +8,14 @@
 
 class UROSBRIDGE_API FROSBridgeSubscriber 
 {
-    FString Type;
+protected:
     FString Topic;
+    FString Type;
 
 public:
 
-    FROSBridgeSubscriber(FString InType, FString InTopic):
-        Type(InType), Topic(InTopic)
+    FROSBridgeSubscriber(FString InTopic, FString InType):
+		Topic(InTopic), Type(InType)
     {
     }
 
@@ -22,12 +23,12 @@ public:
 	{
     }
 
-    virtual FString GetMessageType() const 
+    virtual FString GetType() const 
 	{
         return Type;
     }
 
-    virtual FString GetMessageTopic() const 
+    virtual FString GetTopic() const 
 	{
         return Topic;
     }
