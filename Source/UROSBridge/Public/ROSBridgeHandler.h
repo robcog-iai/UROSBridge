@@ -106,16 +106,21 @@ private:
 
     FString Host;
     int32 Port;
-	bool bIsConnected;
     float ClientInterval;
 
     // TSharedPtr<FWebSocket> Client;
     TSharedPtr<FWebSocket> Client;
     FThreadSafeBool bIsClientConnected;
 
-    TArray< TSharedPtr<FROSBridgeSubscriber> > ListSubscribers;
-    TArray< TSharedPtr<FROSBridgePublisher> >  ListPublishers;
-    TArray< TSharedPtr<FROSBridgeSrvServer> > ListServiceServer;
+	// Pending Subscribers/Publishes/Server Services have not yet been sent to ROSBridge
+	TArray< TSharedPtr<FROSBridgeSubscriber> > ListPendingSubscribers;
+	TArray< TSharedPtr<FROSBridgePublisher> >  ListPendingPublishers;
+	TArray< TSharedPtr<FROSBridgeSrvServer> > ListPendingServiceServers;
+
+	TArray< TSharedPtr<FROSBridgeSubscriber> > ListSubscribers;
+	TArray< TSharedPtr<FROSBridgePublisher> >  ListPublishers;
+	TArray< TSharedPtr<FROSBridgeSrvServer> > ListServiceServers;
+
     TQueue< TSharedPtr<FProcessTask> > QueueTask;
     TArray< TSharedPtr<FServiceTask> > ArrayService;
 
@@ -142,8 +147,7 @@ public:
     FROSBridgeHandler(FString InHost, int32 InPort):
         Host(InHost), Port(InPort),
         ClientInterval(0.01),
-		bIsClientConnected(false),
-		bIsConnected(false)
+		bIsClientConnected(false)
     {
     }
 
@@ -156,16 +160,6 @@ public:
     {
         ClientInterval = NewInterval;
     }
-
-	bool IsConnected() const
-	{
-		return bIsConnected;
-	}
-
-	void SetConnected(bool bVal)
-	{
-		bIsConnected = bVal;
-	}
 
     bool IsClientConnected() const
     {
@@ -189,17 +183,17 @@ public:
 
     void AddSubscriber(TSharedPtr<FROSBridgeSubscriber> InSubscriber)
     {
-        ListSubscribers.Add(InSubscriber);
+		ListPendingSubscribers.Add(InSubscriber);
     }
 
     void AddPublisher(TSharedPtr<FROSBridgePublisher> InPublisher)
     {
-        ListPublishers.Add(InPublisher);
+        ListPendingPublishers.Add(InPublisher);
     }
 
     void AddServiceServer(TSharedPtr<FROSBridgeSrvServer> InServer)
     {
-        ListServiceServer.Add(InServer);
+        ListPendingServiceServers.Add(InServer);
     }
 
     // Publish service response, used in service server
