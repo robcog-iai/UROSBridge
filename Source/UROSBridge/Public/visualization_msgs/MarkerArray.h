@@ -34,7 +34,7 @@ namespace visualization_msgs
 			return Markers;
 		}
 
-		visualization_msgs::Marker GetmarkerAt(uint32 Index) const
+		visualization_msgs::Marker GetmarkerAt(int32 Index) const
 		{
 			check(Index < Markers.Num());
 			return Markers[Index];

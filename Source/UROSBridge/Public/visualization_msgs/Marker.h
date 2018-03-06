@@ -11,6 +11,7 @@ namespace visualization_msgs
 {
 	class Marker : public FROSBridgeMsg
 	{
+	public:
 		enum EType : uint8
 		{
 			ARROW = 0,
@@ -31,7 +32,7 @@ namespace visualization_msgs
 		{
 			ADD = 0,
 			MODIFY = 0,
-			DELETE = 2
+			DEL= 2
 		};
 
 		std_msgs::Header Header;
@@ -50,7 +51,7 @@ namespace visualization_msgs
 		FString MeshResource;
 		bool bMeshUseEmbeddedMaterials;
 
-	public:
+	
 		Marker()
 		{
 			MsgType = "visualization_msgs/Marker";
