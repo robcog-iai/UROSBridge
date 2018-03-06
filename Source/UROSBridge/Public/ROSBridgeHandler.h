@@ -20,13 +20,16 @@ class UROSBRIDGE_API FROSBridgeHandler
 
 private:
     /* Subclasses */
-    /* FProcessTask: Representation of subscribed messages,
-     *              can be processed by Process()*/
+    
+	/** 
+	* FProcessTask: Representation of subscribed messages,
+    *              can be processed by Process()
+	*/
     struct FProcessTask 
 	{
         FProcessTask(
 			TSharedPtr<FROSBridgeSubscriber> InSubscriber,
-			FString InTopic,
+			const FString& InTopic,
 			TSharedPtr<FROSBridgeMsg> InMessage) :
             Subscriber(InSubscriber),
 			Topic(InTopic),
@@ -39,13 +42,15 @@ private:
         TSharedPtr<FROSBridgeMsg> Message;
     };
 
-    /* FServiceTask: Service call results, can be processed by Process() */
+    /**
+	* FServiceTask: Service call results, can be processed by Process() 
+	*/
     struct FServiceTask 
 	{
         FServiceTask(
 			TSharedPtr<FROSBridgeSrvClient> InClient,
-			FString InServiceName,
-            FString InId) :
+			const FString& InServiceName,
+            const FString& InId) :
             Client(InClient),
 			Name(InServiceName),
 			Id(InId),
@@ -56,8 +61,8 @@ private:
 
         FServiceTask(
 			TSharedPtr<FROSBridgeSrvClient> InClient,
-			FString InServiceName,
-            FString InId,
+			const FString& InServiceName,
+            const FString& InId,
 			TSharedPtr<FROSBridgeSrv::SrvRequest> InRequest,
             TSharedPtr<FROSBridgeSrv::SrvResponse> InResponse) :
             Client(InClient),
@@ -79,6 +84,9 @@ private:
         bool bIsProcessed; 
     };
 
+	/**
+	* Thread to handle ROS communication
+	*/
     class FROSBridgeHandlerRunnable : public FRunnable 
 	{
     public:
@@ -98,12 +106,15 @@ private:
         // Set the stop counter and disconnect
         virtual void Stop() override;
 
+		// Exits the runnable object. Called in the context of the aggregating thread to perform any cleanup.
+		virtual void Exit() override;
+
     private:
         // Increase the StopCounter to stop the Runnable thread.
         FThreadSafeCounter StopCounter;
         FROSBridgeHandler* Handler;
     };
-
+	
     FString Host;
     int32 Port;
     float ClientInterval;
@@ -130,26 +141,32 @@ private:
     FCriticalSection LockTask; 
     FCriticalSection LockArrayService;
 
+	/** Index used to disambiguate thread instances for stats reasons */
+	static int32 ThreadInstanceIdx;
+
 	// Called when the WebSocket connection succeeds
 	void OnConnection();
 
-    // When message comes, create FRenderTask instances and push it
-    // into QueueTask.
+    // When message comes, create FProcessTask instances and push it into QueueTask.
     void OnMessage(void* Data, int32 Length);
 
+    void CallServiceImpl(const FString& Name, TSharedPtr<FROSBridgeSrv::SrvRequest> Request, const FString& Id);
 
-    void CallServiceImpl(FString Name, TSharedPtr<FROSBridgeSrv::SrvRequest> Request, FString Id);
-
-    // friendship declaration
+    // Friendship declaration
     friend class FROSBridgeHandlerRunnable;
 
 public:
-    FROSBridgeHandler(FString InHost, int32 InPort):
+    FROSBridgeHandler(const FString& InHost, int32 InPort):
         Host(InHost), Port(InPort),
         ClientInterval(0.01),
 		bIsClientConnected(false)
     {
     }
+
+	~FROSBridgeHandler()
+	{
+		ThreadCleanup();
+	}
 
     float GetClientInterval() const
     {
@@ -197,11 +214,11 @@ public:
     }
 
     // Publish service response, used in service server
-    void PublishServiceResponse(FString Service, FString Id,
+    void PublishServiceResponse(const FString& Service, const FString& Id,
         TSharedPtr<FROSBridgeSrv::SrvResponse> Response); 
 
     // Publish ROS message to topics
-    void PublishMsg(FString Topic, TSharedPtr<FROSBridgeMsg> Msg);
+    void PublishMsg(const FString& Topic, TSharedPtr<FROSBridgeMsg> Msg);
 
     // Call external ROS service
     void CallService(TSharedPtr<FROSBridgeSrvClient> SrvClient,
@@ -211,12 +228,11 @@ public:
     // Create runnable instance and run the thread;
     void Connect();
 
-    // Unsubscribe / Unadvertise all messages
-    // Stop the thread
+    // Unsubscribe / Unadvertise all messages, stop the thread
     void Disconnect();
 
-	DEPRECATED(4.18, "Render() is deprecated, use Process() instead.")
-	void Render();
+	// Stop runnable / thread / client
+	void ThreadCleanup();
 
     // Update for each frame / substep
     void Process();
