@@ -16,7 +16,7 @@ class FWebSocket
 
 public:
 
-    // Initialize as client side socket. (do not connect)
+	// Initialize as client side socket. (do not connect)
 	FWebSocket(const FInternetAddr& ServerAddress);
 
 #if !PLATFORM_HTML5
@@ -27,21 +27,21 @@ public:
 	// clean up.
 	~FWebSocket();
 
-    void Connect();
+	void Connect();
 
-    void Destroy();
+	void Destroy();
 
 	/************************************************************************/
-	/* Set various callbacks for Socket Events                              */
+	/* Set various callbacks for Socket Events							  */
 	/************************************************************************/
-    void SetConnectedCallBack(FWebsocketInfoCallBack CallBack);
+	void SetConnectedCallBack(FWebsocketInfoCallBack CallBack);
 	void SetErrorCallBack(FWebsocketInfoCallBack CallBack);
 	void SetRecieveCallBack(FWebsocketPacketRecievedCallBack CallBack);
 
 	/** Send raw data to remote end point. */
-    bool Send(uint8* Data, uint32 Size);  // Send Binary
-    bool SendText(uint8* Data, uint32 Size); // Send Text
-    bool Send(const FString& StringData);
+	bool Send(uint8* Data, uint32 Size);  // Send Binary
+	bool SendText(uint8* Data, uint32 Size); // Send Text
+	bool Send(const FString& StringData);
 
 	/** service libwebsocket.			   */
 	void Tick();
@@ -57,23 +57,23 @@ public:
 public:
 
 	void HandlePacket();
-    void OnRawRecieve(void* Data, uint32 Size, bool isBinary = true);
+	void OnRawRecieve(void* Data, uint32 Size, bool isBinary = true);
 	void OnRawWebSocketWritable(WebSocketInternal* wsi);
 
 	/************************************************************************/
 	/*	Various Socket callbacks											*/
 	/************************************************************************/
 	FWebsocketPacketRecievedCallBack  RecievedCallBack;
-    FWebsocketInfoCallBack ConnectedCallBack;
+	FWebsocketInfoCallBack ConnectedCallBack;
 	FWebsocketInfoCallBack ErrorCallBack;
 
 	/**  Recv and Send Buffers, serviced during the Tick */
 	TArray<uint8> RecievedBuffer;
 	TArray<TArray<uint8>> OutgoingBuffer;
-    TArray<uint8> OutgoingBufferType;
+	TArray<uint8> OutgoingBufferType;
 
-    /** Critical Section */
-    FCriticalSection CriticalSection;
+	/** Critical Section */
+	FCriticalSection CriticalSection;
 
 #if !PLATFORM_HTML5
 	/** libwebsocket internal context*/
@@ -88,16 +88,16 @@ public:
 	int SockFd;
 #endif
 
-    FString StrInetAddress;
-    int32 InetPort;
+	FString StrInetAddress;
+	int32 InetPort;
 
 	struct sockaddr_in RemoteAddr;
 
 	/** Server side socket or client side*/
 	bool IsServerSide;
 
-    /** Is the client destroyed? */ 
-    bool IsDestroyed; 
+	/** Is the client destroyed? */ 
+	bool IsDestroyed; 
 
 	friend class FWebSocketServer;
 };

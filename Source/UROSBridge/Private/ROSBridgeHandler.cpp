@@ -1,4 +1,4 @@
-// Copyright 2017, Institute for Artificial Intelligence - University of Bremen
+// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
 
 #include "ROSBridgeHandler.h"
 #include "UROSBridge.h"
@@ -11,47 +11,47 @@ int32 FROSBridgeHandler::ThreadInstanceIdx = 0;
 
 void FROSBridgeHandler::OnConnection()
 {
-    UE_LOG(LogROS, Log, TEXT("[%s] Websocket server connected."), *FString(__FUNCTION__));
+	UE_LOG(LogROS, Log, TEXT("[%s] Websocket server connected."), *FString(__FUNCTION__));
 
-    SetClientConnected(true);
+	SetClientConnected(true);
 }
 
 static void OnError()
 {
-    UE_LOG(LogROS, Error, TEXT("[%s] Error in Websocket."), *FString(__FUNCTION__));
+	UE_LOG(LogROS, Error, TEXT("[%s] Error in Websocket."), *FString(__FUNCTION__));
 }
 
 // Create connection, bind functions to WebSocket Client, and Connect.
 bool FROSBridgeHandler::FROSBridgeHandlerRunnable::Init()
 {
 #if UE_BUILD_DEBUG
-    UE_LOG(LogROS, Log, TEXT("[%s]"), *FString(__FUNCTION__));
+	UE_LOG(LogROS, Log, TEXT("[%s]"), *FString(__FUNCTION__));
 #endif
 
-    FIPv4Address IPAddress;
-    FIPv4Address::Parse(Handler->GetHost(), IPAddress);
+	FIPv4Address IPAddress;
+	FIPv4Address::Parse(Handler->GetHost(), IPAddress);
 
-    FIPv4Endpoint Endpoint(IPAddress, Handler->GetPort());
-    Handler->Client = MakeShareable<FWebSocket>(new FWebSocket(Endpoint.ToInternetAddr().Get()));
+	FIPv4Endpoint Endpoint(IPAddress, Handler->GetPort());
+	Handler->Client = MakeShareable<FWebSocket>(new FWebSocket(Endpoint.ToInternetAddr().Get()));
 
-    // Bind Received callback
-    FWebsocketPacketRecievedCallBack ReceivedCallback;
-    ReceivedCallback.BindRaw(this->Handler, &FROSBridgeHandler::OnMessage);
-    Handler->Client->SetRecieveCallBack(ReceivedCallback);
+	// Bind Received callback
+	FWebsocketPacketRecievedCallBack ReceivedCallback;
+	ReceivedCallback.BindRaw(this->Handler, &FROSBridgeHandler::OnMessage);
+	Handler->Client->SetRecieveCallBack(ReceivedCallback);
 
-    // Bind Connected callback
-    FWebsocketInfoCallBack ConnectedCallback;
-    ConnectedCallback.BindRaw(this->Handler, &FROSBridgeHandler::OnConnection);
-    Handler->Client->SetConnectedCallBack(ConnectedCallback);
+	// Bind Connected callback
+	FWebsocketInfoCallBack ConnectedCallback;
+	ConnectedCallback.BindRaw(this->Handler, &FROSBridgeHandler::OnConnection);
+	Handler->Client->SetConnectedCallBack(ConnectedCallback);
 
-    // Bind Error callback
-    FWebsocketInfoCallBack ErrorCallback;
-    ErrorCallback.BindStatic(&OnError);
-    Handler->Client->SetErrorCallBack(ErrorCallback);
+	// Bind Error callback
+	FWebsocketInfoCallBack ErrorCallback;
+	ErrorCallback.BindStatic(&OnError);
+	Handler->Client->SetErrorCallBack(ErrorCallback);
 
-    Handler->Client->Connect();
+	Handler->Client->Connect();
 
-    return true;
+	return true;
 }
 
 // Process subscribed messages
@@ -97,7 +97,7 @@ uint32 FROSBridgeHandler::FROSBridgeHandlerRunnable::Run()
 			while (Handler->ListPendingSubscribers.Num() > 0)
 			{
 				auto Subscriber = Handler->ListPendingSubscribers.Pop();
-				UE_LOG(LogROS, Warning, TEXT("[%s] Subscribing Topic %s"), 
+				UE_LOG(LogROS, Log, TEXT("[%s] Subscribing Topic %s"), 
 					*FString(__FUNCTION__), *Subscriber->GetTopic());
 				FString WebSocketMessage = FROSBridgeMsg::Subscribe(Subscriber->GetTopic(), Subscriber->GetType());
 				Handler->Client->Send(WebSocketMessage);
@@ -109,7 +109,7 @@ uint32 FROSBridgeHandler::FROSBridgeHandlerRunnable::Run()
 			while (Handler->ListPendingPublishers.Num() > 0)
 			{
 				auto Publisher = Handler->ListPendingPublishers.Pop();
-				UE_LOG(LogROS, Warning, TEXT("[%s] Advertising Topic %s"), 
+				UE_LOG(LogROS, Log, TEXT("[%s] Advertising Topic %s"),
 					*FString(__FUNCTION__), *Publisher->GetTopic());
 				FString WebSocketMessage = FROSBridgeMsg::Advertise(Publisher->GetTopic(), Publisher->GetType());
 				Handler->Client->Send(WebSocketMessage);
@@ -121,7 +121,7 @@ uint32 FROSBridgeHandler::FROSBridgeHandlerRunnable::Run()
 			while (Handler->ListPendingServiceServers.Num() > 0)
 			{
 				auto ServiceServer = Handler->ListPendingServiceServers.Pop();
-				UE_LOG(LogROS, Warning, TEXT("[%s] Advertising Service [%s] of type [%s]"),
+				UE_LOG(LogROS, Log, TEXT("[%s] Advertising Service [%s] of type [%s]"),
 					*FString(__FUNCTION__), *ServiceServer->GetName(), *ServiceServer->GetType());
 				FString WebSocketMessage = FROSBridgeSrv::AdvertiseService(ServiceServer->GetName(), ServiceServer->GetType());
 				Handler->Client->Send(WebSocketMessage);
@@ -133,13 +133,13 @@ uint32 FROSBridgeHandler::FROSBridgeHandlerRunnable::Run()
 		// Sleep the main loop
 		FPlatformProcess::Sleep(Handler->GetClientInterval());
 	}
-    return 0;
+	return 0;
 }
 
 // Set the stop counter and disconnect
 void FROSBridgeHandler::FROSBridgeHandlerRunnable::Stop()
 {
-    StopCounter.Increment();
+	StopCounter.Increment();
 }
 
 // Exits the runnable object
@@ -150,39 +150,39 @@ void FROSBridgeHandler::FROSBridgeHandlerRunnable::Exit()
 // Callback function when message comes from WebSocket
 void FROSBridgeHandler::OnMessage(void* InData, int32 InLength)
 {
-    char * CharMessage = new char [InLength + 1];
-    memcpy(CharMessage, InData, InLength);
-    CharMessage[InLength] = 0;
-    const FString JsonMessage = UTF8_TO_TCHAR(CharMessage);
-    delete[] CharMessage;
+	char * CharMessage = new char [InLength + 1];
+	memcpy(CharMessage, InData, InLength);
+	CharMessage[InLength] = 0;
+	const FString JsonMessage = UTF8_TO_TCHAR(CharMessage);
+	delete[] CharMessage;
 
-//#if UE_BUILD_DEBUG
-    UE_LOG(LogROS, Error, TEXT("[%s] Json Message: %s"), *FString(__FUNCTION__), *JsonMessage);
-//#endif
+#if UE_BUILD_DEBUG
+UE_LOG(LogROS, Log, TEXT("[%s] Json Message: %s"), *FString(__FUNCTION__), *JsonMessage);
+#endif
 
-    // Parse Json Message Here
-    TSharedRef< TJsonReader<> > Reader = TJsonReaderFactory<>::Create(JsonMessage);
-    TSharedPtr< FJsonObject > JsonObject;
-    bool DeserializeState = FJsonSerializer::Deserialize(Reader, JsonObject);
-    if (!DeserializeState)
-    {
-        UE_LOG(LogROS, Error, TEXT("[%s] Deserialization Error. Message Contents: %s"),
+	// Parse Json Message Here
+	TSharedRef< TJsonReader<> > Reader = TJsonReaderFactory<>::Create(JsonMessage);
+	TSharedPtr< FJsonObject > JsonObject;
+	bool DeserializeState = FJsonSerializer::Deserialize(Reader, JsonObject);
+	if (!DeserializeState)
+	{
+		UE_LOG(LogROS, Error, TEXT("[%s] Deserialization Error. Message Contents: %s"),
 			*FString(__FUNCTION__), *JsonMessage);
-        return;
-    }
+		return;
+	}
 
-    const FString Op = JsonObject->GetStringField(TEXT("op"));
+	const FString Op = JsonObject->GetStringField(TEXT("op"));
 
-    if (Op == TEXT("publish")) // Message 
-    {
-        const FString Topic = JsonObject->GetStringField(TEXT("topic"));
-        UE_LOG(LogROS, Log, TEXT("[%s] Received message at Topic [%s]."),
+	if (Op == TEXT("publish")) // Message 
+	{
+		const FString Topic = JsonObject->GetStringField(TEXT("topic"));
+		UE_LOG(LogROS, Log, TEXT("[%s] Received message at Topic [%s]."),
 			*FString(__FUNCTION__), *Topic);
 
-        TSharedPtr< FJsonObject > MsgObject = JsonObject->GetObjectField(TEXT("msg"));
+		TSharedPtr< FJsonObject > MsgObject = JsonObject->GetObjectField(TEXT("msg"));
 
-        // Find corresponding subscriber
-        bool IsTopicFound = false;
+		// Find corresponding subscriber
+		bool IsTopicFound = false;
 		TSharedPtr<FROSBridgeSubscriber> Subscriber;
 		for (int i = 0; i < ListSubscribers.Num(); i++)
 		{
@@ -196,24 +196,24 @@ void FROSBridgeHandler::OnMessage(void* InData, int32 InLength)
 			}
 		}
 
-        if (!IsTopicFound)
-        {
-            UE_LOG(LogROS, Error, TEXT("[%s] Error: Topic [%s] subscriber not Found. "),
+		if (!IsTopicFound)
+		{
+			UE_LOG(LogROS, Error, TEXT("[%s] Error: Topic [%s] subscriber not Found. "),
 				*FString(__FUNCTION__), *Topic);
-        }
-        else
-        {
-            TSharedPtr<FROSBridgeMsg> ROSBridgeMsg;
-            ROSBridgeMsg = Subscriber->ParseMessage(MsgObject);
-            TSharedPtr<FProcessTask> ProcessTask = MakeShareable<FProcessTask>(new FProcessTask(Subscriber, Topic, ROSBridgeMsg));
-            QueueTask.Enqueue(ProcessTask);
-        }
-    }
-    else if (Op == TEXT("service_response"))
-    {
-        const FString Id = JsonObject->GetStringField(TEXT("id"));
-        const FString ServiceName = JsonObject->GetStringField(TEXT("service"));
-        TSharedPtr< FJsonObject > ValuesObj; 
+		}
+		else
+		{
+			TSharedPtr<FROSBridgeMsg> ROSBridgeMsg;
+			ROSBridgeMsg = Subscriber->ParseMessage(MsgObject);
+			TSharedPtr<FProcessTask> ProcessTask = MakeShareable<FProcessTask>(new FProcessTask(Subscriber, Topic, ROSBridgeMsg));
+			QueueTask.Enqueue(ProcessTask);
+		}
+	}
+	else if (Op == TEXT("service_response"))
+	{
+		const FString Id = JsonObject->GetStringField(TEXT("id"));
+		const FString ServiceName = JsonObject->GetStringField(TEXT("service"));
+		TSharedPtr< FJsonObject > ValuesObj; 
 		if (JsonObject->HasField("values"))
 		{
 			// has values
@@ -224,35 +224,35 @@ void FROSBridgeHandler::OnMessage(void* InData, int32 InLength)
 			ValuesObj = MakeShareable(new FJsonObject);
 		}
 
-        bool bFoundService = false; 
-        int FoundServiceIndex; 
-        LockArrayService.Lock(); // Lock mutex, when access ArrayService
-        for (int i = 0; i < ArrayService.Num(); i++)
-        {
-            if (ArrayService[i]->Name == ServiceName &&
-                ArrayService[i]->Id == Id)
-            {
-                ArrayService[i]->bIsResponsed = true; 
-                check(ArrayService[i]->Response.IsValid());
-                ArrayService[i]->Response->FromJson(ValuesObj);
-                bFoundService = true; 
-                FoundServiceIndex = i;
-            }
-        }
-        LockArrayService.Unlock(); // Unlock mutex
+		bool bFoundService = false; 
+		int FoundServiceIndex; 
+		LockArrayService.Lock(); // Lock mutex, when access ArrayService
+		for (int i = 0; i < ArrayService.Num(); i++)
+		{
+			if (ArrayService[i]->Name == ServiceName &&
+				ArrayService[i]->Id == Id)
+			{
+				ArrayService[i]->bIsResponsed = true; 
+				check(ArrayService[i]->Response.IsValid());
+				ArrayService[i]->Response->FromJson(ValuesObj);
+				bFoundService = true; 
+				FoundServiceIndex = i;
+			}
+		}
+		LockArrayService.Unlock(); // Unlock mutex
 
-        if (!bFoundService)
-        {
-            UE_LOG(LogROS, Error, TEXT("[%s] Error: Service Name [%s] Id [%s] not found. "),
+		if (!bFoundService)
+		{
+			UE_LOG(LogROS, Error, TEXT("[%s] Error: Service Name [%s] Id [%s] not found. "),
 				*FString(__FUNCTION__), *ServiceName, *Id);
-        } 
-    }
-    else if (Op == "call_service")
-    {
-        const FString Id = JsonObject->GetStringField(TEXT("id")); 
-        // there is always an Id for rosbridge_server generated service call
-        const FString ServiceName = JsonObject->GetStringField(TEXT("service"));
-        TSharedPtr< FJsonObject > ArgsObj;
+		} 
+	}
+	else if (Op == "call_service")
+	{
+		const FString Id = JsonObject->GetStringField(TEXT("id")); 
+		// there is always an Id for rosbridge_server generated service call
+		const FString ServiceName = JsonObject->GetStringField(TEXT("service"));
+		TSharedPtr< FJsonObject > ArgsObj;
 		if (JsonObject->HasField("args"))
 		{
 			ArgsObj = JsonObject->GetObjectField(TEXT("args"));
@@ -262,40 +262,40 @@ void FROSBridgeHandler::OnMessage(void* InData, int32 InLength)
 			ArgsObj = MakeShareable(new FJsonObject);
 		}
 
-        // Call service in block mode
-        bool bFoundService = false;
-        int FoundServiceIndex = -1;
-        for (int i = 0; i < ListServiceServers.Num(); i++)
-            if (ListServiceServers[i]->GetName() == ServiceName)
-            {
-                bFoundService = true;
-                FoundServiceIndex = i; 
-                break; 
-            }
+		// Call service in block mode
+		bool bFoundService = false;
+		int FoundServiceIndex = -1;
+		for (int i = 0; i < ListServiceServers.Num(); i++)
+			if (ListServiceServers[i]->GetName() == ServiceName)
+			{
+				bFoundService = true;
+				FoundServiceIndex = i; 
+				break; 
+			}
 
-        if (!bFoundService)
-        {
-            UE_LOG(LogROS, Error, TEXT("[%s] Error: Service Name [%s] Id [%s] not found. "),
+		if (!bFoundService)
+		{
+			UE_LOG(LogROS, Error, TEXT("[%s] Error: Service Name [%s] Id [%s] not found. "),
 				*FString(__FUNCTION__), *ServiceName, *Id);
-        }
-        else
-        {
+		}
+		else
+		{
 #if UE_BUILD_DEBUG
-            UE_LOG(LogROS, Log, TEXT("[%s] Info: Service Name [%s] Id [%s] found, calling callback function."),
+			UE_LOG(LogROS, Log, TEXT("[%s] Info: Service Name [%s] Id [%s] found, calling callback function."),
 				*FString(__FUNCTION__), *ServiceName, *Id);
 #endif
-            TSharedPtr<FROSBridgeSrv::SrvRequest> Request = ListServiceServers[FoundServiceIndex]->FromJson(ArgsObj); 
-            TSharedPtr<FROSBridgeSrv::SrvResponse> Response = ListServiceServers[FoundServiceIndex]->Callback(Request); // block 
-            PublishServiceResponse(ServiceName, Id, Response); 
-        }
-    }
+			TSharedPtr<FROSBridgeSrv::SrvRequest> Request = ListServiceServers[FoundServiceIndex]->FromJson(ArgsObj); 
+			TSharedPtr<FROSBridgeSrv::SrvResponse> Response = ListServiceServers[FoundServiceIndex]->Callback(Request); // block 
+			PublishServiceResponse(ServiceName, Id, Response); 
+		}
+	}
 }
 
 // Create runnable instance and run the thread;
 void FROSBridgeHandler::Connect()
 {
-    Runnable = new FROSBridgeHandlerRunnable(this);
-    //Thread = FRunnableThread::Create(Runnable, TEXT("ROSBridgeHandlerRunnable"), 0, TPri_Normal);
+	Runnable = new FROSBridgeHandlerRunnable(this);
+	//Thread = FRunnableThread::Create(Runnable, TEXT("ROSBridgeHandlerRunnable"), 0, TPri_Normal);
 	Thread = FRunnableThread::Create(Runnable, *FString::Printf(TEXT("ROSBridgeHandlerRunnable_%d"), ThreadInstanceIdx++), 0, TPri_Normal);
 }
 
@@ -390,19 +390,19 @@ void FROSBridgeHandler::ThreadCleanup()
 // Update for each frame / substep
 void FROSBridgeHandler::Process()
 {
-    while (!QueueTask.IsEmpty())
-    {
-        TSharedPtr<FProcessTask> ProcessTask;
-        QueueTask.Dequeue(ProcessTask);
+	while (!QueueTask.IsEmpty())
+	{
+		TSharedPtr<FProcessTask> ProcessTask;
+		QueueTask.Dequeue(ProcessTask);
 
-        TSharedPtr<FROSBridgeMsg> Msg = ProcessTask->Message;
-        UE_LOG(LogROS, Log, TEXT("[%s] Processing task [%s]"),
+		TSharedPtr<FROSBridgeMsg> Msg = ProcessTask->Message;
+		UE_LOG(LogROS, Log, TEXT("[%s] Processing task [%s]"),
 			*FString(__FUNCTION__), *ProcessTask->Topic);
-        ProcessTask->Subscriber->Callback(Msg);
-        // delete Msg;
-    }
+		ProcessTask->Subscriber->Callback(Msg);
+		// delete Msg;
+	}
 
-    LockArrayService.Lock(); // Lock mutex, when access ArrayService
+	LockArrayService.Lock(); // Lock mutex, when access ArrayService
 	for (auto SrvItr(ArrayService.CreateIterator()); SrvItr; ++SrvItr)
 	{
 		if (SrvItr->Get()->bIsResponsed)
@@ -412,17 +412,17 @@ void FROSBridgeHandler::Process()
 			SrvItr.RemoveCurrent();
 		}
 	}
-    LockArrayService.Unlock(); // Unlock mutex of ArrayService
+	LockArrayService.Unlock(); // Unlock mutex of ArrayService
 }
 
 void FROSBridgeHandler::PublishServiceResponse(const FString& InService, const FString& InId,
-    TSharedPtr<FROSBridgeSrv::SrvResponse> InResponse)
+	TSharedPtr<FROSBridgeSrv::SrvResponse> InResponse)
 {
 	if (!Client.IsValid()) return;
 	if (!bIsClientConnected) return;
 
-    FString MsgToSend = FROSBridgeSrv::ServiceResponse(InService, InId, InResponse);
-    Client->Send(MsgToSend); 
+	FString MsgToSend = FROSBridgeSrv::ServiceResponse(InService, InId, InResponse);
+	Client->Send(MsgToSend); 
 }
 
 void FROSBridgeHandler::PublishMsg(const FString& InTopic, TSharedPtr<FROSBridgeMsg> InMsg)
@@ -430,25 +430,25 @@ void FROSBridgeHandler::PublishMsg(const FString& InTopic, TSharedPtr<FROSBridge
 	if (!Client.IsValid()) return;
 	if (!bIsClientConnected) return;
 
-    FString MsgToSend = FROSBridgeMsg::Publish(InTopic, InMsg);
-    Client->Send(MsgToSend);
+	FString MsgToSend = FROSBridgeMsg::Publish(InTopic, InMsg);
+	Client->Send(MsgToSend);
 }
 
 void FROSBridgeHandler::CallService(TSharedPtr<FROSBridgeSrvClient> InSrvClient,
 	TSharedPtr<FROSBridgeSrv::SrvRequest> InRequest,
 	TSharedPtr<FROSBridgeSrv::SrvResponse> InResponse)
 {
-    const FString Name = InSrvClient->GetName(); 
-    const FString Id = Name + TEXT("_request_") + FString::FromInt(FMath::RandRange(0, 10000000));
+	const FString Name = InSrvClient->GetName(); 
+	const FString Id = Name + TEXT("_request_") + FString::FromInt(FMath::RandRange(0, 10000000));
 	//const FString Id = Name + TEXT("_request_") + FGuid::NewGuid().ToString();
-    
+	
 	LockArrayService.Lock(); // Lock mutex, when access ArrayService
-    TSharedPtr<FServiceTask> ServiceTask = MakeShareable<FServiceTask>(
+	TSharedPtr<FServiceTask> ServiceTask = MakeShareable<FServiceTask>(
 		new FServiceTask(InSrvClient, Name, Id, InRequest, InResponse)); 
-    ArrayService.Add(ServiceTask);
-    LockArrayService.Unlock(); // Unlock mutex
+	ArrayService.Add(ServiceTask);
+	LockArrayService.Unlock(); // Unlock mutex
 
-    CallServiceImpl(Name, InRequest, Id); 
+	CallServiceImpl(Name, InRequest, Id); 
 }
 
 void FROSBridgeHandler::CallServiceImpl(const FString& Name, TSharedPtr<FROSBridgeSrv::SrvRequest> Request, const FString& Id)
@@ -456,7 +456,6 @@ void FROSBridgeHandler::CallServiceImpl(const FString& Name, TSharedPtr<FROSBrid
 	if (!Client.IsValid()) return;
 	if (!bIsClientConnected) return;
 
-    FString MsgToSend = FROSBridgeSrv::CallService(Name, Request, Id);
-    Client->Send(MsgToSend); 
+	FString MsgToSend = FROSBridgeSrv::CallService(Name, Request, Id);
+	Client->Send(MsgToSend); 
 }
-

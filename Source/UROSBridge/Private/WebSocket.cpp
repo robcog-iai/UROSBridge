@@ -87,15 +87,15 @@ FWebSocket::FWebSocket(
 
 	check(Context);
 
-    StrInetAddress = ServerAddress.ToString(false);
-    InetPort = ServerAddress.GetPort();
+	StrInetAddress = ServerAddress.ToString(false);
+	InetPort = ServerAddress.GetPort();
 #endif
 }
 
 void FWebSocket::Connect(){
 #if !PLATFORM_HTML5
 	struct lws_client_connect_info ConnectInfo = {
-            Context, TCHAR_TO_ANSI(*StrInetAddress), InetPort, false, "/", TCHAR_TO_ANSI(*StrInetAddress), TCHAR_TO_ANSI(*StrInetAddress), Protocols[1].name, -1, this
+			Context, TCHAR_TO_ANSI(*StrInetAddress), InetPort, false, "/", TCHAR_TO_ANSI(*StrInetAddress), TCHAR_TO_ANSI(*StrInetAddress), Protocols[1].name, -1, this
 	};
 	Wsi = lws_client_connect_via_info(&ConnectInfo);
 	check(Wsi);
@@ -121,20 +121,20 @@ void FWebSocket::Connect(){
 	int32 SizeOfRemoteAddr = sizeof(RemoteAddr);
 
 	// Force ServerAddress into non-const array. API doesn't modify contents but old API still requires non-const string
-    if (WSAStringToAddress(StrInetAddress.GetCharArray().GetData(), AF_INET, NULL, (sockaddr*)&RemoteAddr, &SizeOfRemoteAddr) != 0)
+	if (WSAStringToAddress(StrInetAddress.GetCharArray().GetData(), AF_INET, NULL, (sockaddr*)&RemoteAddr, &SizeOfRemoteAddr) != 0)
 	{
 		UE_LOG(LogHTML5Networking, Warning, TEXT("WSAStringToAddress failed "));
 		return;
 	}
 
 	RemoteAddr.sin_family = AF_INET;
-    RemoteAddr.sin_port = htons(InetPort);
+	RemoteAddr.sin_port = htons(InetPort);
 #else
 	memset(&RemoteAddr, 0, sizeof(RemoteAddr));
 	RemoteAddr.sin_family = AF_INET;
-    RemoteAddr.sin_port = htons(InetPort);
+	RemoteAddr.sin_port = htons(InetPort);
 
-    if (inet_pton(AF_INET, TCHAR_TO_ANSI(*StrInetAddress), &RemoteAddr.sin_addr) != 1)
+	if (inet_pton(AF_INET, TCHAR_TO_ANSI(*StrInetAddress), &RemoteAddr.sin_addr) != 1)
 	{
 		UE_LOG(LogHTML5Networking, Warning, TEXT("inet_pton failed "));
 		return;
@@ -146,7 +146,7 @@ void FWebSocket::Connect(){
 	UE_LOG(LogHTML5Networking, Warning, TEXT(" Connect socket returned %d"), Ret);
 #endif
 
-    IsDestroyed = false; 
+	IsDestroyed = false; 
 }
 
 #if !PLATFORM_HTML5
@@ -173,44 +173,44 @@ bool FWebSocket::Send(uint8* Data, uint32 Size)
 	Buffer.Append((uint8*)&Size, sizeof (uint32)); // insert size.
 	Buffer.Append((uint8*)Data, Size);
 
-    CriticalSection.Lock();
-    OutgoingBuffer.Add(Buffer);
-    OutgoingBufferType.Add( LWS_WRITE_BINARY );
-    CriticalSection.Unlock();
+	CriticalSection.Lock();
+	OutgoingBuffer.Add(Buffer);
+	OutgoingBufferType.Add( LWS_WRITE_BINARY );
+	CriticalSection.Unlock();
 
 	return true;
 }
 
 bool FWebSocket::SendText(uint8* Data, uint32 Size)
 {
-    TArray<uint8> Buffer;
+	TArray<uint8> Buffer;
 
 #if !PLATFORM_HTML5
-    Buffer.AddDefaulted(LWS_PRE); // Reserve space for WS header data
+	Buffer.AddDefaulted(LWS_PRE); // Reserve space for WS header data
 #endif
 
-    // Buffer.Append((uint8*)&Size, sizeof (uint32)); // insert size.
-    Buffer.Append((uint8*)Data, Size);
+	// Buffer.Append((uint8*)&Size, sizeof (uint32)); // insert size.
+	Buffer.Append((uint8*)Data, Size);
 
-    CriticalSection.Lock();
-    OutgoingBuffer.Add(Buffer);
-    OutgoingBufferType.Add( LWS_WRITE_TEXT );
-    CriticalSection.Unlock();
+	CriticalSection.Lock();
+	OutgoingBuffer.Add(Buffer);
+	OutgoingBufferType.Add( LWS_WRITE_TEXT );
+	CriticalSection.Unlock();
 
-    return true;
+	return true;
 }
 
 bool FWebSocket::Send(const FString &StringData)
 {
 #if UE_BUILD_DEBUG
-    UE_LOG(LogROS, Log, TEXT("[WebSocket::Send] Output Message: %s"), *StringData);
+	UE_LOG(LogROS, Log, TEXT("[WebSocket::Send] Output Message: %s"), *StringData);
 #endif
-    FTCHARToUTF8 Conversion(*StringData);
-    uint32 DestLen = Conversion.Length();
-    uint8* Data = (uint8*)Conversion.Get();
+	FTCHARToUTF8 Conversion(*StringData);
+	uint32 DestLen = Conversion.Length();
+	uint8* Data = (uint8*)Conversion.Get();
 
-    // Call FWebSocket::Send(uint8* Data, uint32 Size)
-    return SendText(Data, DestLen);
+	// Call FWebSocket::Send(uint8* Data, uint32 Size)
+	return SendText(Data, DestLen);
 }
 
 void FWebSocket::SetRecieveCallBack(FWebsocketPacketRecievedCallBack CallBack)
@@ -370,45 +370,45 @@ void FWebSocket::SetErrorCallBack(FWebsocketInfoCallBack CallBack)
 void FWebSocket::OnRawRecieve(void* Data, uint32 Size, bool isBinary)
 {
 #if UE_BUILD_DEBUG
-    UE_LOG(LogROS, Warning, TEXT("[WebSocket::OnRawReceive] Message size = %d, isBinary = %d"), Size, isBinary);
+	UE_LOG(LogROS, Warning, TEXT("[WebSocket::OnRawReceive] Message size = %d, isBinary = %d"), Size, isBinary);
 #endif
 
 #if !PLATFORM_HTML5
 
 	RecievedBuffer.Append((uint8*)Data, Size); // consumes all of Data
-    // UE_LOG(LogROS, Warning, TEXT("ReceivedBuffer.Num() = %d"), RecievedBuffer.Num());
+	// UE_LOG(LogROS, Warning, TEXT("ReceivedBuffer.Num() = %d"), RecievedBuffer.Num());
 
-    if (isBinary)
-    {
-        while (RecievedBuffer.Num() > sizeof(uint32))
-        {
-            uint32 BytesToBeRead = *(uint32*)RecievedBuffer.GetData();
-            // UE_LOG(LogROS, Warning, TEXT("BytesToBeRead = %d"), BytesToBeRead);
+	if (isBinary)
+	{
+		while (RecievedBuffer.Num() > sizeof(uint32))
+		{
+			uint32 BytesToBeRead = *(uint32*)RecievedBuffer.GetData();
+			// UE_LOG(LogROS, Warning, TEXT("BytesToBeRead = %d"), BytesToBeRead);
 
-            if (BytesToBeRead <= ((uint32)RecievedBuffer.Num() - sizeof(uint32)))
-            {
-                RecievedCallBack.ExecuteIfBound((void*)((uint8*)RecievedBuffer.GetData() + sizeof(uint32)), BytesToBeRead);
-                RecievedBuffer.RemoveAt(0, sizeof(uint32) + BytesToBeRead );
-            }
-            else
-            {
-                break;
-            }
-        }
-    }
-    else
-    {
-        uint8* Bytes = (uint8*)RecievedBuffer.GetData();
-        RecievedCallBack.ExecuteIfBound((void*)(Bytes), Size);
-        RecievedBuffer.RemoveAt(0, Size );
-    }
+			if (BytesToBeRead <= ((uint32)RecievedBuffer.Num() - sizeof(uint32)))
+			{
+				RecievedCallBack.ExecuteIfBound((void*)((uint8*)RecievedBuffer.GetData() + sizeof(uint32)), BytesToBeRead);
+				RecievedBuffer.RemoveAt(0, sizeof(uint32) + BytesToBeRead );
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+	else
+	{
+		uint8* Bytes = (uint8*)RecievedBuffer.GetData();
+		RecievedCallBack.ExecuteIfBound((void*)(Bytes), Size);
+		RecievedBuffer.RemoveAt(0, Size );
+	}
 
 
 #else // PLATFORM_HTML5
 
-    check(false); // Not modified (Yilong)
+	check(false); // Not modified (Yilong)
 
-    // browser was crashing when using RecievedBuffer...
+	// browser was crashing when using RecievedBuffer...
 
 	check(Data == NULL); // jic this is not obvious, Data will be resigned to Buffer below
 
@@ -429,7 +429,7 @@ void FWebSocket::OnRawRecieve(void* Data, uint32 Size, bool isBinary)
 			Data = (void*)((uint8*)Data + BytesToBeRead);
 			BytesLeft -= BytesToBeRead + sizeof(uint32);
 			if ( (uint8*)Data >= (Buffer+Size)  // hard cap
-				||	BytesLeft == 0	)           // soft limit
+				||	BytesLeft == 0	)		   // soft limit
 			{
 				break;
 			}
@@ -443,13 +443,13 @@ void FWebSocket::OnRawRecieve(void* Data, uint32 Size, bool isBinary)
 
 void FWebSocket::OnRawWebSocketWritable(WebSocketInternal* wsi)
 {
-    if (OutgoingBuffer.Num() == 0 || OutgoingBufferType.Num() == 0)
+	if (OutgoingBuffer.Num() == 0 || OutgoingBufferType.Num() == 0)
 		return;
 
-    CriticalSection.Lock();
+	CriticalSection.Lock();
 	TArray <uint8>& Packet = OutgoingBuffer[0];
-    lws_write_protocol OutType = (lws_write_protocol)OutgoingBufferType[0];
-    CriticalSection.Unlock();
+	lws_write_protocol OutType = (lws_write_protocol)OutgoingBufferType[0];
+	CriticalSection.Unlock();
 
 #if !PLATFORM_HTML5
 
@@ -457,8 +457,8 @@ void FWebSocket::OnRawWebSocketWritable(WebSocketInternal* wsi)
 	uint32 DataToSend = TotalDataSize;
 	while (DataToSend)
 	{
-        int Sent = lws_write(Wsi, Packet.GetData() + LWS_PRE + (DataToSend-TotalDataSize), DataToSend, OutType);
-        ;
+		int Sent = lws_write(Wsi, Packet.GetData() + LWS_PRE + (DataToSend-TotalDataSize), DataToSend, OutType);
+		;
 		if (Sent < 0)
 		{
 			ErrorCallBack.ExecuteIfBound();
@@ -495,44 +495,44 @@ void FWebSocket::OnRawWebSocketWritable(WebSocketInternal* wsi)
 #endif
 
 	// this is very inefficient we need a constant size circular buffer to efficiently not do unnecessary allocations/deallocations.
-    CriticalSection.Lock();
+	CriticalSection.Lock();
 	OutgoingBuffer.RemoveAt(0);
-    OutgoingBufferType.RemoveAt(0);
-    CriticalSection.Unlock();
+	OutgoingBufferType.RemoveAt(0);
+	CriticalSection.Unlock();
 
 }
 
 void FWebSocket::Destroy()
 {
-    RecievedCallBack.Unbind();
-    ConnectedCallBack.Unbind();
-    ErrorCallBack.Unbind();
+	RecievedCallBack.Unbind();
+	ConnectedCallBack.Unbind();
+	ErrorCallBack.Unbind();
 
 #if !PLATFORM_HTML5
 
-    Flush();
+	Flush();
 
-    if (!IsServerSide)
-    {
-        lws_context_destroy(Context);
-        Context = NULL;
-        delete Protocols;
-        Protocols = NULL;
-    }
+	if (!IsServerSide)
+	{
+		lws_context_destroy(Context);
+		Context = NULL;
+		delete Protocols;
+		Protocols = NULL;
+	}
 
 #else // PLATFORM_HTML5
 
-    close(SockFd);
+	close(SockFd);
 
 #endif
 
-    IsDestroyed = true; 
+	IsDestroyed = true; 
 }
 
 FWebSocket::~FWebSocket()
 {
-    if (!IsDestroyed)
-        Destroy(); 
+	if (!IsDestroyed)
+		Destroy(); 
 }
 
 #if !PLATFORM_HTML5
@@ -563,7 +563,7 @@ static int unreal_networking_client(
 	case LWS_CALLBACK_CLIENT_RECEIVE:
 		{
 			// push it on the socket.
-            Socket->OnRawRecieve(In, (uint32)Len, !!lws_frame_is_binary(Wsi));
+			Socket->OnRawRecieve(In, (uint32)Len, !!lws_frame_is_binary(Wsi));
 			check(Socket->Wsi == Wsi);
 			lws_set_timeout(Wsi, NO_PENDING_TIMEOUT, 0);
 			break;

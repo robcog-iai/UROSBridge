@@ -14,10 +14,10 @@
   "IsBetaVersion": false,
   "Installed": false,
   "Modules": [
-    {
-      "Name": "UROSBridge",
-      "Type": "Developer",
-      "LoadingPhase": "Default"
-    }
+	{
+	  "Name": "UROSBridge",
+	  "Type": "Developer",
+	  "LoadingPhase": "Default"
+	}
   ]
 }

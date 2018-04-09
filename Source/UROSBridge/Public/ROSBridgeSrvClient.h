@@ -1,4 +1,4 @@
-// Copyright 2017, Institute for Artificial Intelligence - University of Bremen
+// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
 
 #pragma once
 
@@ -10,11 +10,11 @@
 class UROSBRIDGE_API FROSBridgeSrvClient 
 {
 protected:
-    FString Name; 
-    FString Type; 
+	FString Name; 
+	FString Type; 
 
 public:
-    FROSBridgeSrvClient() 
+	FROSBridgeSrvClient() 
 	{
 	} 
 
@@ -22,19 +22,19 @@ public:
 	{
 	}
 
-    FROSBridgeSrvClient(FString InName, FString InType): Name(InName), Type(InType) 
+	FROSBridgeSrvClient(FString InName, FString InType): Name(InName), Type(InType) 
 	{
 	}
 
-    FString GetName() const 
+	FString GetName() const 
 	{ 
 		return Name; 
 	}
 
-    FString GetType() const 
+	FString GetType() const 
 	{ 
 		return Type; 
 	}
-    
-    virtual void Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> InRequest, TSharedPtr<FROSBridgeSrv::SrvResponse> InResponse) = 0;
+	
+	virtual void Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> InRequest, TSharedPtr<FROSBridgeSrv::SrvResponse> InResponse) = 0;
 }; 
