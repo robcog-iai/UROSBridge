@@ -1,4 +1,4 @@
-// Copyright 2017, Institute for Artificial Intelligence - University of Bremen
+// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
 
 using UnrealBuildTool;
 
@@ -47,8 +47,8 @@ public class UROSBridge : ModuleRules
 				"libWebSockets",
 				"OpenSSL",
 				"zlib",				
-                "Json",
-                "JsonUtilities",
+				"Json",
+				"JsonUtilities",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

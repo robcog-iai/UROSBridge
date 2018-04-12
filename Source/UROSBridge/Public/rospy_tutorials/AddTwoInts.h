@@ -2,7 +2,7 @@
 
 #include "ROSBridgeSrv.h"
 
-namespace beginner_tutorials
+namespace rospy_tutorials
 {
 	class AddTwoInts : public FROSBridgeSrv 
 	{
@@ -10,7 +10,7 @@ namespace beginner_tutorials
 	public:
 		AddTwoInts()
 		{
-			SrvType = TEXT("beginner_tutorials/AddTwoInts");
+			SrvType = TEXT("rospy_tutorials/AddTwoInts");
 		}
 
 		class Request : public SrvRequest 
@@ -20,7 +20,7 @@ namespace beginner_tutorials
 			int64 B; 
 
 		public:
-			Request() { }
+			Request() {}
 			Request(int64 InA, int64 InB) : A(InA), B(InB) {}
 
 			int64 GetA() const 
@@ -115,4 +115,4 @@ namespace beginner_tutorials
 			}
 		};
 	};
-} // namespace beginner_tutorials 
+} // namespace rospy_tutorials 

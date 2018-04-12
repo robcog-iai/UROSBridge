@@ -1,4 +1,4 @@
-// Copyright 2017, Institute for Artificial Intelligence - University of Bremen
+// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
 
 #pragma once
 
@@ -10,23 +10,35 @@
 
 class UROSBRIDGE_API FROSBridgeSrvServer
 {
-
 protected:
-    FString Name; 
-    FString Type; 
+	FString Name;
+	FString Type;
 
 public:
-    FROSBridgeSrvServer() {}
+	FROSBridgeSrvServer() 
+	{
+	}
 
-	virtual ~FROSBridgeSrvServer() {}
+	FROSBridgeSrvServer(FString InName, FString InType):
+		Name(InName), Type(InType)
+	{
+	}
 
-    FROSBridgeSrvServer(FString InName, FString InType): Name(InName), Type(InType) {}
+	virtual ~FROSBridgeSrvServer() 
+	{
+	}
 
-    FString GetName() const { return Name; }
+	FString GetType() const 
+	{
+		return Type; 
+	}
 
-    FString GetType() const { return Type; }
+	FString GetName() const 
+	{
+		return Name;
+	}
 
-    virtual TSharedPtr<FROSBridgeSrv::SrvRequest> FromJson(TSharedPtr<FJsonObject> JsonObject) const = 0;
-    
-    virtual TSharedPtr<FROSBridgeSrv::SrvResponse> Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> InRequest) = 0;
+	virtual TSharedPtr<FROSBridgeSrv::SrvRequest> FromJson(TSharedPtr<FJsonObject> JsonObject) const = 0;
+
+	virtual TSharedPtr<FROSBridgeSrv::SrvResponse> Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> InRequest) = 0;
 }; 

@@ -1,4 +1,4 @@
-// Copyright 2017, Institute for Artificial Intelligence - University of Bremen
+// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
 
 #pragma once
 
@@ -9,30 +9,31 @@
 
 class UROSBRIDGE_API FROSBridgePublisher 
 {
-    FString Type;
-    FString Topic;
+protected:
+	FString Topic;
+	FString Type;
 
 public:
 
-    FROSBridgePublisher(FString InType, FString InTopic):
-        Type(InType), Topic(InTopic)
-    {
-    }
-
-    virtual ~FROSBridgePublisher() {}
-
-    virtual FString GetMessageType() const 
+	FROSBridgePublisher(FString InTopic, FString InType):
+		Topic(InTopic), Type(InType)
 	{
-        return Type;
-    }
+	}
 
-    virtual FString GetMessageTopic() const 
-	{
-        return Topic;
-    }
+	virtual ~FROSBridgePublisher() {}
 
-    virtual FString ToYamlString() const 
+	virtual FString GetType() const 
 	{
-        return TEXT("");
-    }
+		return Type;
+	}
+
+	virtual FString GetTopic() const 
+	{
+		return Topic;
+	}
+
+	virtual FString ToYamlString() const 
+	{
+		return TEXT("");
+	}
 };

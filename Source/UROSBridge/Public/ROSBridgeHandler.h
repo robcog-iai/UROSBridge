@@ -19,211 +19,221 @@ class UROSBRIDGE_API FROSBridgeHandler
 {
 
 private:
-    /* Subclasses */
-    /* FProcessTask: Representation of subscribed messages,
-     *              can be processed by Process()*/
-    struct FProcessTask 
+	/* Subclasses */
+	
+	/** 
+	* FProcessTask: Representation of subscribed messages,
+	*			  can be processed by Process()
+	*/
+	struct FProcessTask 
 	{
-        FProcessTask(
+		FProcessTask(
 			TSharedPtr<FROSBridgeSubscriber> InSubscriber,
-			FString InTopic,
+			const FString& InTopic,
 			TSharedPtr<FROSBridgeMsg> InMessage) :
-            Subscriber(InSubscriber),
+			Subscriber(InSubscriber),
 			Topic(InTopic),
 			Message(InMessage)
 		{
 		}
 
-        TSharedPtr<FROSBridgeSubscriber> Subscriber;
-        FString Topic;
-        TSharedPtr<FROSBridgeMsg> Message;
-    };
+		TSharedPtr<FROSBridgeSubscriber> Subscriber;
+		FString Topic;
+		TSharedPtr<FROSBridgeMsg> Message;
+	};
 
-    /* FServiceTask: Service call results, can be processed by Process() */
-    struct FServiceTask 
+	/**
+	* FServiceTask: Service call results, can be processed by Process() 
+	*/
+	struct FServiceTask 
 	{
-        FServiceTask(
+		FServiceTask(
 			TSharedPtr<FROSBridgeSrvClient> InClient,
-			FString InServiceName,
-            FString InId) :
-            Client(InClient),
+			const FString& InServiceName,
+			const FString& InId) :
+			Client(InClient),
 			Name(InServiceName),
 			Id(InId),
-            bIsResponsed(false),
+			bIsResponsed(false),
 			bIsProcessed(false) 
 		{
 		}
 
-        FServiceTask(
+		FServiceTask(
 			TSharedPtr<FROSBridgeSrvClient> InClient,
-			FString InServiceName,
-            FString InId,
+			const FString& InServiceName,
+			const FString& InId,
 			TSharedPtr<FROSBridgeSrv::SrvRequest> InRequest,
-            TSharedPtr<FROSBridgeSrv::SrvResponse> InResponse) :
-            Client(InClient),
+			TSharedPtr<FROSBridgeSrv::SrvResponse> InResponse) :
+			Client(InClient),
 			Name(InServiceName),
 			Id(InId),
-            Request(InRequest),
+			Request(InRequest),
 			Response(InResponse),
-            bIsResponsed(false),
+			bIsResponsed(false),
 			bIsProcessed(false) 
 		{
 		}
 
-        TSharedPtr<FROSBridgeSrvClient> Client;
-        FString Name;
-        FString Id; 
-        TSharedPtr<FROSBridgeSrv::SrvRequest> Request; 
-        TSharedPtr<FROSBridgeSrv::SrvResponse> Response;
-        bool bIsResponsed; 
-        bool bIsProcessed; 
-    };
+		TSharedPtr<FROSBridgeSrvClient> Client;
+		FString Name;
+		FString Id; 
+		TSharedPtr<FROSBridgeSrv::SrvRequest> Request; 
+		TSharedPtr<FROSBridgeSrv::SrvResponse> Response;
+		bool bIsResponsed; 
+		bool bIsProcessed; 
+	};
 
-    class FROSBridgeHandlerRunnable : public FRunnable 
+	/**
+	* Thread to handle ROS communication
+	*/
+	class FROSBridgeHandlerRunnable : public FRunnable 
 	{
-    public:
-        FROSBridgeHandlerRunnable(
+	public:
+		FROSBridgeHandlerRunnable(
 			FROSBridgeHandler* ROSBridgeHandler) :
-            StopCounter(0),
+			StopCounter(0),
 			Handler(ROSBridgeHandler)
-        {
-        }
+		{
+		}
 
-        // Create connection, bind functions to WebSocket Client, and Connect.
-        virtual bool Init() override;
+		// Create connection, bind functions to WebSocket Client, and Connect.
+		virtual bool Init() override;
 
-        // Process subscribed messages using "Send"
-        virtual uint32 Run() override;
+		// Process subscribed messages using "Send"
+		virtual uint32 Run() override;
 
-        // Set the stop counter and disconnect
-        virtual void Stop() override;
+		// Set the stop counter and disconnect
+		virtual void Stop() override;
 
-    private:
-        // Increase the StopCounter to stop the Runnable thread.
-        FThreadSafeCounter StopCounter;
-        FROSBridgeHandler* Handler;
-    };
+		// Exits the runnable object. Called in the context of the aggregating thread to perform any cleanup.
+		virtual void Exit() override;
 
-    FString Host;
-    int32 Port;
-	bool bIsConnected;
-    float ClientInterval;
+	private:
+		// Increase the StopCounter to stop the Runnable thread.
+		FThreadSafeCounter StopCounter;
+		FROSBridgeHandler* Handler;
+	};
+	
+	FString Host;
+	int32 Port;
+	float ClientInterval;
 
-    // TSharedPtr<FWebSocket> Client;
-    TSharedPtr<FWebSocket> Client;
-    FThreadSafeBool bIsClientConnected;
+	// TSharedPtr<FWebSocket> Client;
+	TSharedPtr<FWebSocket> Client;
+	FThreadSafeBool bIsClientConnected;
 
-    TArray< TSharedPtr<FROSBridgeSubscriber> > ListSubscribers;
-    TArray< TSharedPtr<FROSBridgePublisher> >  ListPublishers;
-    TArray< TSharedPtr<FROSBridgeSrvServer> > ListServiceServer;
-    TQueue< TSharedPtr<FProcessTask> > QueueTask;
-    TArray< TSharedPtr<FServiceTask> > ArrayService;
+	// Pending Subscribers/Publishes/Server Services have not yet been sent to ROSBridge
+	TArray< TSharedPtr<FROSBridgeSubscriber> > ListPendingSubscribers;
+	TArray< TSharedPtr<FROSBridgePublisher> >  ListPendingPublishers;
+	TArray< TSharedPtr<FROSBridgeSrvServer> > ListPendingServiceServers;
 
-    FROSBridgeHandlerRunnable* Runnable;
-    FRunnableThread* Thread;
+	TArray< TSharedPtr<FROSBridgeSubscriber> > ListSubscribers;
+	TArray< TSharedPtr<FROSBridgePublisher> >  ListPublishers;
+	TArray< TSharedPtr<FROSBridgeSrvServer> > ListServiceServers;
 
-    FCriticalSection LockTask; 
-    FCriticalSection LockArrayService;
+	TQueue< TSharedPtr<FProcessTask> > QueueTask;
+	TArray< TSharedPtr<FServiceTask> > ArrayService;
+
+	FROSBridgeHandlerRunnable* Runnable;
+	FRunnableThread* Thread;
+
+	FCriticalSection LockTask; 
+	FCriticalSection LockArrayService;
+
+	/** Index used to disambiguate thread instances for stats reasons */
+	static int32 ThreadInstanceIdx;
 
 	// Called when the WebSocket connection succeeds
 	void OnConnection();
 
-    // When message comes, create FRenderTask instances and push it
-    // into QueueTask.
-    void OnMessage(void* Data, int32 Length);
+	// When message comes, create FProcessTask instances and push it into QueueTask.
+	void OnMessage(void* Data, int32 Length);
 
+	void CallServiceImpl(const FString& Name, TSharedPtr<FROSBridgeSrv::SrvRequest> Request, const FString& Id);
 
-    void CallServiceImpl(FString Name, TSharedPtr<FROSBridgeSrv::SrvRequest> Request, FString Id);
-
-    // friendship declaration
-    friend class FROSBridgeHandlerRunnable;
+	// Friendship declaration
+	friend class FROSBridgeHandlerRunnable;
 
 public:
-    FROSBridgeHandler(FString InHost, int32 InPort):
-        Host(InHost), Port(InPort),
-        ClientInterval(0.01),
-		bIsClientConnected(false),
-		bIsConnected(false)
-    {
-    }
-
-    float GetClientInterval() const
-    {
-        return ClientInterval;
-    }
-
-    void SetClientInterval(float NewInterval)
-    {
-        ClientInterval = NewInterval;
-    }
-
-	bool IsConnected() const
+	FROSBridgeHandler(const FString& InHost, int32 InPort):
+		Host(InHost), Port(InPort),
+		ClientInterval(0.01),
+		bIsClientConnected(false)
 	{
-		return bIsConnected;
 	}
 
-	void SetConnected(bool bVal)
+	~FROSBridgeHandler()
 	{
-		bIsConnected = bVal;
+		ThreadCleanup();
 	}
 
-    bool IsClientConnected() const
-    {
-        return bIsClientConnected;
-    }
+	float GetClientInterval() const
+	{
+		return ClientInterval;
+	}
 
-    void SetClientConnected(bool bVal)
-    {
-        bIsClientConnected.AtomicSet(bVal);
-    }
+	void SetClientInterval(float NewInterval)
+	{
+		ClientInterval = NewInterval;
+	}
 
-    FString GetHost() const
-    {
-        return Host;
-    }
+	bool IsClientConnected() const
+	{
+		return bIsClientConnected;
+	}
 
-    int32 GetPort() const
-    {
-        return Port;
-    }
+	void SetClientConnected(bool bVal)
+	{
+		bIsClientConnected.AtomicSet(bVal);
+	}
 
-    void AddSubscriber(TSharedPtr<FROSBridgeSubscriber> InSubscriber)
-    {
-        ListSubscribers.Add(InSubscriber);
-    }
+	FString GetHost() const
+	{
+		return Host;
+	}
 
-    void AddPublisher(TSharedPtr<FROSBridgePublisher> InPublisher)
-    {
-        ListPublishers.Add(InPublisher);
-    }
+	int32 GetPort() const
+	{
+		return Port;
+	}
 
-    void AddServiceServer(TSharedPtr<FROSBridgeSrvServer> InServer)
-    {
-        ListServiceServer.Add(InServer);
-    }
+	void AddSubscriber(TSharedPtr<FROSBridgeSubscriber> InSubscriber)
+	{
+		ListPendingSubscribers.Add(InSubscriber);
+	}
 
-    // Publish service response, used in service server
-    void PublishServiceResponse(FString Service, FString Id,
-        TSharedPtr<FROSBridgeSrv::SrvResponse> Response); 
+	void AddPublisher(TSharedPtr<FROSBridgePublisher> InPublisher)
+	{
+		ListPendingPublishers.Add(InPublisher);
+	}
 
-    // Publish ROS message to topics
-    void PublishMsg(FString Topic, TSharedPtr<FROSBridgeMsg> Msg);
+	void AddServiceServer(TSharedPtr<FROSBridgeSrvServer> InServer)
+	{
+		ListPendingServiceServers.Add(InServer);
+	}
 
-    // Call external ROS service
-    void CallService(TSharedPtr<FROSBridgeSrvClient> SrvClient,
-        TSharedPtr<FROSBridgeSrv::SrvRequest> Request,
-        TSharedPtr<FROSBridgeSrv::SrvResponse> Response);
+	// Publish service response, used in service server
+	void PublishServiceResponse(const FString& Service, const FString& Id,
+		TSharedPtr<FROSBridgeSrv::SrvResponse> Response); 
 
-    // Create runnable instance and run the thread;
-    void Connect();
+	// Publish ROS message to topics
+	void PublishMsg(const FString& Topic, TSharedPtr<FROSBridgeMsg> Msg);
 
-    // Unsubscribe / Unadvertise all messages
-    // Stop the thread
-    void Disconnect();
+	// Call external ROS service
+	void CallService(TSharedPtr<FROSBridgeSrvClient> SrvClient,
+		TSharedPtr<FROSBridgeSrv::SrvRequest> Request,
+		TSharedPtr<FROSBridgeSrv::SrvResponse> Response);
 
-	DEPRECATED(4.18, "Render() is deprecated, use Process() instead.")
-	void Render();
+	// Create runnable instance and run the thread;
+	void Connect();
 
-    // Update for each frame / substep
-    void Process();
+	// Unsubscribe / Unadvertise all messages, stop the thread
+	void Disconnect();
+
+	// Stop runnable / thread / client
+	void ThreadCleanup();
+
+	// Update for each frame / substep
+	void Process();
 };
