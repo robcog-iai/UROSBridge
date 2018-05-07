@@ -450,7 +450,7 @@ void FWebSocket::OnRawWebSocketWritable(WebSocketInternal* wsi)
 		;
 		if (Sent < 0)
 		{
-			ErrorCallBack.ExecuteIfBound();
+			ErrorCallBack.Broadcast();
 			return;
 		}
 		if ((uint32)Sent < DataToSend)
@@ -474,7 +474,7 @@ void FWebSocket::OnRawWebSocketWritable(WebSocketInternal* wsi)
 		{
 			// we are caught with our pants down. fail.
 			UE_LOG(LogHTML5Networking, Error, TEXT("Could not write %d bytes"), Packet.Num());
-			ErrorCallBack.ExecuteIfBound();
+			ErrorCallBack.Broadcast();
 			return;
 		}
 		UE_CLOG((uint32)Result < DataToSend, LogHTML5Networking, Warning, TEXT("Could not write all '%d' bytes to socket"), DataToSend);
@@ -493,9 +493,9 @@ void FWebSocket::OnRawWebSocketWritable(WebSocketInternal* wsi)
 
 void FWebSocket::Destroy()
 {
-	RecievedCallBack.Unbind();
-	ConnectedCallBack.Unbind();
-	ErrorCallBack.Unbind();
+    RecievedCallBack.Unbind();
+    ConnectedCallBack.Clear();
+    ErrorCallBack.Clear();
 
 #if !PLATFORM_HTML5
 
@@ -538,14 +538,14 @@ static int unreal_networking_client(
 	{
 	case LWS_CALLBACK_CLIENT_ESTABLISHED:
 		{
-			Socket->ConnectedCallBack.ExecuteIfBound();
+			Socket->ConnectedCallBack.Broadcast();
 			lws_set_timeout(Wsi, NO_PENDING_TIMEOUT, 0);
 			check(Socket->Wsi == Wsi);
 		}
 		break;
 	case LWS_CALLBACK_CLIENT_CONNECTION_ERROR:
 		{
-			Socket->ErrorCallBack.ExecuteIfBound();
+			Socket->ErrorCallBack.Broadcast();
 			return -1;
 		}
 		break;
@@ -567,7 +567,7 @@ static int unreal_networking_client(
 		}
 	case LWS_CALLBACK_CLOSED:
 		{
-			Socket->ErrorCallBack.ExecuteIfBound();
+			Socket->ErrorCallBack.Broadcast();
 			return -1;
 		}
 	}

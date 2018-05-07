@@ -15,6 +15,7 @@
 
 #include "WebSocket.h"
 
+
 class UROSBRIDGE_API FROSBridgeHandler 
 {
 
@@ -144,6 +145,14 @@ private:
 	/** Index used to disambiguate thread instances for stats reasons */
 	static int32 ThreadInstanceIdx;
 
+	/** Callback delgate that will be triggerd when Error accurs
+		User of the RosBridgeHandler can add their own callbacks by passing a 'FWebsocketInfoCallBack' to the Constructor */	
+	FWebsocketInfoCallBack ErrorCallbacks;
+
+	/** Callback delgate that will be triggerd when connection is established
+	User of the RosBridgeHandler can add their own callbacks by passing a 'FWebsocketInfoCallBack' to the Constructor */
+	FWebsocketInfoCallBack ConnectedCallbacks;
+
 	// Called when the WebSocket connection succeeds
 	void OnConnection();
 
@@ -163,6 +172,15 @@ public:
 	{
 	}
 
+	//This creates a Handler with a custom ErrorCallback
+	FROSBridgeHandler(const FString& InHost, int32 InPort, FWebsocketInfoCallBack UserErrorCallbacks, FWebsocketInfoCallBack UserConnectedCallbacks) :
+		Host(InHost), Port(InPort),
+		ErrorCallbacks(UserErrorCallbacks),
+		ConnectedCallbacks(UserConnectedCallbacks),
+		ClientInterval(0.01),
+		bIsClientConnected(false)
+	{
+	}
 	~FROSBridgeHandler()
 	{
 		ThreadCleanup();
