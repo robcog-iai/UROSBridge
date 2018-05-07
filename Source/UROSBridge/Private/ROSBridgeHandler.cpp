@@ -40,15 +40,11 @@ bool FROSBridgeHandler::FROSBridgeHandlerRunnable::Init()
 	Handler->Client->SetRecieveCallBack(ReceivedCallback);
 
 	// Bind Connected callback
-	FWebsocketInfoCallBack ConnectedCallback;
-	ConnectedCallback.BindRaw(this->Handler, &FROSBridgeHandler::OnConnection);
-	Handler->Client->SetConnectedCallBack(ConnectedCallback);
+	Handler->ConnectedCallbacks.AddRaw(this->Handler, &FROSBridgeHandler::OnConnection);
+	Handler->Client->SetConnectedCallBack(Handler->ConnectedCallbacks);
 
-	// Bind Error callback
-	FWebsocketInfoCallBack ErrorCallback;
-	ErrorCallback.BindStatic(&OnError);
-	Handler->Client->SetErrorCallBack(ErrorCallback);
-
+	Handler->ErrorCallbacks.AddStatic(&OnError);
+	Handler->Client->SetErrorCallBack(Handler->ErrorCallbacks);
 	Handler->Client->Connect();
 
 	return true;
