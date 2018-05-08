@@ -6,13 +6,12 @@ void UROSBridgeGameInstance::OnStart()
 {
 	Super::OnStart();
 
-	UE_LOG(LogROS, Warning, TEXT("OnStart() of GameInstance"));
-	//UE_LOG(LogROS, Log, TEXT("[%s] Websocket server connected."), *FString(__FUNCTION__));
 	if (!bConnectToROS) {
 		UE_LOG(LogTemp, Warning, TEXT("ConnectToROS is false in GameInstance settings. Don't connect to rosbridge..."));
 		return;
 	}
 
+	UE_LOG(LogROS, Log, TEXT("Connecting to %s:%d via GameInstance"), *ROSBridgeServerHost, ROSBridgeServerPort);
 	ROSHandler = MakeShareable<FROSBridgeHandler>(new FROSBridgeHandler(ROSBridgeServerHost, ROSBridgeServerPort));
 
 	ROSHandler->Connect();
@@ -20,7 +19,6 @@ void UROSBridgeGameInstance::OnStart()
 }
 
 void UROSBridgeGameInstance::Tick(float DeltaTime) {
-	UE_LOG(LogROS, Warning, TEXT("Tick() of GameInstance"));
 	if (ROSHandler.IsValid())
 		ROSHandler->Process();
 
