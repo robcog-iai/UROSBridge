@@ -9,6 +9,7 @@ so you don't need to put your connection parameters into your code.
 #### Configuration
 - Install UROSBridge as usual
 - Add a new Blueprint to your Project:
+
 ![Create Blueprint](Img/gameinstance_create_bp.png)
 - Let it derive from ROSBridgeGameInstance to get the basic handler logic and parameter handling:
 ![Create Blueprint](Img/gameinstance_bp_derive_from.png)
