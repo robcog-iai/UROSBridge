@@ -5,11 +5,11 @@
 #include "Core.h"
 #include "Json.h"
 
-class UROSBRIDGE_API FROSBridgeSrv 
+class UROSBRIDGE_API FROSBridgeSrv
 {
 public:
-	class SrvRequest; 
-	class SrvResponse; 
+	class SrvRequest;
+	class SrvResponse;
 
 protected:
 	FString SrvType;
@@ -25,10 +25,10 @@ public:
 		virtual ~Message() {}
 
 		// Need Implementation
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) = 0; 
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) = 0;
 
-		// Need Implementation 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const 
+		// Need Implementation
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const
 		{
 			TSharedPtr<FJsonObject> NewObject = MakeShareable<FJsonObject>(new FJsonObject());
 			return NewObject;
@@ -39,7 +39,7 @@ public:
 			return TEXT("{}");
 		}
 
-		virtual FString ToYamlString() const 
+		virtual FString ToYamlString() const
 		{
 			FString OutputString;
 			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
@@ -48,19 +48,21 @@ public:
 		}
 	};
 
-	class SrvRequest : public Message 
+	class SrvRequest : public Message
 	{
 	};
 
-	class SrvResponse : public Message 
+	class SrvResponse : public Message
 	{
+     public:
+		bool bResult = true;
 	};
 
-	FROSBridgeSrv() 
+	FROSBridgeSrv()
 	{
 	}
 
-	virtual ~FROSBridgeSrv() 
+	virtual ~FROSBridgeSrv()
 	{
 	}
 
@@ -76,9 +78,10 @@ public:
 
 	static FORCEINLINE FString ServiceResponse(const FString& InService, const FString& InId, TSharedPtr<FROSBridgeSrv::SrvResponse> InResponse)
 	{
+		FString Result = InResponse->bResult ? TEXT("true") : TEXT("false");
 		return TEXT("{\"op\": \"service_response\", \"service\": \"") + InService + TEXT("\", ") +
 			TEXT("\"values\" : ") + InResponse->ToYamlString() + TEXT(", ") +
-			TEXT("\"id\" : \"") + InId + TEXT("\" }");
+			TEXT("\"id\" : \"") + InId + TEXT("\", \"result\" : ") + Result + TEXT("}");
 	}
 
 	static FORCEINLINE FString CallService(const FString& InService, TSharedPtr<FROSBridgeSrv::SrvRequest> InRequest)
