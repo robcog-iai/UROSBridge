@@ -1,5 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
 #pragma once
 
 #include "CoreMinimal.h"
@@ -21,23 +20,29 @@ class UROSBRIDGE_API UROSBridgeGameInstance : public UGameInstance, public FTick
 {
 	GENERATED_BODY()
 
-	void OnStart() override;
+	// Default constructor
+	UROSBridgeGameInstance();
+
+	/* UGameInstance interface */
+	// Called when the game instance is started either normally or through PIE
+	virtual void OnStart() override;
+	// Cleanup opportunity when shutting down
+	virtual void Shutdown() override;
 	
+	/* FTickableGameObject interface */
 	virtual void Tick(float DeltaTime) override;
 	virtual bool IsTickable() const override;
 	virtual TStatId GetStatId() const override;
-	
-	virtual void Shutdown() override;
 
 public:
 	TSharedPtr<FROSBridgeHandler> ROSHandler;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
-	FString ROSBridgeServerHost = "127.0.0.1";
+	FString ROSBridgeServerHost;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
-	int32 ROSBridgeServerPort = 9090;
+	int32 ROSBridgeServerPort;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
-	bool bConnectToROS = true;
+	bool bConnectToROS;
 };

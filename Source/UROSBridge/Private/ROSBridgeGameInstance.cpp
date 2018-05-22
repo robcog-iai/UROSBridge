@@ -1,12 +1,22 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
 
 #include "ROSBridgeGameInstance.h"
 
+// Default constructor
+UROSBridgeGameInstance::UROSBridgeGameInstance()
+{
+	ROSBridgeServerHost = "127.0.0.1";
+	ROSBridgeServerPort = 9090;
+	bConnectToROS = true;
+}
+
+// Called when the game instance is started either normally or through PIE
 void UROSBridgeGameInstance::OnStart()
 {
 	Super::OnStart();
 
-	if (!bConnectToROS) {
+	if (!bConnectToROS) 
+	{
 		UE_LOG(LogTemp, Warning, TEXT("ConnectToROS is false in GameInstance settings. Don't connect to rosbridge..."));
 		return;
 	}
@@ -15,25 +25,32 @@ void UROSBridgeGameInstance::OnStart()
 	ROSHandler = MakeShareable<FROSBridgeHandler>(new FROSBridgeHandler(ROSBridgeServerHost, ROSBridgeServerPort));
 
 	ROSHandler->Connect();
-
 }
 
-void UROSBridgeGameInstance::Tick(float DeltaTime) {
+// Cleanup opportunity when shutting down
+void UROSBridgeGameInstance::Shutdown()
+{
 	if (ROSHandler.IsValid())
-		ROSHandler->Process();
-
-	return;
+	{
+		ROSHandler->Disconnect();
+	}
+	Super::Shutdown();
 }
-bool UROSBridgeGameInstance::IsTickable() const {
+
+void UROSBridgeGameInstance::Tick(float DeltaTime) 
+{
+	if (ROSHandler.IsValid())
+	{
+		ROSHandler->Process();
+	}
+}
+
+bool UROSBridgeGameInstance::IsTickable() const 
+{
 	return true;
 }
-TStatId UROSBridgeGameInstance::GetStatId() const {
+
+TStatId UROSBridgeGameInstance::GetStatId() const 
+{
 	return Super::GetStatID();
-}
-
-void UROSBridgeGameInstance::Shutdown() {
-	if (ROSHandler.IsValid())
-		ROSHandler->Disconnect();
-
-	Super::Shutdown();
 }
