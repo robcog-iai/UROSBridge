@@ -16,17 +16,17 @@
 #include "WebSocket.h"
 
 
-class UROSBRIDGE_API FROSBridgeHandler 
+class UROSBRIDGE_API FROSBridgeHandler
 {
 
 private:
 	/* Subclasses */
-	
-	/** 
+
+	/**
 	* FProcessTask: Representation of subscribed messages,
 	*			  can be processed by Process()
 	*/
-	struct FProcessTask 
+	struct FProcessTask
 	{
 		FProcessTask(
 			TSharedPtr<FROSBridgeSubscriber> InSubscriber,
@@ -44,9 +44,9 @@ private:
 	};
 
 	/**
-	* FServiceTask: Service call results, can be processed by Process() 
+	* FServiceTask: Service call results, can be processed by Process()
 	*/
-	struct FServiceTask 
+	struct FServiceTask
 	{
 		FServiceTask(
 			TSharedPtr<FROSBridgeSrvClient> InClient,
@@ -56,7 +56,7 @@ private:
 			Name(InServiceName),
 			Id(InId),
 			bIsResponsed(false),
-			bIsProcessed(false) 
+			bIsProcessed(false)
 		{
 		}
 
@@ -72,23 +72,23 @@ private:
 			Request(InRequest),
 			Response(InResponse),
 			bIsResponsed(false),
-			bIsProcessed(false) 
+			bIsProcessed(false)
 		{
 		}
 
 		TSharedPtr<FROSBridgeSrvClient> Client;
 		FString Name;
-		FString Id; 
-		TSharedPtr<FROSBridgeSrv::SrvRequest> Request; 
+		FString Id;
+		TSharedPtr<FROSBridgeSrv::SrvRequest> Request;
 		TSharedPtr<FROSBridgeSrv::SrvResponse> Response;
-		bool bIsResponsed; 
-		bool bIsProcessed; 
+		bool bIsResponsed;
+		bool bIsProcessed;
 	};
 
 	/**
 	* Thread to handle ROS communication
 	*/
-	class FROSBridgeHandlerRunnable : public FRunnable 
+	class FROSBridgeHandlerRunnable : public FRunnable
 	{
 	public:
 		FROSBridgeHandlerRunnable(
@@ -115,7 +115,7 @@ private:
 		FThreadSafeCounter StopCounter;
 		FROSBridgeHandler* Handler;
 	};
-	
+
 	FString Host;
 	int32 Port;
 	float ClientInterval;
@@ -139,14 +139,14 @@ private:
 	FROSBridgeHandlerRunnable* Runnable;
 	FRunnableThread* Thread;
 
-	FCriticalSection LockTask; 
+	FCriticalSection LockTask;
 	FCriticalSection LockArrayService;
 
 	/** Index used to disambiguate thread instances for stats reasons */
 	static int32 ThreadInstanceIdx;
 
 	/** Callback delgate that will be triggerd when Error accurs
-		User of the RosBridgeHandler can add their own callbacks by passing a 'FWebsocketInfoCallBack' to the Constructor */	
+		User of the RosBridgeHandler can add their own callbacks by passing a 'FWebsocketInfoCallBack' to the Constructor */
 	FWebsocketInfoCallBack ErrorCallbacks;
 
 	/** Callback delgate that will be triggerd when connection is established
@@ -233,7 +233,7 @@ public:
 
 	// Publish service response, used in service server
 	void PublishServiceResponse(const FString& Service, const FString& Id,
-		TSharedPtr<FROSBridgeSrv::SrvResponse> Response); 
+		TSharedPtr<FROSBridgeSrv::SrvResponse> Response);
 
 	// Publish ROS message to topics
 	void PublishMsg(const FString& Topic, TSharedPtr<FROSBridgeMsg> Msg);
