@@ -7,34 +7,34 @@
 
 #include "ROSBridgeSrv.h"
 
-class UROSBRIDGE_API FROSBridgeSrvClient 
+class UROSBRIDGE_API FROSBridgeSrvClient
 {
 protected:
-	FString Name; 
-	FString Type; 
+	FString Name;
+	FString Type;
 
 public:
-	FROSBridgeSrvClient() 
-	{
-	} 
-
-	virtual ~FROSBridgeSrvClient() 
+	FROSBridgeSrvClient()
 	{
 	}
 
-	FROSBridgeSrvClient(FString InName, FString InType): Name(InName), Type(InType) 
+	virtual ~FROSBridgeSrvClient()
 	{
 	}
 
-	FString GetName() const 
-	{ 
-		return Name; 
+	FROSBridgeSrvClient(FString InName, FString InType): Name(InName), Type(InType)
+	{
 	}
 
-	FString GetType() const 
-	{ 
-		return Type; 
+	FString GetName() const
+	{
+		return Name;
 	}
-	
-	virtual void Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> InRequest, TSharedPtr<FROSBridgeSrv::SrvResponse> InResponse) = 0;
-}; 
+
+	FString GetType() const
+	{
+		return Type;
+	}
+
+	virtual void Callback(TSharedPtr<FROSBridgeSrv::SrvResponse> InResponse) = 0;
+};
