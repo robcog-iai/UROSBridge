@@ -224,15 +224,12 @@ public:
     {          
     }
 
-    void Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> InRequest, TSharedPtr<FROSBridgeSrv::SrvResponse> InResponse) override
+    void Callback(TSharedPtr<FROSBridgeSrv::SrvResponse> InResponse) override
     {
-        // Downcast to convert InRequest and InResponse to corresponding types
-        TSharedPtr<rospy_tutorials::AddTwoInts::Request> Request =
-            StaticCastSharedPtr<rospy_tutorials::AddTwoInts::Request>(InRequest);
         TSharedPtr<rospy_tutorials::AddTwoInts::Response> Response =
             StaticCastSharedPtr<rospy_tutorials::AddTwoInts::Response>(InResponse);
 
-        UE_LOG(LogTemp, Log, TEXT("Add Two Ints: %d + %d = %d"), Request->GetA(), Request->GetB(), Response->GetSum());
+        UE_LOG(LogTemp, Log, TEXT("Add Two Ints Sum = %d"), Response->GetSum());
     }
 };
 ```
