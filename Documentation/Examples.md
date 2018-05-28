@@ -102,7 +102,7 @@ void AROSActor::BeginPlay()
 
 #### Subscribe to Topics
 
-This plugin uses `FROSBridgeSubscriber` class interface to subscribe to topics. We need to extend a `FROSBridgeSubscriber` subclass for each topic we would like to subscribe to, implementing the constructor, destructor, `ParseMessage` function and `Callback` function.
+This plugin uses `FROSBridgeSubscriber` class interface to subscribe to topics. We need to extend a `FROSBridgeSubscriber` subclass for each topic we would like to subscribe to, implementing the constructor, destructor, `ParseMessage` function and `Callback` function. To add the code below we can create new header and cpp files whether manually or using the UE4 Editor to create an empty C++ class. Then we can include the new created header in the Actor's code. 
 
 ##### Include Messages
 
@@ -124,7 +124,7 @@ class FROSStringSubScriber : public FROSBridgeSubscriber
 
 ##### Constructor
 
-In class constructor, we need to call the parent class constructor to set type and topic for this subscriber.
+In class constructor, we need to call the parent class constructor to set type and topic for this subscriber. In the example below `InTopic` refers to the Topic and `TEXT("std_msgs/String")` refers to a string message type.
 
 ```cpp
 FROSStringSubScriber::FROSStringSubScriber(const FString& InTopic):
@@ -163,7 +163,7 @@ TSharedPtr<FROSBridgeMsg> FROSStringSubScriber::ParseMessage
 `Callback` is the callback function called when a new message comes and is successfully parsed to a `ROSBridgeMsg` instance. In this function, we need to first down-cast the `FROSBridgeMsg` pointer to a pointer of its subclass.
 
 ```cpp
-void Callback(TSharedPtr<FROSBridgeMsg> InMsg)
+void FROSStringSubScriber::Callback(TSharedPtr<FROSBridgeMsg> InMsg)
 {
     TSharedPtr<std_msgs::String> StringMessage = StaticCastSharedPtr<std_msgs::String>(InMsg);
     // downcast to subclass using StaticCastSharedPtr function

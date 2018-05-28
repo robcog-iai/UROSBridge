@@ -14,10 +14,10 @@ Most standard ros msgs are supported (`std_msgs`, `sensor_msgs`, `geometry_msgs`
 
 #### How to include the plugin
 
--   Add the plugin to your project (e.g `MyProject/Plugins/UROSBridge`)      
+-   Add the plugin to your project (e.g `MyProjectName/Plugins/UROSBridge`)      
 
 -   Add the module dependency to your module (Project, Plugin); In the
-    `MyModule.Build.cs` file:  
+    `MyModule.Build.cs` file (e.g `MyProjectName/Source/MyProjectName/MyProjectName.Build.cs`):  
 
 		PublicDependencyModuleNames.AddRange(  
 		new string[]  
