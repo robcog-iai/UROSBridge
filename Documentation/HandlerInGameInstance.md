@@ -15,6 +15,7 @@ so you don't need to put your connection parameters into your code.
 ![Create Blueprint](Img/gameinstance_bp_derive_from.png)
 - Open your newly created Blueprint and set the connection parameters for UROSBridge:
 ![Create Blueprint](Img/gameinstance_bp_settings.png)
+- **Set your new game instance in your project settings: Edit -> Project Settings -> Maps & Modes -> Game Instance Class**
 
 #### Usage
 As an example, we'll set up the game instance and create an Actor that publishes something on /talker on every Tick():
