@@ -28,6 +28,7 @@ public class UROSBridge : ModuleRules
 			new string[]
 			{
 				"Core",
+				"Sockets"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -42,7 +43,6 @@ public class UROSBridge : ModuleRules
 				"SlateCore",
 				"Core",
 				"Networking",
-				"Sockets",
 				"PacketHandler",
 				"libWebSockets",
 				"OpenSSL",

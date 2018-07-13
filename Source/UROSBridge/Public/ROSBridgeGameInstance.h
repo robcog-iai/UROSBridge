@@ -3,6 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include "Tickable.h"
 #include "ROSBridgeHandler.h"
 
 #include "ROSBridgeGameInstance.generated.h"
