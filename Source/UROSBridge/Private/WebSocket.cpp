@@ -4,6 +4,7 @@
 #include "UROSBridge.h"
 #include "HTML5NetworkingPrivate.h"
 #include "IPAddress.h"
+#include "FBson.h"
 
 #if PLATFORM_HTML5
 #include <errno.h>
@@ -377,8 +378,8 @@ void FWebSocket::OnRawRecieve(void* Data, uint32 Size, bool isBinary)
 
 			if (BytesToBeRead <= ((uint32)RecievedBuffer.Num() - sizeof(uint32)))
 			{
-				RecievedCallBack.ExecuteIfBound((void*)((uint8*)RecievedBuffer.GetData() + sizeof(uint32)), BytesToBeRead);
-				RecievedBuffer.RemoveAt(0, sizeof(uint32) + BytesToBeRead );
+				RecievedCallBack.ExecuteIfBound((void*)RecievedBuffer.GetData(), BytesToBeRead);
+				RecievedBuffer.RemoveAt(0, BytesToBeRead );
 			}
 			else
 			{

@@ -5,7 +5,6 @@
 #include "Core.h"
 #include "Modules/ModuleManager.h"
 #include "Networking.h"
-//#include "Json.h"
 #include "FBson.h"
 
 int32 FROSBridgeHandler::ThreadInstanceIdx = 0;
@@ -156,51 +155,18 @@ void FROSBridgeHandler::FROSBridgeHandlerRunnable::Exit()
 // Callback function when message comes from WebSocket
 void FROSBridgeHandler::OnMessage(void* InData, int32 InLength)
 {
-	//UE_LOG(LogTemp, Log, TEXT("%s"), *(BsonObject->PrintAsJson()));
-
-
-	// UNCOMMENTING THE LINE AFTER THIS ONE KILLS UNREAL ENGINE
-	//TSharedPtr< FBsonObject > BsonObject = MakeShareable(new FBsonObject((uint8_t*)InData, InLength));
-
 	
-	//bool *p = (bool *) InData;
-	//size_t i;
-	//FString Result = "";
-	//for (i = 0; i < 1024; ++i)
-	//	Result.Append(FString(p[i] ? TEXT("1") : TEXT("0")));
-	//UE_LOG(LogTemp, Log, TEXT("%s"), *Result);
-	
-	char * CharMessage = new char [InLength + 1];
-	memcpy(CharMessage, InData, InLength);
-	CharMessage[InLength] = 0;
-	const FString JsonMessage = UTF8_TO_TCHAR(CharMessage);
-	delete[] CharMessage;
+	TSharedPtr< FBsonObject > BsonObject = MakeShareable(new FBsonObject((uint8_t*)InData, InLength));
 
-#if UE_BUILD_DEBUG
-UE_LOG(LogROS, Log, TEXT("[%s] Json Message: %s"), *FString(__FUNCTION__), *JsonMessage);
-#endif
-
-	// Parse Json Message Here
-	TSharedRef< TJsonReader<> > Reader = TJsonReaderFactory<>::Create(JsonMessage);
-	TSharedPtr< FJsonObject > JsonObject;
-	bool DeserializeState = FJsonSerializer::Deserialize(Reader, JsonObject);
-	if (!DeserializeState)
-	{
-		UE_LOG(LogROS, Error, TEXT("[%s] Deserialization Error. Message Contents: %s"),
-			*FString(__FUNCTION__), *JsonMessage);
-		return;
-	}
-
-
-	const FString Op = JsonObject->GetStringField(TEXT("op"));
+	const FString Op = BsonObject->GetStringField(TEXT("op"));
 
 	if (Op == TEXT("publish")) // Message
 	{
-		const FString Topic = JsonObject->GetStringField(TEXT("topic"));
+		const FString Topic = BsonObject->GetStringField(TEXT("topic"));
 		// UE_LOG(LogROS, Log, TEXT("[%s] Received message at Topic [%s]."),
 		// 	*FString(__FUNCTION__), *Topic);
 
-		TSharedPtr< FJsonObject > MsgObject = JsonObject->GetObjectField(TEXT("msg"));
+		TSharedPtr< FBsonObject > MsgObject = BsonObject->GetObjectField(TEXT("msg"));
 
 		// Find corresponding subscriber
 		bool IsTopicFound = false;
@@ -225,24 +191,28 @@ UE_LOG(LogROS, Log, TEXT("[%s] Json Message: %s"), *FString(__FUNCTION__), *Json
 		else
 		{
 			TSharedPtr<FROSBridgeMsg> ROSBridgeMsg;
-			ROSBridgeMsg = Subscriber->ParseMessage(MsgObject);
+
+			TSharedPtr<FJsonObject> JsonObject;
+			TSharedRef< TJsonReader<> > Reader = TJsonReaderFactory<>::Create(MsgObject->PrintAsJson());
+			FJsonSerializer::Deserialize(Reader, JsonObject);
+			ROSBridgeMsg = Subscriber->ParseMessage(JsonObject);
 			TSharedPtr<FProcessTask> ProcessTask = MakeShareable<FProcessTask>(new FProcessTask(Subscriber, Topic, ROSBridgeMsg));
 			QueueTask.Enqueue(ProcessTask);
 		}
 	}
 	else if (Op == TEXT("service_response"))
 	{
-		const FString Id = JsonObject->GetStringField(TEXT("id"));
-		const FString ServiceName = JsonObject->GetStringField(TEXT("service"));
-		TSharedPtr< FJsonObject > ValuesObj;
-		if (JsonObject->HasField("values"))
+		const FString Id = BsonObject->GetStringField(TEXT("id"));
+		const FString ServiceName = BsonObject->GetStringField(TEXT("service"));
+		TSharedPtr< FBsonObject > ValuesObj;
+		if (BsonObject->HasField("values"))
 		{
 			// has values
-			ValuesObj = JsonObject->GetObjectField(TEXT("values"));
+			ValuesObj = BsonObject->GetObjectField(TEXT("values"));
 		}
 		else
 		{
-			ValuesObj = MakeShareable(new FJsonObject);
+			ValuesObj = MakeShareable(new FBsonObject);
 		}
 
 		bool bFoundService = false;
@@ -254,7 +224,11 @@ UE_LOG(LogROS, Log, TEXT("[%s] Json Message: %s"), *FString(__FUNCTION__), *Json
 			{
 				ArrayService[i]->bIsResponsed = true;
 				check(ArrayService[i]->Response.IsValid());
-				ArrayService[i]->Response->FromJson(ValuesObj);
+
+				TSharedPtr<FJsonObject> JsonObject;
+				TSharedRef< TJsonReader<> > Reader = TJsonReaderFactory<>::Create(ValuesObj->PrintAsJson());
+				FJsonSerializer::Deserialize(Reader, JsonObject);
+				ArrayService[i]->Response->FromJson(JsonObject);
 
 				ArrayService[i]->Client->Callback(ArrayService[i]->Response);
 				bFoundService = true;
@@ -272,17 +246,17 @@ UE_LOG(LogROS, Log, TEXT("[%s] Json Message: %s"), *FString(__FUNCTION__), *Json
 	}
 	else if (Op == "call_service")
 	{
-		const FString Id = JsonObject->GetStringField(TEXT("id"));
+		const FString Id = BsonObject->GetStringField(TEXT("id"));
 		// there is always an Id for rosbridge_server generated service call
-		const FString ServiceName = JsonObject->GetStringField(TEXT("service"));
-		TSharedPtr< FJsonObject > ArgsObj;
-		if (JsonObject->HasField("args"))
+		const FString ServiceName = BsonObject->GetStringField(TEXT("service"));
+		TSharedPtr< FBsonObject > ArgsObj;
+		if (BsonObject->HasField("args"))
 		{
-			ArgsObj = JsonObject->GetObjectField(TEXT("args"));
+			ArgsObj = BsonObject->GetObjectField(TEXT("args"));
 		}
 		else
 		{
-			ArgsObj = MakeShareable(new FJsonObject);
+			ArgsObj = MakeShareable(new FBsonObject);
 		}
 
 		// Call service in block mode
@@ -307,7 +281,10 @@ UE_LOG(LogROS, Log, TEXT("[%s] Json Message: %s"), *FString(__FUNCTION__), *Json
 			UE_LOG(LogROS, Log, TEXT("[%s] Info: Service Name [%s] Id [%s] found, calling callback function."),
 				*FString(__FUNCTION__), *ServiceName, *Id);
 #endif
-			TSharedPtr<FROSBridgeSrv::SrvRequest> Request = ListServiceServers[FoundServiceIndex]->FromJson(ArgsObj);
+			TSharedPtr<FJsonObject> JsonObject;
+			TSharedRef< TJsonReader<> > Reader = TJsonReaderFactory<>::Create(ArgsObj->PrintAsJson());
+			FJsonSerializer::Deserialize(Reader, JsonObject);
+			TSharedPtr<FROSBridgeSrv::SrvRequest> Request = ListServiceServers[FoundServiceIndex]->FromJson(JsonObject);
 			TSharedPtr<FROSBridgeSrv::SrvResponse> Response = ListServiceServers[FoundServiceIndex]->Callback(Request); // block
 			PublishServiceResponse(ServiceName, Id, Response);
 		}
