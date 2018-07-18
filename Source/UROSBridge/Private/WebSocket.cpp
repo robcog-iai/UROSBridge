@@ -159,7 +159,8 @@ bool FWebSocket::Send(uint8* Data, uint32 Size)
 	Buffer.AddDefaulted(LWS_PRE); // Reserve space for WS header data
 #endif
 
-	Buffer.Append((uint8*)&Size, sizeof (uint32)); // insert size.
+	// This Line was screwing with the deserialization, so I removed it.
+	// Buffer.Append((uint8*)&Size, sizeof (uint32)); // insert size.
 	Buffer.Append((uint8*)Data, Size);
 
 	CriticalSection.Lock();

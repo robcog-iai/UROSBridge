@@ -5,7 +5,8 @@
 #include "Core.h"
 #include "Modules/ModuleManager.h"
 #include "Networking.h"
-#include "Json.h"
+//#include "Json.h"
+#include "FBson.h"
 
 int32 FROSBridgeHandler::ThreadInstanceIdx = 0;
 
@@ -96,8 +97,11 @@ uint32 FROSBridgeHandler::FROSBridgeHandlerRunnable::Run()
 				UE_LOG(LogROS, Log, TEXT("[%s] Subscribing Topic %s"),
 					*FString(__FUNCTION__), *Subscriber->GetTopic());
 				FString WebSocketMessage = FROSBridgeMsg::Subscribe(Subscriber->GetTopic(), Subscriber->GetType());
-				Handler->Client->Send(WebSocketMessage);
-
+				
+				// Convert the automatically generated message from Json to Bson
+				FBsonObject BsonObj = FBsonObject(WebSocketMessage);
+				Handler->Client->Send((uint8_t*)BsonObj.GetDataPointer(), BsonObj.GetDataLength());
+				
 				Handler->ListSubscribers.Push(Subscriber);
 			}
 
@@ -108,7 +112,10 @@ uint32 FROSBridgeHandler::FROSBridgeHandlerRunnable::Run()
 				UE_LOG(LogROS, Log, TEXT("[%s] Advertising Topic %s"),
 					*FString(__FUNCTION__), *Publisher->GetTopic());
 				FString WebSocketMessage = FROSBridgeMsg::Advertise(Publisher->GetTopic(), Publisher->GetType());
-				Handler->Client->Send(WebSocketMessage);
+				
+				// Convert the automatically generated message from Json to Bson
+				FBsonObject BsonObj = FBsonObject(WebSocketMessage);
+				Handler->Client->Send((uint8_t*)BsonObj.GetDataPointer(), BsonObj.GetDataLength());
 
 				Handler->ListPublishers.Push(Publisher);
 			}
@@ -120,7 +127,10 @@ uint32 FROSBridgeHandler::FROSBridgeHandlerRunnable::Run()
 				UE_LOG(LogROS, Log, TEXT("[%s] Advertising Service [%s] of type [%s]"),
 					*FString(__FUNCTION__), *ServiceServer->GetName(), *ServiceServer->GetType());
 				FString WebSocketMessage = FROSBridgeSrv::AdvertiseService(ServiceServer->GetName(), ServiceServer->GetType());
-				Handler->Client->Send(WebSocketMessage);
+				
+				// Convert the automatically generated message from Json to Bson
+				FBsonObject BsonObj = FBsonObject(WebSocketMessage);
+				Handler->Client->Send((uint8_t*)BsonObj.GetDataPointer(), BsonObj.GetDataLength());
 
 				Handler->ListServiceServers.Push(ServiceServer);
 			}
@@ -146,6 +156,20 @@ void FROSBridgeHandler::FROSBridgeHandlerRunnable::Exit()
 // Callback function when message comes from WebSocket
 void FROSBridgeHandler::OnMessage(void* InData, int32 InLength)
 {
+	//UE_LOG(LogTemp, Log, TEXT("%s"), *(BsonObject->PrintAsJson()));
+
+
+	// UNCOMMENTING THE LINE AFTER THIS ONE KILLS UNREAL ENGINE
+	//TSharedPtr< FBsonObject > BsonObject = MakeShareable(new FBsonObject((uint8_t*)InData, InLength));
+
+	
+	//bool *p = (bool *) InData;
+	//size_t i;
+	//FString Result = "";
+	//for (i = 0; i < 1024; ++i)
+	//	Result.Append(FString(p[i] ? TEXT("1") : TEXT("0")));
+	//UE_LOG(LogTemp, Log, TEXT("%s"), *Result);
+	
 	char * CharMessage = new char [InLength + 1];
 	memcpy(CharMessage, InData, InLength);
 	CharMessage[InLength] = 0;
@@ -166,6 +190,7 @@ UE_LOG(LogROS, Log, TEXT("[%s] Json Message: %s"), *FString(__FUNCTION__), *Json
 			*FString(__FUNCTION__), *JsonMessage);
 		return;
 	}
+
 
 	const FString Op = JsonObject->GetStringField(TEXT("op"));
 
@@ -309,7 +334,9 @@ void FROSBridgeHandler::Disconnect()
 			UE_LOG(LogROS, Log, TEXT("[%s] Unsubscribing Topic %s"),
 				*FString(__FUNCTION__), *Sub->GetTopic());
 			FString WebSocketMessage = FROSBridgeMsg::UnSubscribe(Sub->GetTopic());
-			Client->Send(WebSocketMessage);
+			// Convert the automatically generated message from Json to Bson
+			TSharedPtr<FBsonObject> BsonObj = MakeShareable(new FBsonObject(WebSocketMessage));
+			Client->Send((uint8_t*)BsonObj->GetDataPointer(), BsonObj->GetDataLength());
 		}
 
 		// Unadvertise all topics
@@ -318,7 +345,10 @@ void FROSBridgeHandler::Disconnect()
 			UE_LOG(LogROS, Log, TEXT("[%s] Unadvertising Topic %s"),
 				*FString(__FUNCTION__), *Pub->GetTopic());
 			FString WebSocketMessage = FROSBridgeMsg::UnAdvertise(Pub->GetTopic());
-			Client->Send(WebSocketMessage);
+			// Convert the automatically generated message from Json to Bson
+			// Convert the automatically generated message from Json to Bson
+			FBsonObject BsonObj = FBsonObject(WebSocketMessage);
+			Client->Send((uint8_t*)BsonObj.GetDataPointer(), BsonObj.GetDataLength());
 		}
 
 		// Unadvertise all service servers
@@ -327,7 +357,9 @@ void FROSBridgeHandler::Disconnect()
 			UE_LOG(LogROS, Log, TEXT("[%s] Unadvertising Service [%s]"),
 				*FString(__FUNCTION__), *Srv->GetName());
 			FString WebSocketMessage = FROSBridgeSrv::UnadvertiseService(Srv->GetName());
-			Client->Send(WebSocketMessage);
+			// Convert the automatically generated message from Json to Bson
+			FBsonObject BsonObj = FBsonObject(WebSocketMessage);
+			Client->Send((uint8_t*)BsonObj.GetDataPointer(), BsonObj.GetDataLength());
 		}
 
 #if UE_BUILD_DEBUG
@@ -408,7 +440,9 @@ void FROSBridgeHandler::PublishServiceResponse(const FString& InService, const F
 	if (!bIsClientConnected) return;
 
 	FString MsgToSend = FROSBridgeSrv::ServiceResponse(InService, InId, InResponse);
-	Client->Send(MsgToSend);
+	// Convert the automatically generated message from Json to Bson
+	FBsonObject BsonObj = FBsonObject(MsgToSend);
+	Client->Send((uint8_t*)BsonObj.GetDataPointer(), BsonObj.GetDataLength());
 }
 
 void FROSBridgeHandler::PublishMsg(const FString& InTopic, TSharedPtr<FROSBridgeMsg> InMsg)
@@ -417,7 +451,9 @@ void FROSBridgeHandler::PublishMsg(const FString& InTopic, TSharedPtr<FROSBridge
 	if (!bIsClientConnected) return;
 
 	FString MsgToSend = FROSBridgeMsg::Publish(InTopic, InMsg);
-	Client->Send(MsgToSend);
+	// Convert the automatically generated message from Json to Bson
+	FBsonObject BsonObj = FBsonObject(MsgToSend);
+	Client->Send((uint8_t*)BsonObj.GetDataPointer(), BsonObj.GetDataLength());
 }
 
 void FROSBridgeHandler::CallService(TSharedPtr<FROSBridgeSrvClient> InSrvClient,
@@ -443,5 +479,7 @@ void FROSBridgeHandler::CallServiceImpl(const FString& Name, TSharedPtr<FROSBrid
 	if (!bIsClientConnected) return;
 
 	FString MsgToSend = FROSBridgeSrv::CallService(Name, Request, Id);
-	Client->Send(MsgToSend);
+	// Convert the automatically generated message from Json to Bson
+	FBsonObject BsonObj = FBsonObject(MsgToSend);
+	Client->Send((uint8_t*)BsonObj.GetDataPointer(), BsonObj.GetDataLength());
 }

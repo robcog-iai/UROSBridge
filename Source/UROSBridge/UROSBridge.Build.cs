@@ -49,6 +49,7 @@ public class UROSBridge : ModuleRules
 				"zlib",				
 				"Json",
 				"JsonUtilities",
+                "UE4Bson"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
