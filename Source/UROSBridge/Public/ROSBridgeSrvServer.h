@@ -39,6 +39,10 @@ public:
 	}
 
 	virtual TSharedPtr<FROSBridgeSrv::SrvRequest> FromJson(TSharedPtr<FJsonObject> JsonObject) const = 0;
+	
+	virtual TSharedPtr<FROSBridgeSrv::SrvRequest> FromBson(TSharedPtr<FBsonObject> BsonObject) {
+		UE_LOG(LogROS, Warning, TEXT("Empty SrvRequest created. Did you forget to overwrite FromBson()?"));
+	}
 
 	virtual TSharedPtr<FROSBridgeSrv::SrvResponse> Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> InRequest) = 0;
 }; 

@@ -14,6 +14,7 @@
 #include "ROSBridgeSrvServer.h"
 
 #include "WebSocket.h"
+#include "SerializationMode.h"
 
 
 class UROSBRIDGE_API FROSBridgeHandler
@@ -164,21 +165,32 @@ private:
 	// Friendship declaration
 	friend class FROSBridgeHandlerRunnable;
 
+	FSerializationMode SerializationMode;
+
+	void SendBySerializationMode(FString Message);
+
+	// Automatic message parse call depending on the Type of the incoming message
+	void FROSBridgeHandler::ProcessMessageByMode(TSharedPtr<FBsonObject> BsonObject);
+	void FROSBridgeHandler::ProcessMessageByMode(TSharedPtr<FJsonObject> JsonObject);
+
 public:
-	FROSBridgeHandler(const FString& InHost, int32 InPort):
+	
+	FROSBridgeHandler(const FString& InHost, int32 InPort, FSerializationMode InMode = FSerializationMode::MODE_JSON):
 		Host(InHost), Port(InPort),
 		ClientInterval(0.01),
-		bIsClientConnected(false)
+		bIsClientConnected(false),
+		SerializationMode(InMode)
 	{
 	}
 
 	//This creates a Handler with a custom ErrorCallback
-	FROSBridgeHandler(const FString& InHost, int32 InPort, FWebsocketInfoCallBack UserErrorCallbacks, FWebsocketInfoCallBack UserConnectedCallbacks) :
+	FROSBridgeHandler(const FString& InHost, int32 InPort, FWebsocketInfoCallBack UserErrorCallbacks, FWebsocketInfoCallBack UserConnectedCallbacks, FSerializationMode InMode = FSerializationMode::MODE_JSON) :
 		Host(InHost), Port(InPort),
 		ErrorCallbacks(UserErrorCallbacks),
 		ConnectedCallbacks(UserConnectedCallbacks),
 		ClientInterval(0.01),
-		bIsClientConnected(false)
+		bIsClientConnected(false),
+		SerializationMode(InMode)
 	{
 	}
 	~FROSBridgeHandler()

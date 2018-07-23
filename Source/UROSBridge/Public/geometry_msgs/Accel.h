@@ -7,8 +7,8 @@ namespace geometry_msgs
 {
 	class Accel : public FROSBridgeMsg
 	{
-		FROSBridgeMsgGeometrymsgsVector3 Linear;
-		FROSBridgeMsgGeometrymsgsVector3 Angular;
+		geometry_msgs::Vector3 Linear;
+		geometry_msgs::Vector3 Angular;
 
 	public:
 		Accel()
@@ -17,7 +17,7 @@ namespace geometry_msgs
 		}
 
 		Accel
-		(FROSBridgeMsgGeometrymsgsVector3 InLinear, FROSBridgeMsgGeometrymsgsVector3 InAngular) :
+		(geometry_msgs::Vector3 InLinear, geometry_msgs::Vector3 InAngular) :
 			Linear(InLinear), Angular(InAngular)
 		{
 			MsgType = "geometry_msgs/Accel";
@@ -25,30 +25,30 @@ namespace geometry_msgs
 
 		~Accel() override {}
 
-		FROSBridgeMsgGeometrymsgsVector3 GetLinear() const
+		geometry_msgs::Vector3 GetLinear() const
 		{
 			return Linear;
 		}
 
-		FROSBridgeMsgGeometrymsgsVector3 GetAngular() const
+		geometry_msgs::Vector3 GetAngular() const
 		{
 			return Angular;
 		}
 
-		void SetLinear(FROSBridgeMsgGeometrymsgsVector3 InLinear)
+		void SetLinear(geometry_msgs::Vector3 InLinear)
 		{
 			Linear = InLinear;
 		}
 
-		void SetAngular(FROSBridgeMsgGeometrymsgsVector3 InAngular)
+		void SetAngular(geometry_msgs::Vector3 InAngular)
 		{
 			Angular = InAngular;
 		}
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
 		{
-			Linear = FROSBridgeMsgGeometrymsgsVector3::GetFromJson(JsonObject->GetObjectField(TEXT("linear")));
-			Angular = FROSBridgeMsgGeometrymsgsVector3::GetFromJson(JsonObject->GetObjectField(TEXT("angular")));
+			Linear = geometry_msgs::Vector3::GetFromJson(JsonObject->GetObjectField(TEXT("linear")));
+			Angular = geometry_msgs::Vector3::GetFromJson(JsonObject->GetObjectField(TEXT("angular")));
 		}
 
 		static Accel GetFromJson(TSharedPtr<FJsonObject> JsonObject)
