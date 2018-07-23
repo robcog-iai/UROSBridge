@@ -2,7 +2,6 @@
 #include "ROSBridgeMsg.h"
 
 #include "std_msgs/Header.h"
-#include "std_msgs/String.h"
 #include "geometry_msgs/PoseWithCovariance.h"
 #include "geometry_msgs/TwistWithCovariance.h"
 
@@ -11,7 +10,7 @@ namespace nav_msgs
 	class Odometry : public FROSBridgeMsg
 	{
 		std_msgs::Header Header;
-		std_msgs::String ChildFrameId;
+		FString ChildFrameId;
 		geometry_msgs::PoseWithCovariance Pose;
 		geometry_msgs::TwistWithCovariance Twist;
 
@@ -22,7 +21,7 @@ namespace nav_msgs
 		}
 
 		Odometry
-		(std_msgs::Header InHeader, std_msgs::String InChildFrameId,
+		(std_msgs::Header InHeader, FString InChildFrameId,
 			geometry_msgs::PoseWithCovariance InPose,
 			geometry_msgs::TwistWithCovariance InTwist) :
 			Header(InHeader), ChildFrameId(InChildFrameId), Pose(InPose), Twist(InTwist)
@@ -33,7 +32,7 @@ namespace nav_msgs
 		~Odometry() override {}
 
 		std_msgs::Header GetHeader() const { return Header; }
-		std_msgs::String GetChildFrameId() const { return ChildFrameId; }
+		FString GetChildFrameId() const { return ChildFrameId; }
 		geometry_msgs::PoseWithCovariance GetPose() { return Pose; }
 		geometry_msgs::TwistWithCovariance GetTwist() { return Twist; }
 
@@ -42,7 +41,7 @@ namespace nav_msgs
 			Header = InHeader;
 		}
 
-		void SetString(std_msgs::String InChildFrameId)
+		void SetString(FString InChildFrameId)
 		{
 			ChildFrameId = InChildFrameId;
 		}
@@ -61,7 +60,7 @@ namespace nav_msgs
 		{
 			Header = std_msgs::Header::GetFromJson(JsonObject->GetObjectField(TEXT("header")));
 			// TODO check if this is correct?
-			ChildFrameId = std_msgs::String(JsonObject->GetStringField("child_frame_id"));
+			ChildFrameId = JsonObject->GetStringField("child_frame_id");
 			Pose = geometry_msgs::PoseWithCovariance::GetFromJson(JsonObject->GetObjectField(TEXT("pose")));
 			Twist = geometry_msgs::TwistWithCovariance::GetFromJson(JsonObject->GetObjectField(TEXT("twist")));
 		}
@@ -76,7 +75,7 @@ namespace nav_msgs
 		virtual FString ToString() const override
 		{
 			return TEXT("Odometry { header = ") + Header.ToString() +
-				TEXT(", child_frame_id = ") + ChildFrameId.ToString() +
+				TEXT(", child_frame_id = ") + ChildFrameId +
 				TEXT(", pose = ") + Pose.ToString() +
 				TEXT(", twist = ") + Twist.ToString() +
 				TEXT(" } ");
@@ -86,7 +85,7 @@ namespace nav_msgs
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 			Object->SetObjectField(TEXT("header"), Header.ToJsonObject());
-			Object->SetObjectField(TEXT("child_frame_id"), ChildFrameId.ToJsonObject());
+			Object->SetStringField(TEXT("child_frame_id"), ChildFrameId);
 			Object->SetObjectField(TEXT("pose"), Pose.ToJsonObject());
 			Object->SetObjectField(TEXT("twist"), Twist.ToJsonObject());
 			return Object;
