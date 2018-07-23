@@ -4,6 +4,7 @@
 
 #include "Core.h"
 #include "Json.h"
+#include "UROSBridge.h"
 #include "FBson.h"
 
 class UROSBRIDGE_API FROSBridgeSrv

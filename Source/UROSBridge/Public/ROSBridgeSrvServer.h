@@ -4,6 +4,7 @@
 
 #include "Core.h"
 #include "Json.h"
+#include "UROSBridge.h"
 
 #include "ROSBridgeSrv.h"
 
@@ -42,6 +43,7 @@ public:
 	
 	virtual TSharedPtr<FROSBridgeSrv::SrvRequest> FromBson(TSharedPtr<FBsonObject> BsonObject) {
 		UE_LOG(LogROS, Warning, TEXT("Empty SrvRequest created. Did you forget to overwrite FromBson()?"));
+		return MakeShareable(new FROSBridgeSrv::SrvRequest());
 	}
 
 	virtual TSharedPtr<FROSBridgeSrv::SrvResponse> Callback(TSharedPtr<FROSBridgeSrv::SrvRequest> InRequest) = 0;

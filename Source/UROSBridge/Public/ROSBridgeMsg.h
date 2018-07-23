@@ -5,7 +5,7 @@
 #include "Core.h"
 #include "Json.h"
 #include "FBson.h"
-
+#include "UROSBridge.h"
 #include "ROSTime.h"
 
 class UROSBRIDGE_API FROSBridgeMsg 

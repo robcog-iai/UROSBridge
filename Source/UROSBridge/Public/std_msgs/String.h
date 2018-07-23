@@ -1,27 +1,33 @@
 #pragma once
+
 #include "ROSBridgeMsg.h"
+
+#include "FBson.h"
+
 
 namespace std_msgs
 {
 	class String : public FROSBridgeMsg
 	{
 		FString Data;
-
 	public:
 		String()
 		{
 			MsgType = "std_msgs/String";
 		}
 
-		String(FString InData)
+		String
+		(
+			FString InData
+		):
+			Data(InData)
 		{
 			MsgType = "std_msgs/String";
-			Data = InData;
 		}
 
 		~String() override {}
 
-		FString GetData()
+		FString GetData() const
 		{
 			return Data;
 		}
@@ -31,24 +37,46 @@ namespace std_msgs
 			Data = InData;
 		}
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
-			Data = JsonObject->GetStringField("data");
+			Data = JsonObject->GetStringField(TEXT("data"));
+
 		}
 
-		virtual FString ToString() const override
+		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
 		{
-			return TEXT("String { data = \"" + Data + "\" }");
+			Data = BsonObject->GetStringField(TEXT("data"));
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const override 
+		static String GetFromJson(TSharedPtr<FJsonObject> JsonObject)
+		{
+			String Result;
+			Result.FromJson(JsonObject);
+			return Result;
+		}
+
+		static String GetFromBson(TSharedPtr<FBsonObject> BsonObject)
+		{
+			String Result;
+			Result.FromBson(BsonObject);
+			return Result;
+		}
+
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
+
 			Object->SetStringField(TEXT("data"), Data);
 			return Object;
 		}
+		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
+		{
+			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
-		virtual FString ToYamlString() const override 
+			Object->SetStringField(TEXT("data"), Data);
+			return Object;
+		}
+		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
 			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
@@ -56,4 +84,4 @@ namespace std_msgs
 			return OutputString;
 		}
 	};
-} // namespace std_msgs
+}
