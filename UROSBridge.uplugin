@@ -16,7 +16,7 @@
   "Modules": [
 	{
 	  "Name": "UROSBridge",
-	  "Type": "Developer",
+	  "Type": "Runtime",
 	  "LoadingPhase": "Default"
 	}
   ]
