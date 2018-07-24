@@ -21,6 +21,7 @@ class UROSBRIDGE_API UROSBridgeGameInstance : public UGameInstance, public FTick
 {
 	GENERATED_BODY()
 
+protected:
 	// Default constructor
 	UROSBridgeGameInstance();
 
