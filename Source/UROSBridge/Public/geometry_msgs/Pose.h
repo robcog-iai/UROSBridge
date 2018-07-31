@@ -1,4 +1,5 @@
 #pragma once
+
 #include "ROSBridgeMsg.h"
 
 #include "geometry_msgs/Point.h"
@@ -10,7 +11,6 @@ namespace geometry_msgs
 	{
 		geometry_msgs::Point Position;
 		geometry_msgs::Quaternion Orientation;
-
 	public:
 		Pose()
 		{
@@ -18,8 +18,12 @@ namespace geometry_msgs
 		}
 
 		Pose
-		(geometry_msgs::Point Inposition, geometry_msgs::Quaternion InOrientation) :
-			Position(Inposition), Orientation(InOrientation)
+		(
+			geometry_msgs::Point InPosition,
+			geometry_msgs::Quaternion InOrientation
+		):
+			Position(InPosition),
+			Orientation(InOrientation)
 		{
 			MsgType = "geometry_msgs/Pose";
 		}
@@ -46,10 +50,20 @@ namespace geometry_msgs
 			Orientation = InOrientation;
 		}
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
 			Position = geometry_msgs::Point::GetFromJson(JsonObject->GetObjectField(TEXT("position")));
+
 			Orientation = geometry_msgs::Quaternion::GetFromJson(JsonObject->GetObjectField(TEXT("orientation")));
+
+		}
+
+		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
+		{
+			Position = geometry_msgs::Point::GetFromBson(BsonObject->GetObjectField(TEXT("position")));
+
+			Orientation = geometry_msgs::Quaternion::GetFromBson(BsonObject->GetObjectField(TEXT("orientation")));
+
 		}
 
 		static Pose GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -59,21 +73,30 @@ namespace geometry_msgs
 			return Result;
 		}
 
-		virtual FString ToString() const override
+		static Pose GetFromBson(TSharedPtr<FBsonObject> BsonObject)
 		{
-			return TEXT("Pose { position = ") + Position.ToString() +
-				TEXT(", orientation = ") + Orientation.ToString() + TEXT(" } ");
+			Pose Result;
+			Result.FromBson(BsonObject);
+			return Result;
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const override 
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
+
 			Object->SetObjectField(TEXT("position"), Position.ToJsonObject());
 			Object->SetObjectField(TEXT("orientation"), Orientation.ToJsonObject());
 			return Object;
 		}
+		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
+		{
+			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
-		virtual FString ToYamlString() const override 
+			Object->SetObjectField(TEXT("position"), Position.ToBsonObject());
+			Object->SetObjectField(TEXT("orientation"), Orientation.ToBsonObject());
+			return Object;
+		}
+		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
 			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
@@ -81,5 +104,4 @@ namespace geometry_msgs
 			return OutputString;
 		}
 	};
-
-} // namespace geometry_msgs
+}

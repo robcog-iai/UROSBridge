@@ -51,7 +51,7 @@ bool FROSBridgeHandler::FROSBridgeHandlerRunnable::Init()
 }
 
 void FROSBridgeHandler::SendBySerializationMode(FString JsonMessage) {
-	if (SerializationMode == FSerializationMode::MODE_BSON) {
+	if (SerializationMode == ESerializationMode::MODE_BSON) {
 		// Convert the message from Json to Bson
 		FBsonObject BsonObj = FBsonObject(JsonMessage);
 		Client->Send((uint8_t*)BsonObj.GetDataPointer(), BsonObj.GetDataLength());
@@ -410,7 +410,7 @@ void FROSBridgeHandler::ProcessMessageByMode(TSharedPtr<FJsonObject> JsonObject)
 // Callback function when message comes from WebSocket
 void FROSBridgeHandler::OnMessage(void* InData, int32 InLength)
 {
-	if(SerializationMode == FSerializationMode::MODE_BSON)
+	if(SerializationMode == ESerializationMode::MODE_BSON)
 		ProcessMessageByMode(MakeShareable(new FBsonObject((uint8_t*)InData, InLength)));
 	else {
 		char * CharMessage = new char[InLength + 1];

@@ -1,4 +1,5 @@
 #pragma once
+
 #include "ROSBridgeMsg.h"
 
 #include "geometry_msgs/Twist.h"
@@ -9,17 +10,19 @@ namespace geometry_msgs
 	{
 		geometry_msgs::Twist Twist;
 		TArray<double> Covariance;
-
 	public:
 		TwistWithCovariance()
 		{
 			MsgType = "geometry_msgs/TwistWithCovariance";
-			Covariance.SetNumZeroed(36);
 		}
 
 		TwistWithCovariance
-		(geometry_msgs::Twist InTwist, const TArray<double>& InCovariance) :
-			Twist(InTwist), Covariance(InCovariance)
+		(
+			geometry_msgs::Twist InTwist,
+			const TArray<double>& InCovariance
+		):
+			Twist(InTwist),
+			Covariance(InCovariance)
 		{
 			MsgType = "geometry_msgs/TwistWithCovariance";
 		}
@@ -41,20 +44,35 @@ namespace geometry_msgs
 			Twist = InTwist;
 		}
 
-		void SetCovariance(const TArray<double>& InCovariance)
+		void SetCovariance(TArray<double>& InCovariance)
 		{
 			Covariance = InCovariance;
 		}
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
 			Twist = geometry_msgs::Twist::GetFromJson(JsonObject->GetObjectField(TEXT("twist")));
+
+			TArray<TSharedPtr<FJsonValue>> ValuesPtrArr;
+
 			Covariance.Empty();
-			TArray<TSharedPtr<FJsonValue>> CovariancePtrArr = JsonObject->GetArrayField(TEXT("covariance"));
-			for (auto &ptr : CovariancePtrArr)
+			ValuesPtrArr = JsonObject->GetArrayField(TEXT("covariance"));
+			for (auto &ptr : ValuesPtrArr)
 				Covariance.Add(ptr->AsNumber());
 
-			check(Covariance.Num() == 36);
+		}
+
+		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
+		{
+			Twist = geometry_msgs::Twist::GetFromBson(BsonObject->GetObjectField(TEXT("twist")));
+
+			TArray<TSharedPtr<FBsonValue>> ValuesPtrArr;
+
+			Covariance.Empty();
+			ValuesPtrArr = BsonObject->GetArrayField(TEXT("covariance"));
+			for (auto &ptr : ValuesPtrArr)
+				Covariance.Add(ptr->AsNumber());
+
 		}
 
 		static TwistWithCovariance GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -64,31 +82,36 @@ namespace geometry_msgs
 			return Result;
 		}
 
-		virtual FString ToString() const override
+		static TwistWithCovariance GetFromBson(TSharedPtr<FBsonObject> BsonObject)
 		{
-			FString ArrayString = "[ ";
-			for (auto &cov_value : Covariance)
-				ArrayString += FString::SanitizeFloat(cov_value) + TEXT(", ");
-			ArrayString += " ]";
-
-			return TEXT("TwistWithCovariance { twist = ") + Twist.ToString() +
-				TEXT(", covariance = ") + ArrayString + TEXT(" } ");
+			TwistWithCovariance Result;
+			Result.FromBson(BsonObject);
+			return Result;
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const override 
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
-			TArray<TSharedPtr<FJsonValue>> CovArray;
-			for (auto &val : Covariance)
-				CovArray.Add(MakeShareable(new FJsonValueNumber(val)));
-
 			Object->SetObjectField(TEXT("twist"), Twist.ToJsonObject());
-			Object->SetArrayField(TEXT("covariance"), CovArray);
+			TArray<TSharedPtr<FJsonValue>> CovarianceArray;
+			for (auto &val : Covariance)
+				CovarianceArray.Add(MakeShareable(new FJsonValueNumber(val)));
+			Object->SetArrayField(TEXT("covariance"), CovarianceArray);
 			return Object;
 		}
+		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
+		{
+			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
-		virtual FString ToYamlString() const override 
+			Object->SetObjectField(TEXT("twist"), Twist.ToBsonObject());
+			TArray<TSharedPtr<FBsonValue>> CovarianceArray;
+			for (auto &val : Covariance)
+				CovarianceArray.Add(MakeShareable(new FBsonValueNumber(val)));
+			Object->SetArrayField(TEXT("covariance"), CovarianceArray);
+			return Object;
+		}
+		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
 			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
@@ -96,4 +119,4 @@ namespace geometry_msgs
 			return OutputString;
 		}
 	};
-} // namespace geometry_msgs
+}

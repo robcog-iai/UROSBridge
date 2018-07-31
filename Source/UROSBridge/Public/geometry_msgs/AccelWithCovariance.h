@@ -1,4 +1,5 @@
 #pragma once
+
 #include "ROSBridgeMsg.h"
 
 #include "geometry_msgs/Accel.h"
@@ -8,19 +9,20 @@ namespace geometry_msgs
 	class AccelWithCovariance : public FROSBridgeMsg
 	{
 		geometry_msgs::Accel Accel;
-
-	public:
 		TArray<double> Covariance;
-
+	public:
 		AccelWithCovariance()
 		{
 			MsgType = "geometry_msgs/AccelWithCovariance";
-			Covariance.SetNumZeroed(36);
 		}
 
 		AccelWithCovariance
-		(geometry_msgs::Accel InAccel, const TArray<double>& InCovariance) :
-			Accel(InAccel), Covariance(InCovariance)
+		(
+			geometry_msgs::Accel InAccel,
+			const TArray<double>& InCovariance
+		):
+			Accel(InAccel),
+			Covariance(InCovariance)
 		{
 			MsgType = "geometry_msgs/AccelWithCovariance";
 		}
@@ -42,22 +44,35 @@ namespace geometry_msgs
 			Accel = InAccel;
 		}
 
-		void SetCovariance(const TArray<double>& InCovariance)
+		void SetCovariance(TArray<double>& InCovariance)
 		{
 			Covariance = InCovariance;
 		}
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
 			Accel = geometry_msgs::Accel::GetFromJson(JsonObject->GetObjectField(TEXT("accel")));
-			Covariance.Empty();
-			TArray<TSharedPtr<FJsonValue>> CovariancePtrArr = JsonObject->GetArrayField(TEXT("covariance"));
-			for (auto &Cov : CovariancePtrArr)
-			{
-				Covariance.Add(Cov->AsNumber());
-			}
 
-			check(Covariance.Num() == 36);
+			TArray<TSharedPtr<FJsonValue>> ValuesPtrArr;
+
+			Covariance.Empty();
+			ValuesPtrArr = JsonObject->GetArrayField(TEXT("covariance"));
+			for (auto &ptr : ValuesPtrArr)
+				Covariance.Add(ptr->AsNumber());
+
+		}
+
+		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
+		{
+			Accel = geometry_msgs::Accel::GetFromBson(BsonObject->GetObjectField(TEXT("accel")));
+
+			TArray<TSharedPtr<FBsonValue>> ValuesPtrArr;
+
+			Covariance.Empty();
+			ValuesPtrArr = BsonObject->GetArrayField(TEXT("covariance"));
+			for (auto &ptr : ValuesPtrArr)
+				Covariance.Add(ptr->AsNumber());
+
 		}
 
 		static AccelWithCovariance GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -67,35 +82,36 @@ namespace geometry_msgs
 			return Result;
 		}
 
-		virtual FString ToString() const override
+		static AccelWithCovariance GetFromBson(TSharedPtr<FBsonObject> BsonObject)
 		{
-			FString ArrayString = "[ ";
-			for (auto &Val : Covariance)
-			{
-				ArrayString += FString::SanitizeFloat(Val) + TEXT(", ");
-			}
-			ArrayString += " ]";
-
-			return TEXT("AccelWithCovariance { accel = ") + Accel.ToString() +
-				TEXT(", covariance = ") + ArrayString + TEXT(" } ");
+			AccelWithCovariance Result;
+			Result.FromBson(BsonObject);
+			return Result;
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const override 
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
-			TArray<TSharedPtr<FJsonValue>> CovArray;
-			for (auto &Val : Covariance)
-			{
-				CovArray.Add(MakeShareable(new FJsonValueNumber(Val)));
-			}
-
 			Object->SetObjectField(TEXT("accel"), Accel.ToJsonObject());
-			Object->SetArrayField(TEXT("covariance"), CovArray);
+			TArray<TSharedPtr<FJsonValue>> CovarianceArray;
+			for (auto &val : Covariance)
+				CovarianceArray.Add(MakeShareable(new FJsonValueNumber(val)));
+			Object->SetArrayField(TEXT("covariance"), CovarianceArray);
 			return Object;
 		}
+		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
+		{
+			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
-		virtual FString ToYamlString() const override 
+			Object->SetObjectField(TEXT("accel"), Accel.ToBsonObject());
+			TArray<TSharedPtr<FBsonValue>> CovarianceArray;
+			for (auto &val : Covariance)
+				CovarianceArray.Add(MakeShareable(new FBsonValueNumber(val)));
+			Object->SetArrayField(TEXT("covariance"), CovarianceArray);
+			return Object;
+		}
+		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
 			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
@@ -103,4 +119,4 @@ namespace geometry_msgs
 			return OutputString;
 		}
 	};
-} // namespace geometry_msgs
+}

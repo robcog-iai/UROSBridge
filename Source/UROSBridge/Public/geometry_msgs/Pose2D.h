@@ -1,5 +1,7 @@
 #pragma once
+
 #include "ROSBridgeMsg.h"
+
 
 namespace geometry_msgs
 {
@@ -8,23 +10,23 @@ namespace geometry_msgs
 		double X;
 		double Y;
 		double Theta;
-
 	public:
 		Pose2D()
 		{
 			MsgType = "geometry_msgs/Pose2D";
 		}
 
-		Pose2D(double InX, double InY, double InTheta)
+		Pose2D
+		(
+			double InX,
+			double InY,
+			double InTheta
+		):
+			X(InX),
+			Y(InY),
+			Theta(InTheta)
 		{
 			MsgType = "geometry_msgs/Pose2D";
-			X = InX; Y = InY; Theta = InTheta;
-		}
-
-		Pose2D(FVector InVector)
-		{
-			MsgType = "geometry_msgs/Pose2D";
-			X = InVector.X; Y = InVector.Y; Theta = InVector.Z;
 		}
 
 		~Pose2D() override {}
@@ -44,11 +46,6 @@ namespace geometry_msgs
 			return Theta;
 		}
 
-		FVector GetVector() const
-		{
-			return FVector(X, Y, Theta);
-		}
-
 		void SetX(double InX)
 		{
 			X = InX;
@@ -64,16 +61,24 @@ namespace geometry_msgs
 			Theta = InTheta;
 		}
 
-		void SetVector(const FVector& InVector)
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
-			X = InVector.X; Y = InVector.Y; Theta = InVector.Z;
+			X = JsonObject->GetNumberField(TEXT("x"));
+
+			Y = JsonObject->GetNumberField(TEXT("y"));
+
+			Theta = JsonObject->GetNumberField(TEXT("theta"));
+
 		}
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
+		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
 		{
-			X = (double)(JsonObject->GetNumberField(TEXT("x")));
-			Y = (double)(JsonObject->GetNumberField(TEXT("y")));
-			Theta = (double)(JsonObject->GetNumberField(TEXT("theta")));
+			X = BsonObject->GetNumberField(TEXT("x"));
+
+			Y = BsonObject->GetNumberField(TEXT("y"));
+
+			Theta = BsonObject->GetNumberField(TEXT("theta"));
+
 		}
 
 		static Pose2D GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -83,23 +88,32 @@ namespace geometry_msgs
 			return Result;
 		}
 
-		virtual FString ToString() const override
+		static Pose2D GetFromBson(TSharedPtr<FBsonObject> BsonObject)
 		{
-			return TEXT("Pose2D { x = ") + FString::SanitizeFloat(X) +
-				TEXT(", y = ") + FString::SanitizeFloat(Y) +
-				TEXT(", theta = ") + FString::SanitizeFloat(Theta) + TEXT(" } ");
+			Pose2D Result;
+			Result.FromBson(BsonObject);
+			return Result;
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const override 
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
+
 			Object->SetNumberField(TEXT("x"), X);
 			Object->SetNumberField(TEXT("y"), Y);
 			Object->SetNumberField(TEXT("theta"), Theta);
 			return Object;
 		}
+		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
+		{
+			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
-		virtual FString ToYamlString() const override 
+			Object->SetNumberField(TEXT("x"), X);
+			Object->SetNumberField(TEXT("y"), Y);
+			Object->SetNumberField(TEXT("theta"), Theta);
+			return Object;
+		}
+		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
 			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
@@ -107,4 +121,4 @@ namespace geometry_msgs
 			return OutputString;
 		}
 	};
-} // namespace geometry_msgs
+}

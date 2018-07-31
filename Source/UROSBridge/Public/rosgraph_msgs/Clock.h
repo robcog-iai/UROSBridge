@@ -1,39 +1,50 @@
 #pragma once
+
 #include "ROSBridgeMsg.h"
+
 
 namespace rosgraph_msgs
 {
 	class Clock : public FROSBridgeMsg
 	{
-		FROSTime Time;
-
+		FROSTime Clock;
 	public:
 		Clock()
 		{
 			MsgType = "rosgraph_msgs/Clock";
 		}
 
-		Clock(FROSTime InTime)
+		Clock
+		(
+			FROSTime InClock
+		):
+			Clock(InClock)
 		{
 			MsgType = "rosgraph_msgs/Clock";
-			Time = InTime;
 		}
 
 		~Clock() override {}
 
 		FROSTime GetClock() const
 		{
-			return Time;
+			return Clock;
 		}
 
-		void SetClock(FROSTime InTime)
+		void SetClock(FROSTime InClock)
 		{
-			Time = InTime;
+			Clock = InClock;
 		}
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
-			Time = FROSTime::GetFromJson(JsonObject->GetObjectField(TEXT("clock")));
+			Clock = FROSTime::GetFromJson(JsonObject->GetObjectField(TEXT("clock")));
+
+		}
+
+		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
+		{
+			Clock = FROSTime::GetFromBson(BsonObject->GetObjectField(TEXT("clock")));
+
 		}
 
 		static Clock GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -43,19 +54,28 @@ namespace rosgraph_msgs
 			return Result;
 		}
 
-		virtual FString ToString() const override
+		static Clock GetFromBson(TSharedPtr<FBsonObject> BsonObject)
 		{
-			return TEXT("Clock { clock = ") + Time.ToString() + TEXT(" } ");
+			Clock Result;
+			Result.FromBson(BsonObject);
+			return Result;
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const override 
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-			Object->SetObjectField(TEXT("clock"), Time.ToJsonObject());
+
+			Object->SetObjectField(TEXT("clock"), Clock.ToJsonObject());
 			return Object;
 		}
+		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
+		{
+			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
-		virtual FString ToYamlString() const override 
+			Object->SetObjectField(TEXT("clock"), Clock.ToBsonObject());
+			return Object;
+		}
+		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
 			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
@@ -63,4 +83,4 @@ namespace rosgraph_msgs
 			return OutputString;
 		}
 	};
-} // namespace rosgraph_msgs
+}

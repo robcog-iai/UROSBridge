@@ -1,4 +1,5 @@
 #pragma once
+
 #include "ROSBridgeMsg.h"
 
 #include "std_msgs/Header.h"
@@ -10,7 +11,6 @@ namespace geometry_msgs
 	{
 		std_msgs::Header Header;
 		geometry_msgs::TwistWithCovariance Twist;
-
 	public:
 		TwistWithCovarianceStamped()
 		{
@@ -18,8 +18,12 @@ namespace geometry_msgs
 		}
 
 		TwistWithCovarianceStamped
-		(std_msgs::Header InHeader, geometry_msgs::TwistWithCovariance InTwist) :
-			Header(InHeader), Twist(InTwist)
+		(
+			std_msgs::Header InHeader,
+			geometry_msgs::TwistWithCovariance InTwist
+		):
+			Header(InHeader),
+			Twist(InTwist)
 		{
 			MsgType = "geometry_msgs/TwistWithCovarianceStamped";
 		}
@@ -46,10 +50,20 @@ namespace geometry_msgs
 			Twist = InTwist;
 		}
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
 			Header = std_msgs::Header::GetFromJson(JsonObject->GetObjectField(TEXT("header")));
+
 			Twist = geometry_msgs::TwistWithCovariance::GetFromJson(JsonObject->GetObjectField(TEXT("twist")));
+
+		}
+
+		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
+		{
+			Header = std_msgs::Header::GetFromBson(BsonObject->GetObjectField(TEXT("header")));
+
+			Twist = geometry_msgs::TwistWithCovariance::GetFromBson(BsonObject->GetObjectField(TEXT("twist")));
+
 		}
 
 		static TwistWithCovarianceStamped GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -59,21 +73,30 @@ namespace geometry_msgs
 			return Result;
 		}
 
-		virtual FString ToString() const override
+		static TwistWithCovarianceStamped GetFromBson(TSharedPtr<FBsonObject> BsonObject)
 		{
-			return TEXT("TwistWithCovarianceStamped { header = ") + Header.ToString() +
-				TEXT(", twist = ") + Twist.ToString() + TEXT(" } ");
+			TwistWithCovarianceStamped Result;
+			Result.FromBson(BsonObject);
+			return Result;
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const override 
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
+
 			Object->SetObjectField(TEXT("header"), Header.ToJsonObject());
 			Object->SetObjectField(TEXT("twist"), Twist.ToJsonObject());
 			return Object;
 		}
+		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
+		{
+			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
-		virtual FString ToYamlString() const override 
+			Object->SetObjectField(TEXT("header"), Header.ToBsonObject());
+			Object->SetObjectField(TEXT("twist"), Twist.ToBsonObject());
+			return Object;
+		}
+		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
 			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
@@ -81,4 +104,4 @@ namespace geometry_msgs
 			return OutputString;
 		}
 	};
-} // namespace geometry_msgs
+}

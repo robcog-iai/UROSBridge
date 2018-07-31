@@ -1,8 +1,9 @@
 #pragma once
+
 #include "ROSBridgeMsg.h"
+
 #include "std_msgs/Header.h"
 #include "sensor_msgs/RegionOfInterest.h"
-#include "Base64.h"
 
 namespace sensor_msgs
 {
@@ -18,25 +19,27 @@ namespace sensor_msgs
 		TArray<double> P;
 		uint32 BinningX;
 		uint32 BinningY;
-		sensor_msgs::RegionOfInterest ROI;
-
+		sensor_msgs::RegionOfInterest Roi;
 	public:
-
 		CameraInfo()
 		{
 			MsgType = "sensor_msgs/CameraInfo";
 		}
 
 		CameraInfo
-		(std_msgs::Header InHeader, uint32 InHeight, uint32 InWidth,
+		(
+			std_msgs::Header InHeader,
+			uint32 InHeight,
+			uint32 InWidth,
 			FString InDistortionModel,
 			const TArray<double>& InD,
 			const TArray<double>& InK,
 			const TArray<double>& InR,
 			const TArray<double>& InP,
-			uint32 InBinningX, uint32 InBinningY,
-			sensor_msgs::RegionOfInterest InROI)
-			:
+			uint32 InBinningX,
+			uint32 InBinningY,
+			sensor_msgs::RegionOfInterest InRoi
+		):
 			Header(InHeader),
 			Height(InHeight),
 			Width(InWidth),
@@ -45,8 +48,9 @@ namespace sensor_msgs
 			K(InK),
 			R(InR),
 			P(InP),
-			BinningX(InBinningX), BinningY(InBinningY),
-			ROI(InROI)
+			BinningX(InBinningX),
+			BinningY(InBinningY),
+			Roi(InRoi)
 		{
 			MsgType = "sensor_msgs/CameraInfo";
 		}
@@ -103,9 +107,9 @@ namespace sensor_msgs
 			return BinningY;
 		}
 
-		sensor_msgs::RegionOfInterest GetROI() const
+		sensor_msgs::RegionOfInterest GetRoi() const
 		{
-			return ROI;
+			return Roi;
 		}
 
 		void SetHeader(std_msgs::Header InHeader)
@@ -128,22 +132,22 @@ namespace sensor_msgs
 			DistortionModel = InDistortionModel;
 		}
 
-		void SetD(const TArray<double> &InD)
+		void SetD(TArray<double>& InD)
 		{
 			D = InD;
 		}
 
-		void SetK(const TArray<double> &InK)
+		void SetK(TArray<double>& InK)
 		{
 			K = InK;
 		}
-		
-		void SetR(const TArray<double> &InR)
+
+		void SetR(TArray<double>& InR)
 		{
 			R = InR;
 		}
-		
-		void SetP(const TArray<double> &InP)
+
+		void SetP(TArray<double>& InP)
 		{
 			P = InP;
 		}
@@ -158,43 +162,89 @@ namespace sensor_msgs
 			BinningY = InBinningY;
 		}
 
-		void SetROI(sensor_msgs::RegionOfInterest InData)
+		void SetRoi(sensor_msgs::RegionOfInterest InRoi)
 		{
-			ROI = InData;
+			Roi = InRoi;
 		}
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
+			Header = std_msgs::Header::GetFromJson(JsonObject->GetObjectField(TEXT("header")));
+
+			Height = JsonObject->GetNumberField(TEXT("height"));
+
+			Width = JsonObject->GetNumberField(TEXT("width"));
+
+			DistortionModel = JsonObject->GetStringField(TEXT("distortion_model"));
+
 			TArray<TSharedPtr<FJsonValue>> ValuesPtrArr;
 
-			Header = std_msgs::Header::GetFromJson(JsonObject->GetObjectField(TEXT("header")));
-			Height = JsonObject->GetNumberField(TEXT("height"));
-			Width = JsonObject->GetNumberField(TEXT("width"));
-			DistortionModel = JsonObject->GetStringField(TEXT("distortion_model"));
-			
 			D.Empty();
-			ValuesPtrArr = JsonObject->GetArrayField(TEXT("D"));
+			ValuesPtrArr = JsonObject->GetArrayField(TEXT("d"));
 			for (auto &ptr : ValuesPtrArr)
 				D.Add(ptr->AsNumber());
 
 			K.Empty();
-			ValuesPtrArr = JsonObject->GetArrayField(TEXT("K"));
+			ValuesPtrArr = JsonObject->GetArrayField(TEXT("k"));
 			for (auto &ptr : ValuesPtrArr)
 				K.Add(ptr->AsNumber());
 
 			R.Empty();
-			ValuesPtrArr = JsonObject->GetArrayField(TEXT("R"));
+			ValuesPtrArr = JsonObject->GetArrayField(TEXT("r"));
 			for (auto &ptr : ValuesPtrArr)
 				R.Add(ptr->AsNumber());
 
 			P.Empty();
-			ValuesPtrArr = JsonObject->GetArrayField(TEXT("P"));
+			ValuesPtrArr = JsonObject->GetArrayField(TEXT("p"));
 			for (auto &ptr : ValuesPtrArr)
 				P.Add(ptr->AsNumber());
 
 			BinningX = JsonObject->GetNumberField(TEXT("binning_x"));
+
 			BinningY = JsonObject->GetNumberField(TEXT("binning_y"));
-			ROI = sensor_msgs::RegionOfInterest::GetFromJson(JsonObject->GetObjectField(TEXT("roi")));
+
+			Roi = sensor_msgs::RegionOfInterest::GetFromJson(JsonObject->GetObjectField(TEXT("roi")));
+
+		}
+
+		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
+		{
+			Header = std_msgs::Header::GetFromBson(BsonObject->GetObjectField(TEXT("header")));
+
+			Height = BsonObject->GetNumberField(TEXT("height"));
+
+			Width = BsonObject->GetNumberField(TEXT("width"));
+
+			DistortionModel = BsonObject->GetStringField(TEXT("distortion_model"));
+
+			TArray<TSharedPtr<FBsonValue>> ValuesPtrArr;
+
+			D.Empty();
+			ValuesPtrArr = BsonObject->GetArrayField(TEXT("d"));
+			for (auto &ptr : ValuesPtrArr)
+				D.Add(ptr->AsNumber());
+
+			K.Empty();
+			ValuesPtrArr = BsonObject->GetArrayField(TEXT("k"));
+			for (auto &ptr : ValuesPtrArr)
+				K.Add(ptr->AsNumber());
+
+			R.Empty();
+			ValuesPtrArr = BsonObject->GetArrayField(TEXT("r"));
+			for (auto &ptr : ValuesPtrArr)
+				R.Add(ptr->AsNumber());
+
+			P.Empty();
+			ValuesPtrArr = BsonObject->GetArrayField(TEXT("p"));
+			for (auto &ptr : ValuesPtrArr)
+				P.Add(ptr->AsNumber());
+
+			BinningX = BsonObject->GetNumberField(TEXT("binning_x"));
+
+			BinningY = BsonObject->GetNumberField(TEXT("binning_y"));
+
+			Roi = sensor_msgs::RegionOfInterest::GetFromBson(BsonObject->GetObjectField(TEXT("roi")));
+
 		}
 
 		static CameraInfo GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -204,71 +254,71 @@ namespace sensor_msgs
 			return Result;
 		}
 
-		virtual FString ToString() const override
+		static CameraInfo GetFromBson(TSharedPtr<FBsonObject> BsonObject)
 		{
-			FString DString = "[ ";
-			for (auto &value : D)
-				DString += FString::SanitizeFloat(value) + TEXT(", ");
-			DString += " ]";
-
-			FString KString = "[ ";
-			for (auto &value : K)
-				KString += FString::SanitizeFloat(value) + TEXT(", ");
-			KString += " ]";
-
-			FString RString = "[ ";
-			for (auto &value : R)
-				RString += FString::SanitizeFloat(value) + TEXT(", ");
-			RString += " ]";
-
-			FString PString = "[ ";
-			for (auto &value : P)
-				PString += FString::SanitizeFloat(value) + TEXT(", ");
-			PString += " ]";
-
-			return TEXT("CameraInfo { header = ") + Header.ToString() +
-				TEXT(", height = ") + FString::FromInt(Height) +
-				TEXT(", width = ") + FString::FromInt(Width) +
-				TEXT(", distortion_model =") + DistortionModel +
-				TEXT(", D =") + DString +
-				TEXT(", K =") + KString +
-				TEXT(", R =") + RString +
-				TEXT(", P =") + PString +
-				TEXT(", binning_x =") + FString::FromInt(BinningX) +
-				TEXT(", binning_y =") + FString::FromInt(BinningY) +
-				TEXT(", roi = ") + ROI.ToString() +
-				TEXT(" } ");
+			CameraInfo Result;
+			Result.FromBson(BsonObject);
+			return Result;
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
-			TArray<TSharedPtr<FJsonValue>> DArray, KArray, RArray, PArray;
-			for (auto &val : D)
-				DArray.Add(MakeShareable(new FJsonValueNumber(val)));
-			for (auto &val : K)
-				KArray.Add(MakeShareable(new FJsonValueNumber(val)));
-			for (auto &val : R)
-				RArray.Add(MakeShareable(new FJsonValueNumber(val)));
-			for (auto &val : P)
-				PArray.Add(MakeShareable(new FJsonValueNumber(val)));
-
 			Object->SetObjectField(TEXT("header"), Header.ToJsonObject());
 			Object->SetNumberField(TEXT("height"), Height);
 			Object->SetNumberField(TEXT("width"), Width);
 			Object->SetStringField(TEXT("distortion_model"), DistortionModel);
-			Object->SetArrayField(TEXT("D"), DArray);
-			Object->SetArrayField(TEXT("K"), KArray);
-			Object->SetArrayField(TEXT("R"), RArray);
-			Object->SetArrayField(TEXT("P"), PArray);
+			TArray<TSharedPtr<FJsonValue>> DArray;
+			for (auto &val : D)
+				DArray.Add(MakeShareable(new FJsonValueNumber(val)));
+			Object->SetArrayField(TEXT("d"), DArray);
+			TArray<TSharedPtr<FJsonValue>> KArray;
+			for (auto &val : K)
+				KArray.Add(MakeShareable(new FJsonValueNumber(val)));
+			Object->SetArrayField(TEXT("k"), KArray);
+			TArray<TSharedPtr<FJsonValue>> RArray;
+			for (auto &val : R)
+				RArray.Add(MakeShareable(new FJsonValueNumber(val)));
+			Object->SetArrayField(TEXT("r"), RArray);
+			TArray<TSharedPtr<FJsonValue>> PArray;
+			for (auto &val : P)
+				PArray.Add(MakeShareable(new FJsonValueNumber(val)));
+			Object->SetArrayField(TEXT("p"), PArray);
 			Object->SetNumberField(TEXT("binning_x"), BinningX);
 			Object->SetNumberField(TEXT("binning_y"), BinningY);
-			Object->SetObjectField(TEXT("roi"), ROI.ToJsonObject());
-
+			Object->SetObjectField(TEXT("roi"), Roi.ToJsonObject());
 			return Object;
 		}
+		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
+		{
+			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
+			Object->SetObjectField(TEXT("header"), Header.ToBsonObject());
+			Object->SetNumberField(TEXT("height"), Height);
+			Object->SetNumberField(TEXT("width"), Width);
+			Object->SetStringField(TEXT("distortion_model"), DistortionModel);
+			TArray<TSharedPtr<FBsonValue>> DArray;
+			for (auto &val : D)
+				DArray.Add(MakeShareable(new FBsonValueNumber(val)));
+			Object->SetArrayField(TEXT("d"), DArray);
+			TArray<TSharedPtr<FBsonValue>> KArray;
+			for (auto &val : K)
+				KArray.Add(MakeShareable(new FBsonValueNumber(val)));
+			Object->SetArrayField(TEXT("k"), KArray);
+			TArray<TSharedPtr<FBsonValue>> RArray;
+			for (auto &val : R)
+				RArray.Add(MakeShareable(new FBsonValueNumber(val)));
+			Object->SetArrayField(TEXT("r"), RArray);
+			TArray<TSharedPtr<FBsonValue>> PArray;
+			for (auto &val : P)
+				PArray.Add(MakeShareable(new FBsonValueNumber(val)));
+			Object->SetArrayField(TEXT("p"), PArray);
+			Object->SetNumberField(TEXT("binning_x"), BinningX);
+			Object->SetNumberField(TEXT("binning_y"), BinningY);
+			Object->SetObjectField(TEXT("roi"), Roi.ToBsonObject());
+			return Object;
+		}
 		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
@@ -277,4 +327,4 @@ namespace sensor_msgs
 			return OutputString;
 		}
 	};
-} // namespace sensor_msgs
+}

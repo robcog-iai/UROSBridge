@@ -165,7 +165,7 @@ private:
 	// Friendship declaration
 	friend class FROSBridgeHandlerRunnable;
 
-	FSerializationMode SerializationMode;
+	ESerializationMode SerializationMode;
 
 	void SendBySerializationMode(FString Message);
 
@@ -175,7 +175,7 @@ private:
 
 public:
 	
-	FROSBridgeHandler(const FString& InHost, int32 InPort, FSerializationMode InMode = FSerializationMode::MODE_JSON):
+	FROSBridgeHandler(const FString& InHost, int32 InPort, ESerializationMode InMode = ESerializationMode::MODE_JSON):
 		Host(InHost), Port(InPort),
 		ClientInterval(0.01),
 		bIsClientConnected(false),
@@ -184,7 +184,7 @@ public:
 	}
 
 	//This creates a Handler with a custom ErrorCallback
-	FROSBridgeHandler(const FString& InHost, int32 InPort, FWebsocketInfoCallBack UserErrorCallbacks, FWebsocketInfoCallBack UserConnectedCallbacks, FSerializationMode InMode = FSerializationMode::MODE_JSON) :
+	FROSBridgeHandler(const FString& InHost, int32 InPort, FWebsocketInfoCallBack UserErrorCallbacks, FWebsocketInfoCallBack UserConnectedCallbacks, ESerializationMode InMode = ESerializationMode::MODE_JSON) :
 		Host(InHost), Port(InPort),
 		ErrorCallbacks(UserErrorCallbacks),
 		ConnectedCallbacks(UserConnectedCallbacks),

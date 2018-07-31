@@ -8,9 +8,7 @@ namespace visualization_msgs
 {
 	class MarkerArray : public FROSBridgeMsg
 	{
-
 		TArray<visualization_msgs::Marker> Markers;
-
 	public:
 		MarkerArray()
 		{
@@ -18,13 +16,12 @@ namespace visualization_msgs
 		}
 
 		MarkerArray
-		(const TArray<visualization_msgs::Marker>& InMarkers)
+		(
+			const TArray<visualization_msgs::Marker>& InMarkers
+		):
+			Markers(InMarkers)
 		{
 			MsgType = "visualization_msgs/MarkerArray";
-			for (int i = 0; i < InMarkers.Num(); i++)
-			{
-				Markers.Add(InMarkers[i]);
-			}
 		}
 
 		~MarkerArray() override {}
@@ -34,37 +31,31 @@ namespace visualization_msgs
 			return Markers;
 		}
 
-		visualization_msgs::Marker GetmarkerAt(int32 Index) const
+		void SetMarkers(TArray<visualization_msgs::Marker>& InMarkers)
 		{
-			check(Index < Markers.Num());
-			return Markers[Index];
-		}
-
-		void AddMarker(visualization_msgs::Marker InMarker)
-		{
-			Markers.Add(InMarker);
-		}
-
-		void SetMarkers(const TArray<visualization_msgs::Marker>& InMarkers)
-		{
-			Markers.Empty();
 			Markers = InMarkers;
 		}
 
-		void AppendMarkers(const TArray<visualization_msgs::Marker>& InMarkers)
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
-			Markers.Append(InMarkers);
+			TArray<TSharedPtr<FJsonValue>> ValuesPtrArr;
+
+			Markers.Empty();
+			ValuesPtrArr = JsonObject->GetArrayField(TEXT("markers"));
+			for (auto &ptr : ValuesPtrArr)
+				Markers.Add(visualization_msgs::Marker::GetFromJson(ptr->AsObject()));
+
 		}
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
+		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
 		{
-			TArray<TSharedPtr<FJsonValue>> MarkersPtrArray = JsonObject->GetArrayField(TEXT("markers"));
-			for (auto &ptr : MarkersPtrArray)
-			{
-				visualization_msgs::Marker marker =
-					visualization_msgs::Marker::GetFromJson(ptr->AsObject());
-				Markers.Add(marker);
-			}
+			TArray<TSharedPtr<FBsonValue>> ValuesPtrArr;
+
+			Markers.Empty();
+			ValuesPtrArr = BsonObject->GetArrayField(TEXT("markers"));
+			for (auto &ptr : ValuesPtrArr)
+				Markers.Add(visualization_msgs::Marker::GetFromBson(ptr->AsObject()));
+
 		}
 
 		static MarkerArray GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -74,31 +65,34 @@ namespace visualization_msgs
 			return Result;
 		}
 
-		virtual FString ToString() const override
+		static MarkerArray GetFromBson(TSharedPtr<FBsonObject> BsonObject)
 		{
-			FString ArrayString = "[ ";
-			for (auto &Marker : Markers)
-				ArrayString += Marker.ToString() + TEXT(", ");
-			ArrayString += " ]";
-
-			return TEXT("Markers { marker = ") + ArrayString + TEXT(" } ");
+			MarkerArray Result;
+			Result.FromBson(BsonObject);
+			return Result;
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const override 
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-			TArray<TSharedPtr<FJsonValue>> MarkersPtrArray;
-			for (auto &marker : Markers)
-			{
-				TSharedPtr<FJsonValue> Ptr = MakeShareable(new FJsonValueObject(marker.ToJsonObject()));
-				MarkersPtrArray.Add(Ptr);
-			}
 
-			Object->SetArrayField("markers", MarkersPtrArray);
+			TArray<TSharedPtr<FJsonValue>> MarkersArray;
+			for (auto &val : Markers)
+				MarkersArray.Add(MakeShareable(new FJsonValueObject(val.ToJsonObject())));
+			Object->SetArrayField(TEXT("markers"), MarkersArray);
 			return Object;
 		}
+		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
+		{
+			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
-		virtual FString ToYamlString() const override 
+			TArray<TSharedPtr<FBsonValue>> MarkersArray;
+			for (auto &val : Markers)
+				MarkersArray.Add(MakeShareable(new FBsonValueObject(val.ToBsonObject())));
+			Object->SetArrayField(TEXT("markers"), MarkersArray);
+			return Object;
+		}
+		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
 			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
@@ -106,4 +100,4 @@ namespace visualization_msgs
 			return OutputString;
 		}
 	};
-} // namespace visualization_msgs
+}

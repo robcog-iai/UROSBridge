@@ -1,4 +1,5 @@
 #pragma once
+
 #include "ROSBridgeMsg.h"
 
 #include "std_msgs/Header.h"
@@ -10,7 +11,6 @@ namespace geometry_msgs
 	{
 		std_msgs::Header Header;
 		geometry_msgs::Polygon Polygon;
-
 	public:
 		PolygonStamped()
 		{
@@ -18,8 +18,12 @@ namespace geometry_msgs
 		}
 
 		PolygonStamped
-		(std_msgs::Header InHeader, geometry_msgs::Polygon InPolygon) :
-			Header(InHeader), Polygon(InPolygon)
+		(
+			std_msgs::Header InHeader,
+			geometry_msgs::Polygon InPolygon
+		):
+			Header(InHeader),
+			Polygon(InPolygon)
 		{
 			MsgType = "geometry_msgs/PolygonStamped";
 		}
@@ -46,10 +50,20 @@ namespace geometry_msgs
 			Polygon = InPolygon;
 		}
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
 			Header = std_msgs::Header::GetFromJson(JsonObject->GetObjectField(TEXT("header")));
+
 			Polygon = geometry_msgs::Polygon::GetFromJson(JsonObject->GetObjectField(TEXT("polygon")));
+
+		}
+
+		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
+		{
+			Header = std_msgs::Header::GetFromBson(BsonObject->GetObjectField(TEXT("header")));
+
+			Polygon = geometry_msgs::Polygon::GetFromBson(BsonObject->GetObjectField(TEXT("polygon")));
+
 		}
 
 		static PolygonStamped GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -59,21 +73,30 @@ namespace geometry_msgs
 			return Result;
 		}
 
-		virtual FString ToString() const override
+		static PolygonStamped GetFromBson(TSharedPtr<FBsonObject> BsonObject)
 		{
-			return TEXT("PolygonStamped { header = ") + Header.ToString() +
-				TEXT(", polygon = ") + Polygon.ToString() + TEXT(" } ");
+			PolygonStamped Result;
+			Result.FromBson(BsonObject);
+			return Result;
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const override 
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
+
 			Object->SetObjectField(TEXT("header"), Header.ToJsonObject());
 			Object->SetObjectField(TEXT("polygon"), Polygon.ToJsonObject());
 			return Object;
 		}
+		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
+		{
+			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
-		virtual FString ToYamlString() const override 
+			Object->SetObjectField(TEXT("header"), Header.ToBsonObject());
+			Object->SetObjectField(TEXT("polygon"), Polygon.ToBsonObject());
+			return Object;
+		}
+		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
 			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
@@ -81,4 +104,4 @@ namespace geometry_msgs
 			return OutputString;
 		}
 	};
-} // namespace geometry_msgs
+}

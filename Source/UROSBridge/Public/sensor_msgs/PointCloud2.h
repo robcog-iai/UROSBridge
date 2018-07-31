@@ -1,9 +1,9 @@
 #pragma once
+
 #include "ROSBridgeMsg.h"
 
 #include "std_msgs/Header.h"
 #include "sensor_msgs/PointField.h"
-#include "Base64.h"
 
 namespace sensor_msgs
 {
@@ -13,145 +13,192 @@ namespace sensor_msgs
 		uint32 Height;
 		uint32 Width;
 		TArray<sensor_msgs::PointField> Fields;
-		bool bIsBigEndian;
+		bool IsBigendian;
 		uint32 PointStep;
 		uint32 RowStep;
-		// NB: ROSBridge encodes uint8[] as a Base64 string
 		TArray<uint8> Data;
-		bool bIsDense;
-
+		bool IsDense;
 	public:
-
 		PointCloud2()
 		{
 			MsgType = "sensor_msgs/PointCloud2";
 		}
 
 		PointCloud2
-		(std_msgs::Header InHeader, uint32 InHeight, uint32 InWidth,
-			const TArray<sensor_msgs::PointField>& InFields, bool bInIsBigEndian,
-			uint32 InPointStep, uint32 InRowStep, const TArray<uint8>& InData, bool bInIsDense)
-			:
+		(
+			std_msgs::Header InHeader,
+			uint32 InHeight,
+			uint32 InWidth,
+			const TArray<sensor_msgs::PointField>& InFields,
+			bool InIsBigendian,
+			uint32 InPointStep,
+			uint32 InRowStep,
+			const TArray<uint8>& InData,
+			bool InIsDense
+		):
 			Header(InHeader),
 			Height(InHeight),
 			Width(InWidth),
 			Fields(InFields),
-			bIsBigEndian(bInIsBigEndian),
+			IsBigendian(InIsBigendian),
 			PointStep(InPointStep),
 			RowStep(InRowStep),
 			Data(InData),
-			bIsDense(bInIsDense)
+			IsDense(InIsDense)
 		{
 			MsgType = "sensor_msgs/PointCloud2";
 		}
 
 		~PointCloud2() override {}
 
-		std_msgs::Header GetHeader() const 
+		std_msgs::Header GetHeader() const
 		{
 			return Header;
 		}
 
-		uint32 GetHeight() const 
+		uint32 GetHeight() const
 		{
 			return Height;
 		}
 
-		uint32 GetWidth() const 
+		uint32 GetWidth() const
 		{
 			return Width;
 		}
 
-		TArray<sensor_msgs::PointField> GetFields() const 
+		TArray<sensor_msgs::PointField> GetFields() const
 		{
 			return Fields;
 		}
 
-		bool GetIsBigEndian() const 
+		bool GetIsBigendian() const
 		{
-			return bIsBigEndian;
+			return IsBigendian;
 		}
 
-		uint32 GetPointStep() const 
+		uint32 GetPointStep() const
 		{
 			return PointStep;
 		}
 
-		uint32 GetRowStep() const 
+		uint32 GetRowStep() const
 		{
-			return RowStep; 
+			return RowStep;
 		}
 
-		TArray<uint8> GetData() const 
+		TArray<uint8> GetData() const
 		{
-			return Data; 
+			return Data;
 		}
 
-		bool GetIsDense() const 
+		bool GetIsDense() const
 		{
-			return bIsDense; 
+			return IsDense;
 		}
 
-		void SetHeader(std_msgs::Header InHeader) 
-		{ 
-			Header = InHeader; 
+		void SetHeader(std_msgs::Header InHeader)
+		{
+			Header = InHeader;
 		}
 
 		void SetHeight(uint32 InHeight)
-		{ 
-			Height = InHeight; 
+		{
+			Height = InHeight;
 		}
 
-		void SetWidth(uint32 InWidth) 
+		void SetWidth(uint32 InWidth)
 		{
 			Width = InWidth;
 		}
 
-		void SetFields(const TArray<sensor_msgs::PointField>& InFields) 
+		void SetFields(TArray<sensor_msgs::PointField>& InFields)
 		{
-			Fields = InFields; 
+			Fields = InFields;
 		}
 
-		void SetIsBigEndian(bool bInIsBigEndian)
+		void SetIsBigendian(bool InIsBigendian)
 		{
-			bIsBigEndian = bInIsBigEndian; 
+			IsBigendian = InIsBigendian;
 		}
 
-		void SetPointStep(uint32 InPointStep) 
+		void SetPointStep(uint32 InPointStep)
 		{
-			PointStep = InPointStep; 
+			PointStep = InPointStep;
 		}
 
-		void SetRowStep(uint32 InRowStep) 
+		void SetRowStep(uint32 InRowStep)
 		{
-			RowStep = InRowStep; 
+			RowStep = InRowStep;
 		}
 
-		void SetData(const TArray<uint8>& InData) 
+		void SetData(TArray<uint8>& InData)
 		{
-			Data = InData; 
+			Data = InData;
 		}
 
-		void SetIsDense(bool bInIsDense) 
+		void SetIsDense(bool InIsDense)
 		{
-			bIsDense = bInIsDense; 
+			IsDense = InIsDense;
 		}
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
 			Header = std_msgs::Header::GetFromJson(JsonObject->GetObjectField(TEXT("header")));
+
 			Height = JsonObject->GetNumberField(TEXT("height"));
+
 			Width = JsonObject->GetNumberField(TEXT("width"));
+
+			TArray<TSharedPtr<FJsonValue>> ValuesPtrArr;
+
 			Fields.Empty();
-			TArray<TSharedPtr<FJsonValue>> FieldsPtrArr = JsonObject->GetArrayField(TEXT("fields"));
-			for (auto &ptr : FieldsPtrArr)
+			ValuesPtrArr = JsonObject->GetArrayField(TEXT("fields"));
+			for (auto &ptr : ValuesPtrArr)
 				Fields.Add(sensor_msgs::PointField::GetFromJson(ptr->AsObject()));
-			bIsBigEndian = JsonObject->GetBoolField(TEXT("is_bigendian"));
+
+			IsBigendian = JsonObject->GetBoolField(TEXT("is_bigendian"));
+
 			PointStep = JsonObject->GetNumberField(TEXT("point_step"));
+
 			RowStep = JsonObject->GetNumberField(TEXT("row_step"));
+
 			Data.Empty();
-			FBase64::Decode(JsonObject->GetStringField(TEXT("data")), Data);
-			bIsDense = JsonObject->GetBoolField(TEXT("is_dense"));
+			ValuesPtrArr = JsonObject->GetArrayField(TEXT("data"));
+			for (auto &ptr : ValuesPtrArr)
+				Data.Add(ptr->AsNumber());
+
+			IsDense = JsonObject->GetBoolField(TEXT("is_dense"));
+
+		}
+
+		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
+		{
+			Header = std_msgs::Header::GetFromBson(BsonObject->GetObjectField(TEXT("header")));
+
+			Height = BsonObject->GetNumberField(TEXT("height"));
+
+			Width = BsonObject->GetNumberField(TEXT("width"));
+
+			TArray<TSharedPtr<FBsonValue>> ValuesPtrArr;
+
+			Fields.Empty();
+			ValuesPtrArr = BsonObject->GetArrayField(TEXT("fields"));
+			for (auto &ptr : ValuesPtrArr)
+				Fields.Add(sensor_msgs::PointField::GetFromBson(ptr->AsObject()));
+
+			IsBigendian = BsonObject->GetBoolField(TEXT("is_bigendian"));
+
+			PointStep = BsonObject->GetNumberField(TEXT("point_step"));
+
+			RowStep = BsonObject->GetNumberField(TEXT("row_step"));
+
+			Data.Empty();
+			ValuesPtrArr = BsonObject->GetArrayField(TEXT("data"));
+			for (auto &ptr : ValuesPtrArr)
+				Data.Add(ptr->AsNumber());
+
+			IsDense = BsonObject->GetBoolField(TEXT("is_dense"));
+
 		}
 
 		static PointCloud2 GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -161,62 +208,56 @@ namespace sensor_msgs
 			return Result;
 		}
 
-		virtual FString ToString() const override
+		static PointCloud2 GetFromBson(TSharedPtr<FBsonObject> BsonObject)
 		{
-			FString FieldsString = "[ ";
-			for (auto &value : Fields)
-				FieldsString += value.ToString() + TEXT(", ");
-			FieldsString += " ]";
-
-			FString DataString = "[ ";
-			for (auto &value : Data)
-				DataString += FString::FromInt(value) + TEXT(", ");
-			DataString += " ]";
-
-			return TEXT("PointCloud2 { header = ") + Header.ToString() +
-				TEXT(", height = ") + FString::FromInt(Height) +
-				TEXT(", width = ") + FString::FromInt(Width) +
-				TEXT(", fields = ") + FieldsString +
-				TEXT(", is_bigendian = ") + FString::FromInt(bIsBigEndian) +
-				TEXT(", point_step = ") + FString::FromInt(PointStep) +
-				TEXT(", row_step = ") + FString::FromInt(RowStep) +
-				TEXT(", data = ") + DataString +
-				TEXT(", is_dense = ") + FString::FromInt(bIsDense) +
-				TEXT(" } ");
+			PointCloud2 Result;
+			Result.FromBson(BsonObject);
+			return Result;
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const override 
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-
-			TArray<TSharedPtr<FJsonValue>> FieldsPtrArray;
-			for (auto &field : Fields)
-			{
-				TSharedPtr<FJsonValue> Ptr = MakeShareable(new FJsonValueObject(field.ToJsonObject()));
-				FieldsPtrArray.Add(Ptr);
-			}
-
-			TArray<TSharedPtr<FJsonValue>> DataArray;
-			for (auto &datum : Data)
-			{
-				TSharedPtr<FJsonValue> Ptr = MakeShareable(new FJsonValueNumber(datum));
-				DataArray.Add(Ptr);
-			}
 
 			Object->SetObjectField(TEXT("header"), Header.ToJsonObject());
 			Object->SetNumberField(TEXT("height"), Height);
 			Object->SetNumberField(TEXT("width"), Width);
-			Object->SetArrayField(TEXT("fields"), FieldsPtrArray);
-			Object->SetBoolField(TEXT("is_bigendian"), bIsBigEndian);
+			TArray<TSharedPtr<FJsonValue>> FieldsArray;
+			for (auto &val : Fields)
+				FieldsArray.Add(MakeShareable(new FJsonValueObject(val.ToJsonObject())));
+			Object->SetArrayField(TEXT("fields"), FieldsArray);
+			Object->SetBoolField(TEXT("is_bigendian"), IsBigendian);
 			Object->SetNumberField(TEXT("point_step"), PointStep);
 			Object->SetNumberField(TEXT("row_step"), RowStep);
-			Object->SetStringField(TEXT("data"), *(FBase64::Encode(Data)));
-			Object->SetBoolField(TEXT("is_dense"), bIsDense);
-
+			TArray<TSharedPtr<FJsonValue>> DataArray;
+			for (auto &val : Data)
+				DataArray.Add(MakeShareable(new FJsonValueNumber(val)));
+			Object->SetArrayField(TEXT("data"), DataArray);
+			Object->SetBoolField(TEXT("is_dense"), IsDense);
 			return Object;
 		}
+		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
+		{
+			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
-		virtual FString ToYamlString() const override 
+			Object->SetObjectField(TEXT("header"), Header.ToBsonObject());
+			Object->SetNumberField(TEXT("height"), Height);
+			Object->SetNumberField(TEXT("width"), Width);
+			TArray<TSharedPtr<FBsonValue>> FieldsArray;
+			for (auto &val : Fields)
+				FieldsArray.Add(MakeShareable(new FBsonValueObject(val.ToBsonObject())));
+			Object->SetArrayField(TEXT("fields"), FieldsArray);
+			Object->SetBoolField(TEXT("is_bigendian"), IsBigendian);
+			Object->SetNumberField(TEXT("point_step"), PointStep);
+			Object->SetNumberField(TEXT("row_step"), RowStep);
+			TArray<TSharedPtr<FBsonValue>> DataArray;
+			for (auto &val : Data)
+				DataArray.Add(MakeShareable(new FBsonValueNumber(val)));
+			Object->SetArrayField(TEXT("data"), DataArray);
+			Object->SetBoolField(TEXT("is_dense"), IsDense);
+			return Object;
+		}
+		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
 			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
@@ -224,4 +265,4 @@ namespace sensor_msgs
 			return OutputString;
 		}
 	};
-} // namespace sensor_msgs
+}

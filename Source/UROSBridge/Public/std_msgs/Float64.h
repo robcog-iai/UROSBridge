@@ -1,28 +1,31 @@
 #pragma once
+
 #include "ROSBridgeMsg.h"
+
 
 namespace std_msgs
 {
 	class Float64 : public FROSBridgeMsg
 	{
 		double Data;
-
 	public:
 		Float64()
 		{
 			MsgType = "std_msgs/Float64";
 		}
 
-
-		Float64(float InData)
+		Float64
+		(
+			double InData
+		):
+			Data(InData)
 		{
 			MsgType = "std_msgs/Float64";
-			Data = InData;
 		}
 
 		~Float64() override {}
 
-		double GetData()
+		double GetData() const
 		{
 			return Data;
 		}
@@ -34,21 +37,44 @@ namespace std_msgs
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
-			Data = JsonObject->GetNumberField("data");
+			Data = JsonObject->GetNumberField(TEXT("data"));
+
 		}
 
-		virtual FString ToString() const override
+		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
 		{
-			return TEXT("Float64 { data = \"") + FString::SanitizeFloat(Data) + TEXT("\" }");
+			Data = BsonObject->GetNumberField(TEXT("data"));
+
+		}
+
+		static Float64 GetFromJson(TSharedPtr<FJsonObject> JsonObject)
+		{
+			Float64 Result;
+			Result.FromJson(JsonObject);
+			return Result;
+		}
+
+		static Float64 GetFromBson(TSharedPtr<FBsonObject> BsonObject)
+		{
+			Float64 Result;
+			Result.FromBson(BsonObject);
+			return Result;
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
+
 			Object->SetNumberField(TEXT("data"), Data);
 			return Object;
 		}
+		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
+		{
+			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
+			Object->SetNumberField(TEXT("data"), Data);
+			return Object;
+		}
 		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
@@ -57,4 +83,4 @@ namespace std_msgs
 			return OutputString;
 		}
 	};
-} // namespace std_msgs
+}

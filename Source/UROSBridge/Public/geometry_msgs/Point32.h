@@ -1,5 +1,7 @@
 #pragma once
+
 #include "ROSBridgeMsg.h"
+
 
 namespace geometry_msgs
 {
@@ -8,23 +10,23 @@ namespace geometry_msgs
 		float X;
 		float Y;
 		float Z;
-
 	public:
 		Point32()
 		{
 			MsgType = "geometry_msgs/Point32";
 		}
 
-		Point32(float InX, float InY, float InZ)
+		Point32
+		(
+			float InX,
+			float InY,
+			float InZ
+		):
+			X(InX),
+			Y(InY),
+			Z(InZ)
 		{
 			MsgType = "geometry_msgs/Point32";
-			X = InX; Y = InY; Z = InZ;
-		}
-
-		Point32(FVector InVector)
-		{
-			MsgType = "geometry_msgs/Point32";
-			X = InVector.X; Y = InVector.Y; Z = InVector.Z;
 		}
 
 		~Point32() override {}
@@ -44,11 +46,6 @@ namespace geometry_msgs
 			return Z;
 		}
 
-		FVector GetVector() const
-		{
-			return FVector(X, Y, Z);
-		}
-
 		void SetX(float InX)
 		{
 			X = InX;
@@ -64,16 +61,24 @@ namespace geometry_msgs
 			Z = InZ;
 		}
 
-		void SetVector(const FVector& Vector)
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
-			X = Vector.X; Y = Vector.Y; Z = Vector.Z;
+			X = JsonObject->GetNumberField(TEXT("x"));
+
+			Y = JsonObject->GetNumberField(TEXT("y"));
+
+			Z = JsonObject->GetNumberField(TEXT("z"));
+
 		}
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
+		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
 		{
-			X = (float)(JsonObject->GetNumberField(TEXT("x")));
-			Y = (float)(JsonObject->GetNumberField(TEXT("y")));
-			Z = (float)(JsonObject->GetNumberField(TEXT("z")));
+			X = BsonObject->GetNumberField(TEXT("x"));
+
+			Y = BsonObject->GetNumberField(TEXT("y"));
+
+			Z = BsonObject->GetNumberField(TEXT("z"));
+
 		}
 
 		static Point32 GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -83,22 +88,32 @@ namespace geometry_msgs
 			return Result;
 		}
 
-		virtual FString ToString() const override
+		static Point32 GetFromBson(TSharedPtr<FBsonObject> BsonObject)
 		{
-			return TEXT("Point32 { x = ") + FString::SanitizeFloat(X) +
-				TEXT(", y = ") + FString::SanitizeFloat(Y) +
-				TEXT(", z = ") + FString::SanitizeFloat(Z) + TEXT(" } ");
+			Point32 Result;
+			Result.FromBson(BsonObject);
+			return Result;
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const override {
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
+		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
+
 			Object->SetNumberField(TEXT("x"), X);
 			Object->SetNumberField(TEXT("y"), Y);
 			Object->SetNumberField(TEXT("z"), Z);
 			return Object;
 		}
+		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
+		{
+			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
-		virtual FString ToYamlString() const override 
+			Object->SetNumberField(TEXT("x"), X);
+			Object->SetNumberField(TEXT("y"), Y);
+			Object->SetNumberField(TEXT("z"), Z);
+			return Object;
+		}
+		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
 			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
@@ -106,4 +121,4 @@ namespace geometry_msgs
 			return OutputString;
 		}
 	};
-} // geometry_msgs
+}

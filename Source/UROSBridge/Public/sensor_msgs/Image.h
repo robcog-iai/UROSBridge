@@ -1,7 +1,8 @@
 #pragma once
+
 #include "ROSBridgeMsg.h"
+
 #include "std_msgs/Header.h"
-#include "Base64.h"
 
 namespace sensor_msgs
 {
@@ -10,29 +11,31 @@ namespace sensor_msgs
 		std_msgs::Header Header;
 		uint32 Height;
 		uint32 Width;
-		FString Encoding; // reference http://docs.ros.org/kinetic/api/sensor_msgs/html/image__encodings_8h_source.html
-		uint8 IsBigEndian;
+		FString Encoding;
+		uint8 IsBigendian;
 		uint32 Step;
-		// NB: ROSBridge encodes uint8[] as a Base64 string
 		TArray<uint8> Data;
-
 	public:
-
 		Image()
 		{
 			MsgType = "sensor_msgs/Image";
 		}
 
 		Image
-		(std_msgs::Header InHeader, uint32 InHeight, uint32 InWidth,
-			FString InEncoding, uint8 InIsBigEndian,
-			uint32 InStep, const TArray<uint8>& InData)
-			:
+		(
+			std_msgs::Header InHeader,
+			uint32 InHeight,
+			uint32 InWidth,
+			FString InEncoding,
+			uint8 InIsBigendian,
+			uint32 InStep,
+			const TArray<uint8>& InData
+		):
 			Header(InHeader),
 			Height(InHeight),
 			Width(InWidth),
 			Encoding(InEncoding),
-			IsBigEndian(InIsBigEndian),
+			IsBigendian(InIsBigendian),
 			Step(InStep),
 			Data(InData)
 		{
@@ -61,9 +64,9 @@ namespace sensor_msgs
 			return Encoding;
 		}
 
-		uint8 GetIsBigEndian() const
+		uint8 GetIsBigendian() const
 		{
-			return IsBigEndian;
+			return IsBigendian;
 		}
 
 		uint32 GetStep() const
@@ -96,9 +99,9 @@ namespace sensor_msgs
 			Encoding = InEncoding;
 		}
 
-		void SetIsBigEndian(uint8 InIsBigEndian)
+		void SetIsBigendian(uint8 InIsBigendian)
 		{
-			IsBigEndian = InIsBigEndian;
+			IsBigendian = InIsBigendian;
 		}
 
 		void SetStep(uint32 InStep)
@@ -106,7 +109,7 @@ namespace sensor_msgs
 			Step = InStep;
 		}
 
-		void SetData(const TArray<uint8>& InData)
+		void SetData(TArray<uint8>& InData)
 		{
 			Data = InData;
 		}
@@ -114,13 +117,47 @@ namespace sensor_msgs
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
 			Header = std_msgs::Header::GetFromJson(JsonObject->GetObjectField(TEXT("header")));
+
 			Height = JsonObject->GetNumberField(TEXT("height"));
+
 			Width = JsonObject->GetNumberField(TEXT("width"));
+
 			Encoding = JsonObject->GetStringField(TEXT("encoding"));
-			IsBigEndian = JsonObject->GetNumberField(TEXT("is_bigendian"));
+
+			IsBigendian = JsonObject->GetNumberField(TEXT("is_bigendian"));
+
 			Step = JsonObject->GetNumberField(TEXT("step"));
+
+			TArray<TSharedPtr<FJsonValue>> ValuesPtrArr;
+
 			Data.Empty();
-			FBase64::Decode(JsonObject->GetStringField(TEXT("data")), Data);
+			ValuesPtrArr = JsonObject->GetArrayField(TEXT("data"));
+			for (auto &ptr : ValuesPtrArr)
+				Data.Add(ptr->AsNumber());
+
+		}
+
+		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
+		{
+			Header = std_msgs::Header::GetFromBson(BsonObject->GetObjectField(TEXT("header")));
+
+			Height = BsonObject->GetNumberField(TEXT("height"));
+
+			Width = BsonObject->GetNumberField(TEXT("width"));
+
+			Encoding = BsonObject->GetStringField(TEXT("encoding"));
+
+			IsBigendian = BsonObject->GetNumberField(TEXT("is_bigendian"));
+
+			Step = BsonObject->GetNumberField(TEXT("step"));
+
+			TArray<TSharedPtr<FBsonValue>> ValuesPtrArr;
+
+			Data.Empty();
+			ValuesPtrArr = BsonObject->GetArrayField(TEXT("data"));
+			for (auto &ptr : ValuesPtrArr)
+				Data.Add(ptr->AsNumber());
+
 		}
 
 		static Image GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -130,45 +167,45 @@ namespace sensor_msgs
 			return Result;
 		}
 
-		virtual FString ToString() const override
+		static Image GetFromBson(TSharedPtr<FBsonObject> BsonObject)
 		{
-			FString DataString = "[ ";
-			for (auto &value : Data)
-				DataString += FString::FromInt(value) + TEXT(", ");
-			DataString += " ]";
-
-			return TEXT("Image { header = ") + Header.ToString() +
-				TEXT(", height = ") + FString::FromInt(Height) +
-				TEXT(", width = ") + FString::FromInt(Width) +
-				TEXT(", encoding =") + Encoding +
-				TEXT(", is_bigendian = ") + FString::FromInt(IsBigEndian) +
-				TEXT(", step = ") + FString::FromInt(Step) +
-				TEXT(", data = ") + DataString +
-				TEXT(" } ");
+			Image Result;
+			Result.FromBson(BsonObject);
+			return Result;
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
-			TArray<TSharedPtr<FJsonValue>> DataArray;
-			for (auto &datum : Data)
-			{
-				TSharedPtr<FJsonValue> Ptr = MakeShareable(new FJsonValueNumber(datum));
-				DataArray.Add(Ptr);
-			}
-
 			Object->SetObjectField(TEXT("header"), Header.ToJsonObject());
 			Object->SetNumberField(TEXT("height"), Height);
 			Object->SetNumberField(TEXT("width"), Width);
 			Object->SetStringField(TEXT("encoding"), Encoding);
-			Object->SetNumberField(TEXT("is_bigendian"), IsBigEndian);
+			Object->SetNumberField(TEXT("is_bigendian"), IsBigendian);
 			Object->SetNumberField(TEXT("step"), Step);
-			Object->SetStringField(TEXT("data"), *(FBase64::Encode(Data)));
-
+			TArray<TSharedPtr<FJsonValue>> DataArray;
+			for (auto &val : Data)
+				DataArray.Add(MakeShareable(new FJsonValueNumber(val)));
+			Object->SetArrayField(TEXT("data"), DataArray);
 			return Object;
 		}
+		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
+		{
+			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
+			Object->SetObjectField(TEXT("header"), Header.ToBsonObject());
+			Object->SetNumberField(TEXT("height"), Height);
+			Object->SetNumberField(TEXT("width"), Width);
+			Object->SetStringField(TEXT("encoding"), Encoding);
+			Object->SetNumberField(TEXT("is_bigendian"), IsBigendian);
+			Object->SetNumberField(TEXT("step"), Step);
+			TArray<TSharedPtr<FBsonValue>> DataArray;
+			for (auto &val : Data)
+				DataArray.Add(MakeShareable(new FBsonValueNumber(val)));
+			Object->SetArrayField(TEXT("data"), DataArray);
+			return Object;
+		}
 		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
@@ -177,4 +214,4 @@ namespace sensor_msgs
 			return OutputString;
 		}
 	};
-} // namespace sensor_msgs
+}

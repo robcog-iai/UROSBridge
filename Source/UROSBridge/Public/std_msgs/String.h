@@ -2,8 +2,6 @@
 
 #include "ROSBridgeMsg.h"
 
-#include "FBson.h"
-
 
 namespace std_msgs
 {
@@ -46,6 +44,7 @@ namespace std_msgs
 		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
 		{
 			Data = BsonObject->GetStringField(TEXT("data"));
+
 		}
 
 		static String GetFromJson(TSharedPtr<FJsonObject> JsonObject)

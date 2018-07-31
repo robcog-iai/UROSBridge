@@ -2,7 +2,8 @@
 
 #include "CoreMinimal.h"
 
-enum class FSerializationMode {
+UENUM()
+enum class ESerializationMode : uint8 {
 	MODE_JSON,
 	MODE_BSON
 };

@@ -1,5 +1,7 @@
 #pragma once
+
 #include "ROSBridgeMsg.h"
+
 
 namespace std_msgs
 {
@@ -8,17 +10,18 @@ namespace std_msgs
 		uint32 Seq;
 		FROSTime Stamp;
 		FString FrameId;
-
 	public:
 		Header()
 		{
 			MsgType = "std_msgs/Header";
 		}
 
-		Header(
+		Header
+		(
 			uint32 InSeq,
 			FROSTime InStamp,
-			FString InFrameId) :
+			FString InFrameId
+		):
 			Seq(InSeq),
 			Stamp(InStamp),
 			FrameId(InFrameId)
@@ -58,11 +61,24 @@ namespace std_msgs
 			FrameId = InFrameId;
 		}
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
-			Seq = (uint32)(JsonObject->GetNumberField(TEXT("seq")));
+			Seq = JsonObject->GetNumberField(TEXT("seq"));
+
 			Stamp = FROSTime::GetFromJson(JsonObject->GetObjectField(TEXT("stamp")));
+
 			FrameId = JsonObject->GetStringField(TEXT("frame_id"));
+
+		}
+
+		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
+		{
+			Seq = BsonObject->GetNumberField(TEXT("seq"));
+
+			Stamp = FROSTime::GetFromBson(BsonObject->GetObjectField(TEXT("stamp")));
+
+			FrameId = BsonObject->GetStringField(TEXT("frame_id"));
+
 		}
 
 		static Header GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -72,23 +88,32 @@ namespace std_msgs
 			return Result;
 		}
 
-		virtual FString ToString() const override
+		static Header GetFromBson(TSharedPtr<FBsonObject> BsonObject)
 		{
-			return TEXT("Header { seq = ") + FString::FromInt(Seq) +
-				TEXT(", stamp = ") + Stamp.ToString() +
-				TEXT(", frame_id = ") + FrameId + TEXT(" } ");
+			Header Result;
+			Result.FromBson(BsonObject);
+			return Result;
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const override 
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
+
 			Object->SetNumberField(TEXT("seq"), Seq);
 			Object->SetObjectField(TEXT("stamp"), Stamp.ToJsonObject());
 			Object->SetStringField(TEXT("frame_id"), FrameId);
 			return Object;
 		}
+		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
+		{
+			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
-		virtual FString ToYamlString() const override 
+			Object->SetNumberField(TEXT("seq"), Seq);
+			Object->SetObjectField(TEXT("stamp"), Stamp.ToBsonObject());
+			Object->SetStringField(TEXT("frame_id"), FrameId);
+			return Object;
+		}
+		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
 			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);

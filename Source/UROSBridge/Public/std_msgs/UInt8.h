@@ -1,28 +1,31 @@
 #pragma once
+
 #include "ROSBridgeMsg.h"
+
 
 namespace std_msgs
 {
 	class UInt8 : public FROSBridgeMsg
 	{
 		uint8 Data;
-
 	public:
 		UInt8()
 		{
 			MsgType = "std_msgs/UInt8";
 		}
 
-
-		UInt8(uint8 InData)
+		UInt8
+		(
+			uint8 InData
+		):
+			Data(InData)
 		{
 			MsgType = "std_msgs/UInt8";
-			Data = InData;
 		}
 
 		~UInt8() override {}
 
-		uint8 GetData()
+		uint8 GetData() const
 		{
 			return Data;
 		}
@@ -32,33 +35,52 @@ namespace std_msgs
 			Data = InData;
 		}
 
-
-		virtual void FromJson(FJsonObject* JsonObject) override 
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
-			Data = (uint8)(JsonObject->GetIntegerField("data"));
+			Data = JsonObject->GetNumberField(TEXT("data"));
+
 		}
 
-		virtual FString ToString() const override
+		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
 		{
-			return TEXT("UInt8 { data = \"" + FString::FromInt(Data) + "\" }");
+			Data = BsonObject->GetNumberField(TEXT("data"));
+
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const override 
+		static UInt8 GetFromJson(TSharedPtr<FJsonObject> JsonObject)
+		{
+			UInt8 Result;
+			Result.FromJson(JsonObject);
+			return Result;
+		}
+
+		static UInt8 GetFromBson(TSharedPtr<FBsonObject> BsonObject)
+		{
+			UInt8 Result;
+			Result.FromBson(BsonObject);
+			return Result;
+		}
+
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
+
 			Object->SetNumberField(TEXT("data"), Data);
 			return Object;
 		}
+		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
+		{
+			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
-		virtual FString ToYamlString() const override 
+			Object->SetNumberField(TEXT("data"), Data);
+			return Object;
+		}
+		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
-			FJsonObject Object;
-			Object.SetNumberField(TEXT("data"), Data);
-
 			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
-			FJsonSerializer::Serialize(Object.ToSharedRef(), Writer);
+			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
 	};
-} // namespace std_msgs
+}

@@ -1,7 +1,7 @@
 #pragma once
+
 #include "ROSBridgeMsg.h"
 
-#include "std_msgs/String.h"
 
 namespace sensor_msgs
 {
@@ -9,7 +9,6 @@ namespace sensor_msgs
 	{
 		FString Name;
 		TArray<float> Values;
-
 	public:
 		ChannelFloat32()
 		{
@@ -17,8 +16,12 @@ namespace sensor_msgs
 		}
 
 		ChannelFloat32
-		(FString InName, const TArray<float>& InValues) :
-			Name(InName), Values(InValues)
+		(
+			FString InName,
+			const TArray<float>& InValues
+		):
+			Name(InName),
+			Values(InValues)
 		{
 			MsgType = "sensor_msgs/ChannelFloat32";
 		}
@@ -40,18 +43,35 @@ namespace sensor_msgs
 			Name = InName;
 		}
 
-		void SetValues(const TArray<float>& InValues)
+		void SetValues(TArray<float>& InValues)
 		{
 			Values = InValues;
 		}
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
 			Name = JsonObject->GetStringField(TEXT("name"));
+
+			TArray<TSharedPtr<FJsonValue>> ValuesPtrArr;
+
 			Values.Empty();
-			TArray<TSharedPtr<FJsonValue>> ValuesPtrArr = JsonObject->GetArrayField(TEXT("values"));
+			ValuesPtrArr = JsonObject->GetArrayField(TEXT("values"));
 			for (auto &ptr : ValuesPtrArr)
 				Values.Add(ptr->AsNumber());
+
+		}
+
+		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
+		{
+			Name = BsonObject->GetStringField(TEXT("name"));
+
+			TArray<TSharedPtr<FBsonValue>> ValuesPtrArr;
+
+			Values.Empty();
+			ValuesPtrArr = BsonObject->GetArrayField(TEXT("values"));
+			for (auto &ptr : ValuesPtrArr)
+				Values.Add(ptr->AsNumber());
+
 		}
 
 		static ChannelFloat32 GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -61,31 +81,36 @@ namespace sensor_msgs
 			return Result;
 		}
 
-		virtual FString ToString() const override
+		static ChannelFloat32 GetFromBson(TSharedPtr<FBsonObject> BsonObject)
 		{
-			FString ArrayString = "[ ";
-			for (auto &value : Values)
-				ArrayString += FString::SanitizeFloat(value) + TEXT(", ");
-			ArrayString += " ]";
-
-			return TEXT("ChannelFloat32 { name = ") + Name +
-				TEXT(", values = ") + ArrayString + TEXT(" } ");
+			ChannelFloat32 Result;
+			Result.FromBson(BsonObject);
+			return Result;
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const override 
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
-			TArray<TSharedPtr<FJsonValue>> ValArray;
-			for (auto &val : Values)
-				ValArray.Add(MakeShareable<FJsonValue>(new FJsonValueNumber(val)));
-
 			Object->SetStringField(TEXT("name"), Name);
-			Object->SetArrayField(TEXT("values"), ValArray);
+			TArray<TSharedPtr<FJsonValue>> ValuesArray;
+			for (auto &val : Values)
+				ValuesArray.Add(MakeShareable(new FJsonValueNumber(val)));
+			Object->SetArrayField(TEXT("values"), ValuesArray);
 			return Object;
 		}
+		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
+		{
+			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
-		virtual FString ToYamlString() const override 
+			Object->SetStringField(TEXT("name"), Name);
+			TArray<TSharedPtr<FBsonValue>> ValuesArray;
+			for (auto &val : Values)
+				ValuesArray.Add(MakeShareable(new FBsonValueNumber(val)));
+			Object->SetArrayField(TEXT("values"), ValuesArray);
+			return Object;
+		}
+		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
 			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
@@ -93,4 +118,4 @@ namespace sensor_msgs
 			return OutputString;
 		}
 	};
-} // namespace sensor_msgs
+}

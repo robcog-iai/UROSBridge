@@ -1,6 +1,8 @@
 #pragma once
+
 #include "ROSBridgeMsg.h"
 
+#include "geometry_msgs/Vector3.h"
 #include "geometry_msgs/Vector3.h"
 
 namespace geometry_msgs
@@ -9,7 +11,6 @@ namespace geometry_msgs
 	{
 		geometry_msgs::Vector3 Force;
 		geometry_msgs::Vector3 Torque;
-
 	public:
 		Wrench()
 		{
@@ -17,8 +18,12 @@ namespace geometry_msgs
 		}
 
 		Wrench
-		(geometry_msgs::Vector3 InForce, geometry_msgs::Vector3 InTorque) :
-			Force(InForce), Torque(InTorque)
+		(
+			geometry_msgs::Vector3 InForce,
+			geometry_msgs::Vector3 InTorque
+		):
+			Force(InForce),
+			Torque(InTorque)
 		{
 			MsgType = "geometry_msgs/Wrench";
 		}
@@ -45,10 +50,20 @@ namespace geometry_msgs
 			Torque = InTorque;
 		}
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
 			Force = geometry_msgs::Vector3::GetFromJson(JsonObject->GetObjectField(TEXT("force")));
+
 			Torque = geometry_msgs::Vector3::GetFromJson(JsonObject->GetObjectField(TEXT("torque")));
+
+		}
+
+		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
+		{
+			Force = geometry_msgs::Vector3::GetFromBson(BsonObject->GetObjectField(TEXT("force")));
+
+			Torque = geometry_msgs::Vector3::GetFromBson(BsonObject->GetObjectField(TEXT("torque")));
+
 		}
 
 		static Wrench GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -58,21 +73,30 @@ namespace geometry_msgs
 			return Result;
 		}
 
-		virtual FString ToString() const override
+		static Wrench GetFromBson(TSharedPtr<FBsonObject> BsonObject)
 		{
-			return TEXT("Wrench { force = ") + Force.ToString() +
-				TEXT(", torque = ") + Torque.ToString() + TEXT(" } ");
+			Wrench Result;
+			Result.FromBson(BsonObject);
+			return Result;
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const override 
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
+
 			Object->SetObjectField(TEXT("force"), Force.ToJsonObject());
 			Object->SetObjectField(TEXT("torque"), Torque.ToJsonObject());
 			return Object;
 		}
+		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
+		{
+			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
-		virtual FString ToYamlString() const override 
+			Object->SetObjectField(TEXT("force"), Force.ToBsonObject());
+			Object->SetObjectField(TEXT("torque"), Torque.ToBsonObject());
+			return Object;
+		}
+		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
 			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
@@ -80,4 +104,4 @@ namespace geometry_msgs
 			return OutputString;
 		}
 	};
-} // namespace geometry_msgs
+}

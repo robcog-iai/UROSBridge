@@ -1,5 +1,7 @@
 #pragma once
+
 #include "ROSBridgeMsg.h"
+
 
 namespace geometry_msgs
 {
@@ -8,17 +10,18 @@ namespace geometry_msgs
 		double X;
 		double Y;
 		double Z;
-
 	public:
 		Vector3()
 		{
 			MsgType = "geometry_msgs/Vector3";
 		}
 
-		Vector3(
+		Vector3
+		(
 			double InX,
 			double InY,
-			double InZ) :
+			double InZ
+		):
 			X(InX),
 			Y(InY),
 			Z(InZ)
@@ -71,18 +74,31 @@ namespace geometry_msgs
 			Z = InZ;
 		}
 
-		void SetVector(const FVector& InVector)
+		void SetVector(const FVector& InVector) 
 		{
-			X = InVector.X;
+			Z = InVector.X;
 			Y = InVector.Y;
 			Z = InVector.Z;
 		}
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
-			X = (double)(JsonObject->GetNumberField(TEXT("x")));
-			Y = (double)(JsonObject->GetNumberField(TEXT("y")));
-			Z = (double)(JsonObject->GetNumberField(TEXT("z")));
+			X = JsonObject->GetNumberField(TEXT("x"));
+
+			Y = JsonObject->GetNumberField(TEXT("y"));
+
+			Z = JsonObject->GetNumberField(TEXT("z"));
+
+		}
+
+		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
+		{
+			X = BsonObject->GetNumberField(TEXT("x"));
+
+			Y = BsonObject->GetNumberField(TEXT("y"));
+
+			Z = BsonObject->GetNumberField(TEXT("z"));
+
 		}
 
 		static Vector3 GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -92,23 +108,32 @@ namespace geometry_msgs
 			return Result;
 		}
 
-		virtual FString ToString() const override
+		static Vector3 GetFromBson(TSharedPtr<FBsonObject> BsonObject)
 		{
-			return TEXT("Vector3 { x = ") + FString::SanitizeFloat(X) +
-				TEXT(", y = ") + FString::SanitizeFloat(Y) +
-				TEXT(", z = ") + FString::SanitizeFloat(Z) + TEXT(" } ");
+			Vector3 Result;
+			Result.FromBson(BsonObject);
+			return Result;
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const override 
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
+
 			Object->SetNumberField(TEXT("x"), X);
 			Object->SetNumberField(TEXT("y"), Y);
 			Object->SetNumberField(TEXT("z"), Z);
 			return Object;
 		}
+		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
+		{
+			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
-		virtual FString ToYamlString() const override 
+			Object->SetNumberField(TEXT("x"), X);
+			Object->SetNumberField(TEXT("y"), Y);
+			Object->SetNumberField(TEXT("z"), Z);
+			return Object;
+		}
+		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
 			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
@@ -116,4 +141,4 @@ namespace geometry_msgs
 			return OutputString;
 		}
 	};
-} // namespace geometry_msgs
+}

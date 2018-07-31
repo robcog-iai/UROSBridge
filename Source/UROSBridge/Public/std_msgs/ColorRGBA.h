@@ -1,5 +1,7 @@
 #pragma once
+
 #include "ROSBridgeMsg.h"
+
 
 namespace std_msgs
 {
@@ -9,44 +11,91 @@ namespace std_msgs
 		float G;
 		float B;
 		float A;
-
 	public:
 		ColorRGBA()
 		{
 			MsgType = "std_msgs/ColorRGBA";
 		}
 
-		ColorRGBA(FVector4 InColor)
+		ColorRGBA
+		(
+			float InR,
+			float InG,
+			float InB,
+			float InA
+		):
+			R(InR),
+			G(InG),
+			B(InB),
+			A(InA)
 		{
-			this->SetColor(InColor);
 			MsgType = "std_msgs/ColorRGBA";
-		}
-
-		ColorRGBA(float InR, float InG, float InB, float InA)
-		{
-			MsgType = "std_msgs/ColorRGBA";
-			R = InR; G = InG; B = InB; A = InA;
 		}
 
 		~ColorRGBA() override {}
 
-
-		FVector GetColor() const
+		float GetR() const
 		{
-			return FVector4(R, G, B, A);
+			return R;
 		}
 
-		void SetColor(const FVector4& Vector)
+		float GetG() const
 		{
-			R = Vector.X; G = Vector.Y; B = Vector.Z; A = Vector.W;
+			return G;
 		}
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
+		float GetB() const
 		{
-			R = (float)(JsonObject->GetNumberField(TEXT("r")));
-			G = (float)(JsonObject->GetNumberField(TEXT("g")));
-			B = (float)(JsonObject->GetNumberField(TEXT("b")));
-			A = (float)(JsonObject->GetNumberField(TEXT("a")));
+			return B;
+		}
+
+		float GetA() const
+		{
+			return A;
+		}
+
+		void SetR(float InR)
+		{
+			R = InR;
+		}
+
+		void SetG(float InG)
+		{
+			G = InG;
+		}
+
+		void SetB(float InB)
+		{
+			B = InB;
+		}
+
+		void SetA(float InA)
+		{
+			A = InA;
+		}
+
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
+		{
+			R = JsonObject->GetNumberField(TEXT("r"));
+
+			G = JsonObject->GetNumberField(TEXT("g"));
+
+			B = JsonObject->GetNumberField(TEXT("b"));
+
+			A = JsonObject->GetNumberField(TEXT("a"));
+
+		}
+
+		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
+		{
+			R = BsonObject->GetNumberField(TEXT("r"));
+
+			G = BsonObject->GetNumberField(TEXT("g"));
+
+			B = BsonObject->GetNumberField(TEXT("b"));
+
+			A = BsonObject->GetNumberField(TEXT("a"));
+
 		}
 
 		static ColorRGBA GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -56,25 +105,34 @@ namespace std_msgs
 			return Result;
 		}
 
-		virtual FString ToString() const override
+		static ColorRGBA GetFromBson(TSharedPtr<FBsonObject> BsonObject)
 		{
-			return TEXT("ColorRGBA { r = ") + FString::SanitizeFloat(R) +
-				TEXT(", g = ") + FString::SanitizeFloat(G) +
-				TEXT(", b = ") + FString::SanitizeFloat(B) +
-				TEXT(", a = ") + FString::SanitizeFloat(A) + TEXT(" } ");
+			ColorRGBA Result;
+			Result.FromBson(BsonObject);
+			return Result;
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const override 
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
+
 			Object->SetNumberField(TEXT("r"), R);
 			Object->SetNumberField(TEXT("g"), G);
 			Object->SetNumberField(TEXT("b"), B);
 			Object->SetNumberField(TEXT("a"), A);
 			return Object;
 		}
+		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
+		{
+			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
-		virtual FString ToYamlString() const override 
+			Object->SetNumberField(TEXT("r"), R);
+			Object->SetNumberField(TEXT("g"), G);
+			Object->SetNumberField(TEXT("b"), B);
+			Object->SetNumberField(TEXT("a"), A);
+			return Object;
+		}
+		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
 			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
@@ -82,4 +140,4 @@ namespace std_msgs
 			return OutputString;
 		}
 	};
-} // namespace std_msgs
+}

@@ -4,90 +4,165 @@
 
 namespace std_srvs
 {
-	class SetBool : public FROSBridgeSrv 
+	class SetBool : public FROSBridgeSrv
 	{
 	public:
 		SetBool()
 		{
-			SrvType = TEXT("srd_srvs/SetBool");
+			SrvType = TEXT("std_srvs/SetBool");
 		}
 
-		class Request : public SrvRequest 
+		class Request : public SrvRequest
 		{
 		private:
-			uint8 Data;
-
+			bool Data;
+					
 		public:
-			Request() { }
-			Request(uint8 InData) : Data(InData) {}
-			uint8 GetData() const { return Data; }
-			void SetData(uint8 InData) { Data = InData; }
-
-			virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
+			Request(){ }
+			Request(bool InData)
+				:
+				Data(InData) { }
+			
+			
+			// Getters 
+			bool GetData() const { return Data; }
+			
+			
+			// Setters 
+			void SetData(bool InData) { Data = InData; }
+			
+			virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 			{
-				Data = JsonObject->GetIntegerField("data");
-			}
+				Data = JsonObject->GetBoolField(TEXT("data"));
 
+			}
+			
+			virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
+			{
+				Data = BsonObject->GetBoolField(TEXT("data"));
+
+			}
+			
 			static Request GetFromJson(TSharedPtr<FJsonObject> JsonObject)
 			{
-				Request Req; 
+				Request Req;
 				Req.FromJson(JsonObject);
 				return Req;
 			}
-
-			virtual FString ToString() const override
+			
+			static Request GetFromBson(TSharedPtr<FBsonObject> BsonObject)
 			{
-				return TEXT("SetBool::Request { data = ") + FString::FromInt(Data) + TEXT(" } ");
+				Request Req;
+				Req.FromBson(BsonObject);
+				return Req;
 			}
-
-			virtual TSharedPtr<FJsonObject> ToJsonObject() const 
+			
+//			### TOSTRING ###
+			
+			virtual TSharedPtr<FJsonObject> ToJsonObject() const
 			{
 				TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-				Object->SetNumberField(TEXT("data"), Data);
+
+				Object->SetBoolField(TEXT("data"), Data);
+
 				return Object;
+
+			}
+			
+			virtual TSharedPtr<FBsonObject> ToBsonObject() const
+			{
+				TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
+
+				Object->SetBoolField(TEXT("data"), Data);
+
+				return Object;
+
 			}
 		};
-
-		class Response : public SrvResponse 
+		
+		class Response : public SrvResponse
 		{
 		private:
-			uint8 Success;
+			bool Success;
 			FString Message;
-
+			
+			
 		public:
-			Response() {}
-			Response(uint8 InSuccess, FString InMessage) : Success(InSuccess), Message(InMessage) {}
-			uint8 GetSuccess() const { return Success; }
+			Response(){ }
+			Response(bool InSuccess,
+				FString InMessage)
+				:
+				Success(InSuccess),
+				Message(InMessage) { }
+			
+			
+			// Getters 
+			bool GetSuccess() const { return Success; }
 			FString GetMessage() const { return Message; }
-			void SetSuccess(uint8 InSuccess) { Success = InSuccess; }
+			
+			
+			// Setters 
+			void SetSuccess(bool InSuccess) { Success = InSuccess; }
 			void SetMessage(FString InMessage) { Message = InMessage; }
-
-			virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
+			
+			
+			virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 			{
-				Success = JsonObject->GetIntegerField("success");
-				Message = JsonObject->GetStringField("message");
-			}
+				Success = JsonObject->GetBoolField(TEXT("success"));
 
+				Message = JsonObject->GetStringField(TEXT("message"));
+
+			}
+			
+			virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
+			{
+				Success = BsonObject->GetBoolField(TEXT("success"));
+
+				Message = BsonObject->GetStringField(TEXT("message"));
+
+			}
+			
 			static Response GetFromJson(TSharedPtr<FJsonObject> JsonObject)
 			{
-				Response Resp; 
+				Response Resp;
 				Resp.FromJson(JsonObject);
 				return Resp;
 			}
-
-			virtual FString ToString() const override
+			
+			static Response GetFromBson(TSharedPtr<FBsonObject> BsonObject)
 			{
-				return TEXT("SetBool::Response { success = ") + FString::FromInt(Success) + TEXT(", ") +
-					TEXT(" message = \"") + Message + TEXT("\" } ");
-			}
-
-			virtual TSharedPtr<FJsonObject> ToJsonObject() const 
+				Response Resp; 
+				Resp.FromBson(BsonObject);
+				return Resp;
+			}			
+			
+//			### TOSTRING ###
+			
+			virtual TSharedPtr<FJsonObject> ToJsonObject() const
 			{
 				TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-				Object->SetNumberField("success", Success);
-				Object->SetStringField("message", Message);
+
+				Object->SetBoolField(TEXT("success"), Success);
+
+				Object->SetStringField(TEXT("message"), Message);
+
 				return Object;
+
+			}
+			
+			virtual TSharedPtr<FBsonObject> ToBsonObject() const
+			{
+				TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
+
+				Object->SetBoolField(TEXT("success"), Success);
+
+				Object->SetStringField(TEXT("message"), Message);
+
+				return Object;
+
 			}
 		};
+		
 	};
-} // namespace std_srvs
+	
+}
