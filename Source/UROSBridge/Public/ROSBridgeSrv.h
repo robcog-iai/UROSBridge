@@ -28,21 +28,21 @@ public:
 
 		// Need Implementation
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) {
-			UE_LOG(LogROS, Warning, TEXT("Service Object not changed. Did you forget to overwrite FromJson() somewhere?"));
+			UE_LOG(LogTemp, Warning, TEXT("Service Object not changed. Did you forget to overwrite FromJson() somewhere?"));
 		}
 		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) {
-			UE_LOG(LogROS, Warning, TEXT("Service Object not changed. Did you forget to overwrite FromBson() somewhere?"));
+			UE_LOG(LogTemp, Warning, TEXT("Service Object not changed. Did you forget to overwrite FromBson() somewhere?"));
 		}
 
 		// Need Implementation
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const
 		{
-			UE_LOG(LogROS, Warning, TEXT("Service Object created empty. Did you forget to overwrite ToJsonObject() somewhere?"));
+			UE_LOG(LogTemp, Warning, TEXT("Service Object created empty. Did you forget to overwrite ToJsonObject() somewhere?"));
 			return MakeShareable<FJsonObject>(new FJsonObject());
 		}
 		virtual TSharedPtr<FBsonObject> ToBsonObject() const 
 		{
-			UE_LOG(LogROS, Warning, TEXT("Service Object created empty. Did you forget to overwrite ToBsonObject() somewhere?"));
+			UE_LOG(LogTemp, Warning, TEXT("Service Object created empty. Did you forget to overwrite ToBsonObject() somewhere?"));
 			return MakeShareable(new FBsonObject());
 		}
 

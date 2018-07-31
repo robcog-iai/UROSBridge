@@ -21,9 +21,9 @@
     }
   ],
   "Plugins": [
-		{
-			"Name": "UE4Bson",
-			"Enabled": true
-		}
+    {
+      "Name": "UE4Bson",
+      "Enabled": true
+    }
 	]
 }
