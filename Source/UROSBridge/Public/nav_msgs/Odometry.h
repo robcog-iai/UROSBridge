@@ -81,6 +81,7 @@ namespace nav_msgs
 		{
 			Header = std_msgs::Header::GetFromJson(JsonObject->GetObjectField(TEXT("header")));
 
+			// TODO check if this is correct?
 			ChildFrameId = JsonObject->GetStringField(TEXT("child_frame_id"));
 
 			Pose = geometry_msgs::PoseWithCovariance::GetFromJson(JsonObject->GetObjectField(TEXT("pose")));
@@ -113,6 +114,7 @@ namespace nav_msgs
 			Odometry Result;
 			Result.FromBson(BsonObject);
 			return Result;
+
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
@@ -143,4 +145,4 @@ namespace nav_msgs
 			return OutputString;
 		}
 	};
-}
+} // namespace nav_msgs

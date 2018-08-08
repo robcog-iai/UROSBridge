@@ -687,4 +687,4 @@ namespace visualization_msgs
 			return OutputString;
 		}
 	};
-}
+} // namespace visualization_msgs
