@@ -156,6 +156,9 @@ private:
 	// Called when the WebSocket connection succeeds
 	void OnConnection();
 
+	// Called when the WebSocket connection breaks
+	void OnError();
+
 	// When message comes, create FProcessTask instances and push it into QueueTask.
 	void OnMessage(void* Data, int32 Length);
 
@@ -165,10 +168,12 @@ private:
 	friend class FROSBridgeHandlerRunnable;
 
 public:
-	FROSBridgeHandler(const FString& InHost, int32 InPort):
+	FROSBridgeHandler(const FString& InHost, int32 InPort) :
 		Host(InHost), Port(InPort),
 		ClientInterval(0.01),
-		bIsClientConnected(false)
+		bIsClientConnected(false),
+		Runnable(nullptr),
+		Thread(nullptr)
 	{
 	}
 
@@ -178,9 +183,13 @@ public:
 		ErrorCallbacks(UserErrorCallbacks),
 		ConnectedCallbacks(UserConnectedCallbacks),
 		ClientInterval(0.01),
-		bIsClientConnected(false)
+		bIsClientConnected(false),
+		Runnable(nullptr),
+		Thread(nullptr)
 	{
 	}
+
+
 	~FROSBridgeHandler()
 	{
 		ThreadCleanup();
@@ -195,6 +204,30 @@ public:
 	{
 		ClientInterval = NewInterval;
 	}
+
+	void SetPort(int InPort)
+	{
+		Port = InPort;
+	}
+
+	template<class T>
+	void AddToUserErrorCallbacks(T* UserObject, void (T::*FunctionPtr)())
+	{
+		ErrorCallbacks.AddUObject<T>(UserObject, FunctionPtr);
+	}
+
+
+	template<class T>
+	void AddToUserConnectedCallbacks(T* UserObject, void (T::*FunctionPtr)())
+	{
+		ConnectedCallbacks.AddUObject<T>(UserObject, FunctionPtr);
+	}
+
+	void SetHost(const FString& InHost)
+	{
+		Host = InHost;
+	}
+
 
 	bool IsClientConnected() const
 	{
@@ -248,6 +281,7 @@ public:
 
 	// Unsubscribe / Unadvertise all messages, stop the thread
 	void Disconnect();
+
 
 	// Stop runnable / thread / client
 	void ThreadCleanup();

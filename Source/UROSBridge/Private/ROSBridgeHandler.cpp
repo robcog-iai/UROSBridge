@@ -16,8 +16,9 @@ void FROSBridgeHandler::OnConnection()
 	SetClientConnected(true);
 }
 
-static void OnError()
+void FROSBridgeHandler::OnError()
 {
+	SetClientConnected(false);
 	UE_LOG(LogROS, Error, TEXT("[%s] Error in Websocket."), *FString(__FUNCTION__));
 }
 
@@ -43,7 +44,7 @@ bool FROSBridgeHandler::FROSBridgeHandlerRunnable::Init()
 	Handler->ConnectedCallbacks.AddRaw(this->Handler, &FROSBridgeHandler::OnConnection);
 	Handler->Client->SetConnectedCallBack(Handler->ConnectedCallbacks);
 
-	Handler->ErrorCallbacks.AddStatic(&OnError);
+	Handler->ErrorCallbacks.AddRaw(this->Handler, &FROSBridgeHandler::OnError);
 	Handler->Client->SetErrorCallBack(Handler->ErrorCallbacks);
 	Handler->Client->Connect();
 
@@ -292,6 +293,12 @@ UE_LOG(LogROS, Log, TEXT("[%s] Json Message: %s"), *FString(__FUNCTION__), *Json
 // Create runnable instance and run the thread;
 void FROSBridgeHandler::Connect()
 {
+
+	if(bIsClientConnected)
+	{
+		Disconnect();
+	}
+
 	Runnable = new FROSBridgeHandlerRunnable(this);
 	//Thread = FRunnableThread::Create(Runnable, TEXT("ROSBridgeHandlerRunnable"), 0, TPri_Normal);
 	Thread = FRunnableThread::Create(Runnable, *FString::Printf(TEXT("ROSBridgeHandlerRunnable_%d"), ThreadInstanceIdx++), 0, TPri_Normal);
