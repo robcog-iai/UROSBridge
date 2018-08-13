@@ -3,9 +3,6 @@
 #include "RosBridgeHandlerRefSingleton.h"
 #include "LevelEditor.h"
 #include "Editor.h"
-#include "UROSWorldControlManager.h"
-#include "TrajectoryManager.h"
-#include "BasicMarkerSpawner.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
 UUROSBridgeEdTool::UUROSBridgeEdTool(const FObjectInitializer& ObjectInitializer)
@@ -24,27 +21,8 @@ UUROSBridgeEdTool::UUROSBridgeEdTool(const FObjectInitializer& ObjectInitializer
 	{
 		RosHandler = RefSingelton->GetHandlerRef();
 	}
-
-
 }
 
-void UUROSBridgeEdTool::TrySpawnMarker()
-{
-	auto MarkerSpawner = NewObject<UBasicMarkerSpawner>(GetRuntimeManager());
-	MarkerSpawner->SpawnVisualMarker(EBasicMarkerType::Arrow, FVector(0, 0, 200), FRotator(0, 0, 180), FColor::Cyan);
-}
-
-void UUROSBridgeEdTool::TrySpawnTrajectory()
-{
-	auto TrajectorySpawner = NewObject<UTrajectoryManager>(GetRuntimeManager());
-	TArray<FVector> Points;
-	for (int i = 0; i < 500; i++)
-	{
-		Points.Add(FVector(500, 0, i));
-	}
-
-	TrajectorySpawner->SpawnTrajectoryFromPoints(Points, FColor::Green);
-}
 
 
 void UUROSBridgeEdTool::ConnectToRosBridge()
@@ -57,14 +35,14 @@ void UUROSBridgeEdTool::ConnectToRosBridge()
 	{
 
 		//This Avoids registering the same Servers Multiple times
-		if (AlreadyRegistered.Find(Pub) == INDEX_NONE)
+		if (Pub && AlreadyRegistered.Find(Pub) == INDEX_NONE)
 		{
 			AlreadyRegistered.Add(Pub);
 
 			auto BaseClass = Pub->GetDefaultObject<UROSPublisherBaseClass>();
 
 			// Make sure Outer is something GetWorld() can be called on.
-			if(RuntimeManager)
+			if (RuntimeManager)
 			{
 				BaseClass->Rename(*BaseClass->GetName(), RuntimeManager);
 			}
@@ -72,8 +50,8 @@ void UUROSBridgeEdTool::ConnectToRosBridge()
 			{
 				BaseClass->Rename(*BaseClass->GetName(), this);
 			}
-			
-			
+
+
 			BaseClass->Init(Namespace);
 
 			// Register SrvServers
@@ -134,11 +112,42 @@ void UUROSBridgeEdTool::PostEditChangeProperty(struct FPropertyChangedEvent& Pro
 		}
 		else if (PropertyName == GET_MEMBER_NAME_CHECKED(UUROSBridgeEdTool, bSharePublishers))
 		{
-			//TODO
-			UE_LOG(LogTemp, Error, TEXT("bSharePublishers was changed!"));
+
+			if (bSharePublishers)
+			{
+				// Sharing now active
+				for (auto Pub : PublisherList)
+				{
+					RuntimeManager->PublisherList.AddUnique(Pub);
+				}
+			}
+			else
+			{
+				// Sharing deactivated
+
+				for (auto Pub : PublisherList)
+				{
+					if (Pub && RuntimeManager->PublisherList.Remove(Pub) > 0)
+						UE_LOG(LogTemp, Log, TEXT("[%s]: '%s' was removed from RuntimeMangers Publisherlist."),
+							*FString(__FUNCTION__), *Pub->GetName());
+				}
+
+			}
 		}
 	}
+}
 
+void UUROSBridgeEdTool::PostEditChangeChainProperty(struct FPropertyChangedChainEvent& e)
+{
+
+	AROSBridgeRuntimeManager* RuntimeManager = GetRuntimeManager();
+
+	if (bSharePublishers && RuntimeManager)
+	{
+		RuntimeManager->PublisherList = PublisherList;
+	}
+
+	Super::PostEditChangeChainProperty(e);
 }
 #endif
 

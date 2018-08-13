@@ -6,7 +6,6 @@
 #include "UROSBridgeEdMode.h"
 #include <ROSPublisherBaseClass.h>
 #include "ROSBridgeHandler.h"
-#include "TrajectoryManager.h"
 #include "ROSBridgeRuntimeManager.h"
 #include "UROSBridgeEdTool.generated.h"
 
@@ -45,13 +44,8 @@ public:
 	void ConnectToRosBridge();
 
 	void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
-
-	UFUNCTION(Exec)
-	void TrySpawnMarker();
-
-	UFUNCTION(Exec)
-	void TrySpawnTrajectory();
-
+	void PostEditChangeChainProperty(struct FPropertyChangedChainEvent& e) override;
+	
 	void SetParent(FUROSBridgeEdMode* NewParent)
 	{
 		ParentMode = NewParent;

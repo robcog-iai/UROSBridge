@@ -34,26 +34,30 @@ void AROSBridgeRuntimeManager::BeginPlay()
 	// Register Services, Publisher and Subcriber 
 	for (auto Pub : PublisherList)
 	{
-		auto BaseClass = Pub->GetDefaultObject<UROSPublisherBaseClass>();
-		BaseClass->Rename(*BaseClass->GetName(), this);
-		BaseClass->Init(Namespace);
-
-		// Register SrvServers
-		for (auto SrvServer : BaseClass->ServicesToPublish)
+		if (Pub)
 		{
-			RosHandler->AddServiceServer(SrvServer);
-		}
 
-		// Register Publisher
-		for (auto Publisher : BaseClass->PublisherToPublish)
-		{
-			RosHandler->AddPublisher(Publisher);
-		}
+			auto BaseClass = Pub->GetDefaultObject<UROSPublisherBaseClass>();
+			BaseClass->Rename(*BaseClass->GetName(), this);
+			BaseClass->Init(Namespace);
 
-		// Register Subscriber
-		for (auto Subscriber : BaseClass->SubscriberToPublish)
-		{
-			RosHandler->AddSubscriber(Subscriber);
+			// Register SrvServers
+			for (auto SrvServer : BaseClass->ServicesToPublish)
+			{
+				RosHandler->AddServiceServer(SrvServer);
+			}
+
+			// Register Publisher
+			for (auto Publisher : BaseClass->PublisherToPublish)
+			{
+				RosHandler->AddPublisher(Publisher);
+			}
+
+			// Register Subscriber
+			for (auto Subscriber : BaseClass->SubscriberToPublish)
+			{
+				RosHandler->AddSubscriber(Subscriber);
+			}
 		}
 	}
 
