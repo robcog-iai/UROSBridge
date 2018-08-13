@@ -13,11 +13,16 @@
   "CanContainContent": true,
   "IsBetaVersion": false,
   "Installed": false,
-  "Modules": [
-	{
-	  "Name": "UROSBridge",
-	  "Type": "Developer",
-	  "LoadingPhase": "Default"
-	}
-  ]
+    "Modules": [
+        {
+            "Name": "UROSBridge",
+            "Type": "Developer",
+            "LoadingPhase": "Default"
+        },
+        {
+            "Name": "UROSBridgeEd",
+            "Type": "Editor",
+            "LoadingPhase": "Default"
+        }
+    ]
 }
