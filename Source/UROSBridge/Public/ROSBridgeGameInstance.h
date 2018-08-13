@@ -3,6 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include "Tickable.h"
 #include "ROSBridgeHandler.h"
 
 #include "ROSBridgeGameInstance.generated.h"
@@ -20,6 +21,7 @@ class UROSBRIDGE_API UROSBridgeGameInstance : public UGameInstance, public FTick
 {
 	GENERATED_BODY()
 
+protected:
 	// Default constructor
 	UROSBridgeGameInstance();
 

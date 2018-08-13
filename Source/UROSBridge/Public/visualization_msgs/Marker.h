@@ -57,17 +57,80 @@ namespace visualization_msgs
 			MsgType = "visualization_msgs/Marker";
 		}
 
-		//check what is the minimum requirement for a marker
 		Marker(std_msgs::Header InHeader, FString InNs,
 			EType InMarkerType, EAction InActionType,
 			geometry_msgs::Pose InPose, geometry_msgs::Vector3 InScale,
 			std_msgs::ColorRGBA InColor, uint32 InLifetime,
-			bool bInFrameLocked) :
+			bool bInFrameLocked,
+			TArray<geometry_msgs::Point> InPoints, TArray<std_msgs::ColorRGBA> InColors,
+			FString InText, FString InMeshResource, bool bInMeshUseEmbeddedMaterials) :
 			Type(InMarkerType), Action(InActionType), Header(InHeader), Ns(InNs), Pose(InPose.GetPosition(), InPose.GetOrientation()),
 			Scale(InScale.GetVector()),
-			Color(InColor.GetColor()), Lifetime(InLifetime), bFrameLocked(bInFrameLocked)
+			Color(InColor.GetColor()), Lifetime(InLifetime), bFrameLocked(bInFrameLocked),
+			Points(InPoints), Colors(InColors),
+			Text(InText), MeshResource(InMeshResource), bMeshUseEmbeddedMaterials(bInMeshUseEmbeddedMaterials)
 		{
 			MsgType = "visualization_msgs/Marker";
+		}
+
+		static FString ETypeAsString(EType InType)
+		{
+			switch (InType)
+			{
+			case ARROW:
+				return TEXT("ARROW");
+				break;
+			case CUBE:
+				return TEXT("CUBE");
+				break;
+			case SPHERE:
+				return TEXT("SPHERE");
+				break;
+			case CYLINDER:
+				return TEXT("CYLINDER");
+				break;
+			case LINE_STRIP:
+				return TEXT("LINE_STRIP");
+				break;
+			case LINE_LIST:
+				return TEXT("LINE_LIST");
+				break;
+			case CUBE_LIST:
+				return TEXT("CUBE_LIST");
+				break;
+			case SPHERE_LIST:
+				return TEXT("SPHERE_LIST");
+				break;
+			case POINTS:
+				return TEXT("POINTS");
+				break;
+			case TEXT_VIEW_FACING:
+				return TEXT("TEXT_VIEW_FACING");
+				break;
+			case MESH_RESOURCE:
+				return TEXT("MESH_RESOURCE");
+				break;
+			case TRIANGLE_LIST:
+				return TEXT("TRIANGLE_LIST");
+				break;
+			default:
+				return TEXT("Unknown");
+			}
+		}
+
+		static FString EActionAsString(EAction InAction)
+		{
+			switch (InAction)
+			{
+			case ADD:
+				return TEXT("ADD");
+				break;
+			case DEL:
+				return TEXT("DEL");
+				break;
+			default:
+				return TEXT("Unknown");
+			}
 		}
 
 		std_msgs::Header GetHeader() const
@@ -253,10 +316,36 @@ namespace visualization_msgs
 
 		virtual FString ToString() const override
 		{
-			/*
-			* TODO:IMPLEMENT
-			* */
-			return TEXT("Marker { header = ") + Header.ToString();
+			FString LifetimeString = TEXT("Duration {  secs = ") + FString::FromInt(Lifetime) +
+				TEXT(" nsecs= ") + FString::FromInt(0.0) +
+				TEXT(" } ");
+
+			FString PointString = "[ ";
+			for (auto &value : Points)
+				PointString += value.ToString() + TEXT(", ");
+			PointString += " ]";
+
+			FString ColorString = "[ ";
+			for (auto &value : Colors)
+				ColorString += value.ToString() + TEXT(", ");
+			ColorString += " ]";
+
+			return TEXT("Marker { header = ") + Header.ToString() +
+				TEXT(", ns = ") + Ns +
+				TEXT(", id = ") + FString::FromInt(Id) +
+				TEXT(", type = ") + ETypeAsString(Type) +
+				TEXT(", action = ") + EActionAsString(Action) +
+				TEXT(", pose = ") + Pose.ToString() +
+				TEXT(", scale = ") + Scale.ToString() +
+				TEXT(", color = ") + Color.ToString() +
+				TEXT(", lifetime = ") + LifetimeString +
+				TEXT(", frame_locked = ") + FString::FromInt(bFrameLocked) +
+				TEXT(", points = ") + PointString +
+				TEXT(", colors = ") + ColorString +
+				TEXT(", text = ") + Text +
+				TEXT(", mesh_resource") + MeshResource +
+				TEXT(", mesh_use_embedded_materials") + FString::FromInt(bMeshUseEmbeddedMaterials) +
+				TEXT(" } ");
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
