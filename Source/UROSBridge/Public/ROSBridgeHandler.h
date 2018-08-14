@@ -170,8 +170,8 @@ private:
 	void SendBySerializationMode(FString Message);
 
 	// Automatic message parse call depending on the Type of the incoming message
-	void FROSBridgeHandler::ProcessMessageByMode(TSharedPtr<FBsonObject> BsonObject);
-	void FROSBridgeHandler::ProcessMessageByMode(TSharedPtr<FJsonObject> JsonObject);
+	void ProcessMessageByMode(TSharedPtr<FBsonObject> BsonObject);
+	void ProcessMessageByMode(TSharedPtr<FJsonObject> JsonObject);
 
 public:
 	
