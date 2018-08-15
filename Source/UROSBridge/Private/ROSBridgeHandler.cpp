@@ -564,9 +564,14 @@ void FROSBridgeHandler::PublishServiceResponse(const FString& InService, const F
 	if (!bIsClientConnected) return;
 
 	FString MsgToSend = FROSBridgeSrv::ServiceResponse(InService, InId, InResponse);
-	// Convert the automatically generated message from Json to Bson
-	FBsonObject BsonObj = FBsonObject(MsgToSend);
-	Client->Send((uint8_t*)BsonObj.GetDataPointer(), BsonObj.GetDataLength());
+	if (SerializationMode == ESerializationMode::MODE_BSON) {
+		// Convert the automatically generated message from Json to Bson
+		FBsonObject BsonObj = FBsonObject(MsgToSend);
+		Client->Send((uint8_t*)BsonObj.GetDataPointer(), BsonObj.GetDataLength());
+	}
+	else {
+		Client->Send(MsgToSend);
+	}
 }
 
 void FROSBridgeHandler::PublishMsg(const FString& InTopic, TSharedPtr<FROSBridgeMsg> InMsg)
@@ -575,9 +580,14 @@ void FROSBridgeHandler::PublishMsg(const FString& InTopic, TSharedPtr<FROSBridge
 	if (!bIsClientConnected) return;
 
 	FString MsgToSend = FROSBridgeMsg::Publish(InTopic, InMsg);
-	// Convert the automatically generated message from Json to Bson
-	FBsonObject BsonObj = FBsonObject(MsgToSend);
-	Client->Send((uint8_t*)BsonObj.GetDataPointer(), BsonObj.GetDataLength());
+	if (SerializationMode == ESerializationMode::MODE_BSON) {
+		// Convert the automatically generated message from Json to Bson
+		FBsonObject BsonObj = FBsonObject(MsgToSend);
+		Client->Send((uint8_t*)BsonObj.GetDataPointer(), BsonObj.GetDataLength());
+	}
+	else {
+		Client->Send(MsgToSend);
+	}
 }
 
 void FROSBridgeHandler::CallService(TSharedPtr<FROSBridgeSrvClient> InSrvClient,
@@ -603,7 +613,13 @@ void FROSBridgeHandler::CallServiceImpl(const FString& Name, TSharedPtr<FROSBrid
 	if (!bIsClientConnected) return;
 
 	FString MsgToSend = FROSBridgeSrv::CallService(Name, Request, Id);
-	// Convert the automatically generated message from Json to Bson
-	FBsonObject BsonObj = FBsonObject(MsgToSend);
-	Client->Send((uint8_t*)BsonObj.GetDataPointer(), BsonObj.GetDataLength());
+	
+	if (SerializationMode == ESerializationMode::MODE_BSON) {
+		// Convert the automatically generated message from Json to Bson
+		FBsonObject BsonObj = FBsonObject(MsgToSend);
+		Client->Send((uint8_t*)BsonObj.GetDataPointer(), BsonObj.GetDataLength());
+	}
+	else {
+		Client->Send(MsgToSend);
+	}
 }
