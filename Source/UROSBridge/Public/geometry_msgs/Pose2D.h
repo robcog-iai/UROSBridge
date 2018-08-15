@@ -13,52 +13,49 @@ namespace geometry_msgs
 	public:
 		Pose2D()
 		{
-			MsgType = "geometry_msgs/Pose2D";
+			MsgType = TEXT("geometry_msgs/Pose2D");
 		}
-
-		Pose2D
-		(
-			double InX,
+		
+		Pose2D(double InX,
 			double InY,
-			double InTheta
-		):
+			double InTheta)
+			:
 			X(InX),
 			Y(InY),
 			Theta(InTheta)
 		{
+			MsgType = TEXT("geometry_msgs/Pose2D");
+		}
+
+		// DEPRECATED! Will be removed when the generator is used again.
+		Pose2D(FVector InVector)
+		{
 			MsgType = "geometry_msgs/Pose2D";
+			X = InVector.X; Y = InVector.Y; Theta = InVector.Z;
 		}
 
 		~Pose2D() override {}
 
-		double GetX() const
+		// Getters 
+		double GetX() const { return X; }
+		double GetY() const { return Y; }
+		double GetTheta() const { return Theta; }
+
+		// DEPRECATED! Will be removed when the generator is used again.
+		FVector GetVector() const
 		{
-			return X;
+			return FVector(X, Y, Theta);
 		}
 
-		double GetY() const
-		{
-			return Y;
-		}
+		// Setters 
+		void SetX(double InX) { X = InX; }
+		void SetY(double InY) { Y = InY; }
+		void SetTheta(double InTheta) { Theta = InTheta; }
 
-		double GetTheta() const
+		// DEPRECATED! Will be removed when the generator is used again.
+		void SetVector(const FVector& InVector)
 		{
-			return Theta;
-		}
-
-		void SetX(double InX)
-		{
-			X = InX;
-		}
-
-		void SetY(double InY)
-		{
-			Y = InY;
-		}
-
-		void SetTheta(double InTheta)
-		{
-			Theta = InTheta;
+			X = InVector.X; Y = InVector.Y; Theta = InVector.Z;
 		}
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
@@ -100,19 +97,40 @@ namespace geometry_msgs
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
 			Object->SetNumberField(TEXT("x"), X);
+
 			Object->SetNumberField(TEXT("y"), Y);
+
 			Object->SetNumberField(TEXT("theta"), Theta);
+
 			return Object;
+
 		}
+
 		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
 		{
 			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
 			Object->SetNumberField(TEXT("x"), X);
+
 			Object->SetNumberField(TEXT("y"), Y);
+
 			Object->SetNumberField(TEXT("theta"), Theta);
+
 			return Object;
+
 		}
+
+		virtual FString ToString() const override
+		{
+							
+			return TEXT("Pose2D { x = ") + FString::SanitizeFloat(X) +
+				TEXT(", y = ") + FString::SanitizeFloat(Y) +
+				TEXT(", theta = ") + FString::SanitizeFloat(Theta) +
+				TEXT(" } ");
+
+		}
+
+
 		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
@@ -120,5 +138,7 @@ namespace geometry_msgs
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
+	
 }

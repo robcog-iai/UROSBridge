@@ -1,9 +1,9 @@
 #pragma once
 
 #include "ROSBridgeMsg.h"
-
 #include "std_msgs/Header.h"
 #include "geometry_msgs/Inertia.h"
+
 
 namespace geometry_msgs
 {
@@ -14,41 +14,27 @@ namespace geometry_msgs
 	public:
 		InertiaStamped()
 		{
-			MsgType = "geometry_msgs/InertiaStamped";
+			MsgType = TEXT("geometry_msgs/InertiaStamped");
 		}
-
-		InertiaStamped
-		(
-			std_msgs::Header InHeader,
-			geometry_msgs::Inertia InInertia
-		):
+		
+		InertiaStamped(std_msgs::Header InHeader,
+			geometry_msgs::Inertia InInertia)
+			:
 			Header(InHeader),
 			Inertia(InInertia)
 		{
-			MsgType = "geometry_msgs/InertiaStamped";
+			MsgType = TEXT("geometry_msgs/InertiaStamped");
 		}
 
 		~InertiaStamped() override {}
 
-		std_msgs::Header GetHeader() const
-		{
-			return Header;
-		}
+		// Getters 
+		std_msgs::Header GetHeader() const { return Header; }
+		geometry_msgs::Inertia GetInertia() const { return Inertia; }
 
-		geometry_msgs::Inertia GetInertia() const
-		{
-			return Inertia;
-		}
-
-		void SetHeader(std_msgs::Header InHeader)
-		{
-			Header = InHeader;
-		}
-
-		void SetInertia(geometry_msgs::Inertia InInertia)
-		{
-			Inertia = InInertia;
-		}
+		// Setters 
+		void SetHeader(std_msgs::Header InHeader) { Header = InHeader; }
+		void SetInertia(geometry_msgs::Inertia InInertia) { Inertia = InInertia; }
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
@@ -85,17 +71,35 @@ namespace geometry_msgs
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
 			Object->SetObjectField(TEXT("header"), Header.ToJsonObject());
+
 			Object->SetObjectField(TEXT("inertia"), Inertia.ToJsonObject());
+
 			return Object;
+
 		}
+
 		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
 		{
 			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
 			Object->SetObjectField(TEXT("header"), Header.ToBsonObject());
+
 			Object->SetObjectField(TEXT("inertia"), Inertia.ToBsonObject());
+
 			return Object;
+
 		}
+
+		virtual FString ToString() const override
+		{
+							
+			return TEXT("InertiaStamped { header = ") + Header.ToString() +
+				TEXT(", inertia = ") + Inertia.ToString() +
+				TEXT(" } ");
+
+		}
+
+
 		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
@@ -103,5 +107,7 @@ namespace geometry_msgs
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
+	
 }

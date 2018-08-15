@@ -14,65 +14,55 @@ namespace std_msgs
 	public:
 		ColorRGBA()
 		{
-			MsgType = "std_msgs/ColorRGBA";
+			MsgType = TEXT("std_msgs/ColorRGBA");
 		}
-
-		ColorRGBA
-		(
-			float InR,
+		
+		ColorRGBA(float InR,
 			float InG,
 			float InB,
-			float InA
-		):
+			float InA)
+			:
 			R(InR),
 			G(InG),
 			B(InB),
 			A(InA)
 		{
+			MsgType = TEXT("std_msgs/ColorRGBA");
+		}
+
+		// DEPRECATED! Will be removed when the generator is used again.
+		ColorRGBA(FVector4 InColor)
+		{
+			this->SetColor(InColor);
 			MsgType = "std_msgs/ColorRGBA";
 		}
 
 		~ColorRGBA() override {}
 
-		float GetR() const
+		// Getters 
+		float GetR() const { return R; }
+		float GetG() const { return G; }
+		float GetB() const { return B; }
+		float GetA() const { return A; }
+
+		// DEPRECATED! Will be removed when the generator is used again.
+		FVector GetColor() const
 		{
-			return R;
+			return FVector4(R, G, B, A);
 		}
 
-		float GetG() const
+		// Setters 
+		void SetR(float InR) { R = InR; }
+		void SetG(float InG) { G = InG; }
+		void SetB(float InB) { B = InB; }
+		void SetA(float InA) { A = InA; }
+
+		// DEPRECATED! Will be removed when the generator is used again.
+		void SetColor(const FVector4& Vector)
 		{
-			return G;
+			R = Vector.X; G = Vector.Y; B = Vector.Z; A = Vector.W;
 		}
 
-		float GetB() const
-		{
-			return B;
-		}
-
-		float GetA() const
-		{
-			return A;
-		}
-
-		void SetR(float InR)
-		{
-			R = InR;
-		}
-
-		void SetG(float InG)
-		{
-			G = InG;
-		}
-
-		void SetB(float InB)
-		{
-			B = InB;
-		}
-
-		void SetA(float InA)
-		{
-			A = InA;
-		}
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
@@ -117,21 +107,45 @@ namespace std_msgs
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
 			Object->SetNumberField(TEXT("r"), R);
+
 			Object->SetNumberField(TEXT("g"), G);
+
 			Object->SetNumberField(TEXT("b"), B);
+
 			Object->SetNumberField(TEXT("a"), A);
+
 			return Object;
+
 		}
+
 		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
 		{
 			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
 			Object->SetNumberField(TEXT("r"), R);
+
 			Object->SetNumberField(TEXT("g"), G);
+
 			Object->SetNumberField(TEXT("b"), B);
+
 			Object->SetNumberField(TEXT("a"), A);
+
 			return Object;
+
 		}
+
+		virtual FString ToString() const override
+		{
+							
+			return TEXT("ColorRGBA { r = ") + FString::SanitizeFloat(R) +
+				TEXT(", g = ") + FString::SanitizeFloat(G) +
+				TEXT(", b = ") + FString::SanitizeFloat(B) +
+				TEXT(", a = ") + FString::SanitizeFloat(A) +
+				TEXT(" } ");
+
+		}
+
+
 		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
@@ -139,5 +153,7 @@ namespace std_msgs
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
+	
 }

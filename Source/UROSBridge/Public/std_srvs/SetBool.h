@@ -2,6 +2,8 @@
 
 #include "ROSBridgeSrv.h"
 
+
+
 namespace std_srvs
 {
 	class SetBool : public FROSBridgeSrv
@@ -57,7 +59,13 @@ namespace std_srvs
 				return Req;
 			}
 			
-//			### TOSTRING ###
+			virtual FString ToString() const override
+			{
+									
+				return TEXT("SetBool::Request { data = ") + FString::FromInt(Data) +
+					TEXT(" } ");
+
+			}
 			
 			virtual TSharedPtr<FJsonObject> ToJsonObject() const
 			{
@@ -136,7 +144,14 @@ namespace std_srvs
 				return Resp;
 			}			
 			
-//			### TOSTRING ###
+			virtual FString ToString() const override
+			{
+									
+				return TEXT("SetBool::Response { success = ") + FString::FromInt(Success) +
+					TEXT(", message = ") + Message +
+					TEXT(" } ");
+
+			}
 			
 			virtual TSharedPtr<FJsonObject> ToJsonObject() const
 			{

@@ -15,77 +15,39 @@ namespace sensor_msgs
 	public:
 		RegionOfInterest()
 		{
-			MsgType = "sensor_msgs/RegionOfInterest";
+			MsgType = TEXT("sensor_msgs/RegionOfInterest");
 		}
-
-		RegionOfInterest
-		(
-			uint32 InXOffset,
+		
+		RegionOfInterest(uint32 InXOffset,
 			uint32 InYOffset,
 			uint32 InHeight,
 			uint32 InWidth,
-			bool InDoRectify
-		):
+			bool InDoRectify)
+			:
 			XOffset(InXOffset),
 			YOffset(InYOffset),
 			Height(InHeight),
 			Width(InWidth),
 			DoRectify(InDoRectify)
 		{
-			MsgType = "sensor_msgs/RegionOfInterest";
+			MsgType = TEXT("sensor_msgs/RegionOfInterest");
 		}
 
 		~RegionOfInterest() override {}
 
-		uint32 GetXOffset() const
-		{
-			return XOffset;
-		}
+		// Getters 
+		uint32 GetXOffset() const { return XOffset; }
+		uint32 GetYOffset() const { return YOffset; }
+		uint32 GetHeight() const { return Height; }
+		uint32 GetWidth() const { return Width; }
+		bool GetDoRectify() const { return DoRectify; }
 
-		uint32 GetYOffset() const
-		{
-			return YOffset;
-		}
-
-		uint32 GetHeight() const
-		{
-			return Height;
-		}
-
-		uint32 GetWidth() const
-		{
-			return Width;
-		}
-
-		bool GetDoRectify() const
-		{
-			return DoRectify;
-		}
-
-		void SetXOffset(uint32 InXOffset)
-		{
-			XOffset = InXOffset;
-		}
-
-		void SetYOffset(uint32 InYOffset)
-		{
-			YOffset = InYOffset;
-		}
-
-		void SetHeight(uint32 InHeight)
-		{
-			Height = InHeight;
-		}
-
-		void SetWidth(uint32 InWidth)
-		{
-			Width = InWidth;
-		}
-
-		void SetDoRectify(bool InDoRectify)
-		{
-			DoRectify = InDoRectify;
-		}
+		// Setters 
+		void SetXOffset(uint32 InXOffset) { XOffset = InXOffset; }
+		void SetYOffset(uint32 InYOffset) { YOffset = InYOffset; }
+		void SetHeight(uint32 InHeight) { Height = InHeight; }
+		void SetWidth(uint32 InWidth) { Width = InWidth; }
+		void SetDoRectify(bool InDoRectify) { DoRectify = InDoRectify; }
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
@@ -134,23 +96,50 @@ namespace sensor_msgs
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
 			Object->SetNumberField(TEXT("x_offset"), XOffset);
+
 			Object->SetNumberField(TEXT("y_offset"), YOffset);
+
 			Object->SetNumberField(TEXT("height"), Height);
+
 			Object->SetNumberField(TEXT("width"), Width);
+
 			Object->SetBoolField(TEXT("do_rectify"), DoRectify);
+
 			return Object;
+
 		}
+
 		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
 		{
 			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
 			Object->SetNumberField(TEXT("x_offset"), XOffset);
+
 			Object->SetNumberField(TEXT("y_offset"), YOffset);
+
 			Object->SetNumberField(TEXT("height"), Height);
+
 			Object->SetNumberField(TEXT("width"), Width);
+
 			Object->SetBoolField(TEXT("do_rectify"), DoRectify);
+
 			return Object;
+
 		}
+
+		virtual FString ToString() const override
+		{
+							
+			return TEXT("RegionOfInterest { x_offset = ") + FString::FromInt(XOffset) +
+				TEXT(", y_offset = ") + FString::FromInt(YOffset) +
+				TEXT(", height = ") + FString::FromInt(Height) +
+				TEXT(", width = ") + FString::FromInt(Width) +
+				TEXT(", do_rectify = ") + FString::FromInt(DoRectify) +
+				TEXT(" } ");
+
+		}
+
+
 		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
@@ -158,5 +147,7 @@ namespace sensor_msgs
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
+	
 }

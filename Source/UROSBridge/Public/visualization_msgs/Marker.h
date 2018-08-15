@@ -1,105 +1,78 @@
 #pragma once
 
 #include "ROSBridgeMsg.h"
-
 #include "std_msgs/Header.h"
 #include "geometry_msgs/Pose.h"
 #include "geometry_msgs/Vector3.h"
 #include "std_msgs/ColorRGBA.h"
 #include "geometry_msgs/Point.h"
-#include "std_msgs/ColorRGBA.h"
+
 
 namespace visualization_msgs
 {
 	class Marker : public FROSBridgeMsg
 	{
-		uint8 Arrow = 0;
-		uint8 Cube = 1;
-		uint8 Sphere = 2;
-		uint8 Cylinder = 3;
-		uint8 LineStrip = 4;
-		uint8 LineList = 5;
-		uint8 CubeList = 6;
-		uint8 SphereList = 7;
-		uint8 Points = 8;
-		uint8 TextViewFacing = 9;
-		uint8 MeshResource = 10;
-		uint8 TriangleList = 11;
-		uint8 Add = 0;
-		uint8 Modify = 0;
-		uint8 Delete = 2;
-		uint8 Deleteall = 3;
+	public:
+		enum EType : uint8
+		{
+			ARROW = 0,
+			CUBE = 1,
+			SPHERE = 2,
+			CYLINDER = 3,
+			LINE_STRIP = 4,
+			LINE_LIST = 5,
+			CUBE_LIST = 6,
+			SPHERE_LIST = 7,
+			POINTS = 8,
+			TEXT_VIEW_FACING = 9,
+			MESH_RESOURCE = 10,
+			TRIANGLE_LIST = 11
+		};
+
+		enum EAction : uint8
+		{
+			ADD = 0,
+			MODIFY = 0,
+			DEL = 2
+		};
+
 		std_msgs::Header Header;
 		FString Ns;
 		int32 Id;
-		int32 Type;
-		int32 Action;
+		EType Type;
+		EAction Action;
 		geometry_msgs::Pose Pose;
 		geometry_msgs::Vector3 Scale;
 		std_msgs::ColorRGBA Color;
 		uint32 Lifetime;
 		bool FrameLocked;
-		TArray<geometry_msgs::Point> Points2;
+		TArray<geometry_msgs::Point> Points;
 		TArray<std_msgs::ColorRGBA> Colors;
 		FString Text;
-		FString MeshResource2;
+		FString MeshResource;
 		bool MeshUseEmbeddedMaterials;
-	public:
+	
 		Marker()
 		{
-			MsgType = "visualization_msgs/Marker";
+			MsgType = TEXT("visualization_msgs/Marker");
 		}
-
-		Marker
-		(
-			uint8 InArrow,
-			uint8 InCube,
-			uint8 InSphere,
-			uint8 InCylinder,
-			uint8 InLineStrip,
-			uint8 InLineList,
-			uint8 InCubeList,
-			uint8 InSphereList,
-			uint8 InPoints,
-			uint8 InTextViewFacing,
-			uint8 InMeshResource,
-			uint8 InTriangleList,
-			uint8 InAdd,
-			uint8 InModify,
-			uint8 InDelete,
-			uint8 InDeleteall,
-			std_msgs::Header InHeader,
+		
+		Marker(std_msgs::Header InHeader,
 			FString InNs,
 			int32 InId,
-			int32 InType,
-			int32 InAction,
+			EType InType,
+			EAction InAction,
 			geometry_msgs::Pose InPose,
 			geometry_msgs::Vector3 InScale,
 			std_msgs::ColorRGBA InColor,
 			uint32 InLifetime,
 			bool InFrameLocked,
-			const TArray<geometry_msgs::Point>& InPoints2,
-			const TArray<std_msgs::ColorRGBA>& InColors,
+			TArray<geometry_msgs::Point> InPoints,
+			TArray<std_msgs::ColorRGBA> InColors,
 			FString InText,
-			FString InMeshResource2,
-			bool InMeshUseEmbeddedMaterials
-		):
-			Arrow(InArrow = 0),
-			Cube(InCube = 1),
-			Sphere(InSphere = 2),
-			Cylinder(InCylinder = 3),
-			LineStrip(InLineStrip = 4),
-			LineList(InLineList = 5),
-			CubeList(InCubeList = 6),
-			SphereList(InSphereList = 7),
-			Points(InPoints = 8),
-			TextViewFacing(InTextViewFacing = 9),
-			MeshResource(InMeshResource = 10),
-			TriangleList(InTriangleList = 11),
-			Add(InAdd = 0),
-			Modify(InModify = 0),
-			Delete(InDelete = 2),
-			Deleteall(InDeleteall = 3),
+			FString InMeshResource,
+			bool InMeshUseEmbeddedMaterials)
+			:
 			Header(InHeader),
 			Ns(InNs),
 			Id(InId),
@@ -110,360 +83,122 @@ namespace visualization_msgs
 			Color(InColor),
 			Lifetime(InLifetime),
 			FrameLocked(InFrameLocked),
-			Points2(InPoints2),
+			Points(InPoints),
 			Colors(InColors),
 			Text(InText),
-			MeshResource2(InMeshResource2),
+			MeshResource(InMeshResource),
 			MeshUseEmbeddedMaterials(InMeshUseEmbeddedMaterials)
 		{
-			MsgType = "visualization_msgs/Marker";
+			MsgType = TEXT("visualization_msgs/Marker");
 		}
 
 		~Marker() override {}
 
-		uint8 GetArrow() const
+		static FString ETypeAsString(EType InType)
 		{
-			return Arrow;
+			switch (InType)
+			{
+			case ARROW:
+				return TEXT("ARROW");
+				break;
+			case CUBE:
+				return TEXT("CUBE");
+				break;
+			case SPHERE:
+				return TEXT("SPHERE");
+				break;
+			case CYLINDER:
+				return TEXT("CYLINDER");
+				break;
+			case LINE_STRIP:
+				return TEXT("LINE_STRIP");
+				break;
+			case LINE_LIST:
+				return TEXT("LINE_LIST");
+				break;
+			case CUBE_LIST:
+				return TEXT("CUBE_LIST");
+				break;
+			case SPHERE_LIST:
+				return TEXT("SPHERE_LIST");
+				break;
+			case POINTS:
+				return TEXT("POINTS");
+				break;
+			case TEXT_VIEW_FACING:
+				return TEXT("TEXT_VIEW_FACING");
+				break;
+			case MESH_RESOURCE:
+				return TEXT("MESH_RESOURCE");
+				break;
+			case TRIANGLE_LIST:
+				return TEXT("TRIANGLE_LIST");
+				break;
+			default:
+				return TEXT("Unknown");
+			}
 		}
 
-		uint8 GetCube() const
+		static FString EActionAsString(EAction InAction)
 		{
-			return Cube;
+			switch (InAction)
+			{
+			case ADD:
+				return TEXT("ADD");
+				break;
+			case DEL:
+				return TEXT("DEL");
+				break;
+			default:
+				return TEXT("Unknown");
+			}
 		}
 
-		uint8 GetSphere() const
-		{
-			return Sphere;
-		}
+		// Getters 
+		std_msgs::Header GetHeader() const { return Header; }
+		FString GetNs() const { return Ns; }
+		FString GetNamespace() const { return Ns; }
+		int32 GetId() const { return Id; }
+		EType GetType() const { return Type; }
+		EType GetMarkeType() const { return Type; }
+		EAction GetAction() const { return Action; }
+		EAction GetActionTye() const { return Action; }
+		geometry_msgs::Pose GetPose() const { return Pose; }
+		geometry_msgs::Vector3 GetScale() const { return Scale; }
+		std_msgs::ColorRGBA GetColor() const { return Color; }
+		uint32 GetLifetime() const { return Lifetime; }
+		uint32 GetDuration() const { return Lifetime; }
+		bool GetFrameLocked() const { return FrameLocked; }
+		TArray<geometry_msgs::Point> GetPoints() const { return Points; }
+		TArray<std_msgs::ColorRGBA> GetColors() const { return Colors; }
+		FString GetText() const { return Text; }
+		FString GetMeshResource() const { return MeshResource; }
+		bool GetMeshUseEmbeddedMaterials() const { return MeshUseEmbeddedMaterials; }
 
-		uint8 GetCylinder() const
-		{
-			return Cylinder;
-		}
-
-		uint8 GetLineStrip() const
-		{
-			return LineStrip;
-		}
-
-		uint8 GetLineList() const
-		{
-			return LineList;
-		}
-
-		uint8 GetCubeList() const
-		{
-			return CubeList;
-		}
-
-		uint8 GetSphereList() const
-		{
-			return SphereList;
-		}
-
-		uint8 GetPoints() const
-		{
-			return Points;
-		}
-
-		uint8 GetTextViewFacing() const
-		{
-			return TextViewFacing;
-		}
-
-		uint8 GetMeshResource() const
-		{
-			return MeshResource;
-		}
-
-		uint8 GetTriangleList() const
-		{
-			return TriangleList;
-		}
-
-		uint8 GetAdd() const
-		{
-			return Add;
-		}
-
-		uint8 GetModify() const
-		{
-			return Modify;
-		}
-
-		uint8 GetDelete() const
-		{
-			return Delete;
-		}
-
-		uint8 GetDeleteall() const
-		{
-			return Deleteall;
-		}
-
-		std_msgs::Header GetHeader() const
-		{
-			return Header;
-		}
-
-		FString GetNs() const
-		{
-			return Ns;
-		}
-
-		int32 GetId() const
-		{
-			return Id;
-		}
-
-		int32 GetType() const
-		{
-			return Type;
-		}
-
-		int32 GetAction() const
-		{
-			return Action;
-		}
-
-		geometry_msgs::Pose GetPose() const
-		{
-			return Pose;
-		}
-
-		geometry_msgs::Vector3 GetScale() const
-		{
-			return Scale;
-		}
-
-		std_msgs::ColorRGBA GetColor() const
-		{
-			return Color;
-		}
-
-		uint32 GetLifetime() const
-		{
-			return Lifetime;
-		}
-
-		bool GetFrameLocked() const
-		{
-			return FrameLocked;
-		}
-
-		TArray<geometry_msgs::Point> GetPoints2() const
-		{
-			return Points2;
-		}
-
-		TArray<std_msgs::ColorRGBA> GetColors() const
-		{
-			return Colors;
-		}
-
-		FString GetText() const
-		{
-			return Text;
-		}
-
-		FString GetMeshResource2() const
-		{
-			return MeshResource2;
-		}
-
-		bool GetMeshUseEmbeddedMaterials() const
-		{
-			return MeshUseEmbeddedMaterials;
-		}
-
-		void SetArrow(uint8 InArrow)
-		{
-			Arrow = InArrow;
-		}
-
-		void SetCube(uint8 InCube)
-		{
-			Cube = InCube;
-		}
-
-		void SetSphere(uint8 InSphere)
-		{
-			Sphere = InSphere;
-		}
-
-		void SetCylinder(uint8 InCylinder)
-		{
-			Cylinder = InCylinder;
-		}
-
-		void SetLineStrip(uint8 InLineStrip)
-		{
-			LineStrip = InLineStrip;
-		}
-
-		void SetLineList(uint8 InLineList)
-		{
-			LineList = InLineList;
-		}
-
-		void SetCubeList(uint8 InCubeList)
-		{
-			CubeList = InCubeList;
-		}
-
-		void SetSphereList(uint8 InSphereList)
-		{
-			SphereList = InSphereList;
-		}
-
-		void SetPoints(uint8 InPoints)
-		{
-			Points = InPoints;
-		}
-
-		void SetTextViewFacing(uint8 InTextViewFacing)
-		{
-			TextViewFacing = InTextViewFacing;
-		}
-
-		void SetMeshResource(uint8 InMeshResource)
-		{
-			MeshResource = InMeshResource;
-		}
-
-		void SetTriangleList(uint8 InTriangleList)
-		{
-			TriangleList = InTriangleList;
-		}
-
-		void SetAdd(uint8 InAdd)
-		{
-			Add = InAdd;
-		}
-
-		void SetModify(uint8 InModify)
-		{
-			Modify = InModify;
-		}
-
-		void SetDelete(uint8 InDelete)
-		{
-			Delete = InDelete;
-		}
-
-		void SetDeleteall(uint8 InDeleteall)
-		{
-			Deleteall = InDeleteall;
-		}
-
-		void SetHeader(std_msgs::Header InHeader)
-		{
-			Header = InHeader;
-		}
-
-		void SetNs(FString InNs)
-		{
-			Ns = InNs;
-		}
-
-		void SetId(int32 InId)
-		{
-			Id = InId;
-		}
-
-		void SetType(int32 InType)
-		{
-			Type = InType;
-		}
-
-		void SetAction(int32 InAction)
-		{
-			Action = InAction;
-		}
-
-		void SetPose(geometry_msgs::Pose InPose)
-		{
-			Pose = InPose;
-		}
-
-		void SetScale(geometry_msgs::Vector3 InScale)
-		{
-			Scale = InScale;
-		}
-
-		void SetColor(std_msgs::ColorRGBA InColor)
-		{
-			Color = InColor;
-		}
-
-		void SetLifetime(uint32 InLifetime)
-		{
-			Lifetime = InLifetime;
-		}
-
-		void SetFrameLocked(bool InFrameLocked)
-		{
-			FrameLocked = InFrameLocked;
-		}
-
-		void SetPoints2(TArray<geometry_msgs::Point>& InPoints)
-		{
-			Points2 = InPoints;
-		}
-
-		void SetColors(TArray<std_msgs::ColorRGBA>& InColors)
-		{
-			Colors = InColors;
-		}
-
-		void SetText(FString InText)
-		{
-			Text = InText;
-		}
-
-		void SetMeshResource2(FString InMeshResource)
-		{
-			MeshResource2 = InMeshResource;
-		}
-
-		void SetMeshUseEmbeddedMaterials(bool InMeshUseEmbeddedMaterials)
-		{
-			MeshUseEmbeddedMaterials = InMeshUseEmbeddedMaterials;
-		}
+		// Setters 
+		void SetHeader(std_msgs::Header InHeader) { Header = InHeader; }
+		void SetNs(FString InNs) { Ns = InNs; }
+		void SetNamespace(FString InNs) { Ns = InNs; }
+		void SetId(int32 InId) { Id = InId; }
+		void SetType(EType InType) { Type = InType; }
+		void SetMarkeType(EType InType) { Type = InType; }
+		void SetAction(EAction InAction) { Action = InAction; }
+		void SetActionTye(EAction InAction) { Action = InAction; }
+		void SetPose(geometry_msgs::Pose InPose) { Pose = InPose; }
+		void SetScale(geometry_msgs::Vector3 InScale) { Scale = InScale; }
+		void SetColor(std_msgs::ColorRGBA InColor) { Color = InColor; }
+		void SetLifetime(uint32 InLifetime) { Lifetime = InLifetime; }
+		void SetDuration(uint32 InLifetime) { Lifetime = InLifetime; }
+		void SetFrameLocked(bool InFrameLocked) { FrameLocked = InFrameLocked; }
+		void SetPoints(TArray<geometry_msgs::Point> InPoints) { Points = InPoints; }
+		void SetColors(TArray<std_msgs::ColorRGBA> InColors) { Colors = InColors; }
+		void SetText(FString InText) { Text = InText; }
+		void SetMeshResource(FString InMeshResource) { MeshResource = InMeshResource; }
+		void SetMeshUseEmbeddedMaterials(bool InMeshUseEmbeddedMaterials) { MeshUseEmbeddedMaterials = InMeshUseEmbeddedMaterials; }
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
-			Arrow = JsonObject->GetNumberField(TEXT("ARROW"));
-
-			Cube = JsonObject->GetNumberField(TEXT("CUBE"));
-
-			Sphere = JsonObject->GetNumberField(TEXT("SPHERE"));
-
-			Cylinder = JsonObject->GetNumberField(TEXT("CYLINDER"));
-
-			LineStrip = JsonObject->GetNumberField(TEXT("LINE_STRIP"));
-
-			LineList = JsonObject->GetNumberField(TEXT("LINE_LIST"));
-
-			CubeList = JsonObject->GetNumberField(TEXT("CUBE_LIST"));
-
-			SphereList = JsonObject->GetNumberField(TEXT("SPHERE_LIST"));
-
-			Points = JsonObject->GetNumberField(TEXT("POINTS"));
-
-			TextViewFacing = JsonObject->GetNumberField(TEXT("TEXT_VIEW_FACING"));
-
-			MeshResource = JsonObject->GetNumberField(TEXT("MESH_RESOURCE"));
-
-			TriangleList = JsonObject->GetNumberField(TEXT("TRIANGLE_LIST"));
-
-			Add = JsonObject->GetNumberField(TEXT("ADD"));
-
-			Modify = JsonObject->GetNumberField(TEXT("MODIFY"));
-
-			Delete = JsonObject->GetNumberField(TEXT("DELETE"));
-
-			Deleteall = JsonObject->GetNumberField(TEXT("DELETEALL"));
+			TArray<TSharedPtr<FJsonValue>> ValuesPtrArr;
 
 			Header = std_msgs::Header::GetFromJson(JsonObject->GetObjectField(TEXT("header")));
 
@@ -471,9 +206,9 @@ namespace visualization_msgs
 
 			Id = JsonObject->GetNumberField(TEXT("id"));
 
-			Type = JsonObject->GetNumberField(TEXT("type"));
+			Type = (EType)JsonObject->GetNumberField(TEXT("type"));
 
-			Action = JsonObject->GetNumberField(TEXT("action"));
+			Action = (EAction)JsonObject->GetNumberField(TEXT("action"));
 
 			Pose = geometry_msgs::Pose::GetFromJson(JsonObject->GetObjectField(TEXT("pose")));
 
@@ -485,12 +220,10 @@ namespace visualization_msgs
 
 			FrameLocked = JsonObject->GetBoolField(TEXT("frame_locked"));
 
-			TArray<TSharedPtr<FJsonValue>> ValuesPtrArr;
-
-			Points2.Empty();
+			Points.Empty();
 			ValuesPtrArr = JsonObject->GetArrayField(TEXT("points"));
 			for (auto &ptr : ValuesPtrArr)
-				Points2.Add(geometry_msgs::Point::GetFromJson(ptr->AsObject()));
+				Points.Add(geometry_msgs::Point::GetFromJson(ptr->AsObject()));
 
 			Colors.Empty();
 			ValuesPtrArr = JsonObject->GetArrayField(TEXT("colors"));
@@ -499,7 +232,7 @@ namespace visualization_msgs
 
 			Text = JsonObject->GetStringField(TEXT("text"));
 
-			MeshResource2 = JsonObject->GetStringField(TEXT("mesh_resource"));
+			MeshResource = JsonObject->GetStringField(TEXT("mesh_resource"));
 
 			MeshUseEmbeddedMaterials = JsonObject->GetBoolField(TEXT("mesh_use_embedded_materials"));
 
@@ -507,37 +240,7 @@ namespace visualization_msgs
 
 		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
 		{
-			Arrow = BsonObject->GetNumberField(TEXT("ARROW"));
-
-			Cube = BsonObject->GetNumberField(TEXT("CUBE"));
-
-			Sphere = BsonObject->GetNumberField(TEXT("SPHERE"));
-
-			Cylinder = BsonObject->GetNumberField(TEXT("CYLINDER"));
-
-			LineStrip = BsonObject->GetNumberField(TEXT("LINE_STRIP"));
-
-			LineList = BsonObject->GetNumberField(TEXT("LINE_LIST"));
-
-			CubeList = BsonObject->GetNumberField(TEXT("CUBE_LIST"));
-
-			SphereList = BsonObject->GetNumberField(TEXT("SPHERE_LIST"));
-
-			Points = BsonObject->GetNumberField(TEXT("POINTS"));
-
-			TextViewFacing = BsonObject->GetNumberField(TEXT("TEXT_VIEW_FACING"));
-
-			MeshResource = BsonObject->GetNumberField(TEXT("MESH_RESOURCE"));
-
-			TriangleList = BsonObject->GetNumberField(TEXT("TRIANGLE_LIST"));
-
-			Add = BsonObject->GetNumberField(TEXT("ADD"));
-
-			Modify = BsonObject->GetNumberField(TEXT("MODIFY"));
-
-			Delete = BsonObject->GetNumberField(TEXT("DELETE"));
-
-			Deleteall = BsonObject->GetNumberField(TEXT("DELETEALL"));
+			TArray<TSharedPtr<FBsonValue>> ValuesPtrArr;
 
 			Header = std_msgs::Header::GetFromBson(BsonObject->GetObjectField(TEXT("header")));
 
@@ -545,9 +248,9 @@ namespace visualization_msgs
 
 			Id = BsonObject->GetNumberField(TEXT("id"));
 
-			Type = BsonObject->GetNumberField(TEXT("type"));
+			Type = (EType)BsonObject->GetNumberField(TEXT("type"));
 
-			Action = BsonObject->GetNumberField(TEXT("action"));
+			Action = (EAction)BsonObject->GetNumberField(TEXT("action"));
 
 			Pose = geometry_msgs::Pose::GetFromBson(BsonObject->GetObjectField(TEXT("pose")));
 
@@ -559,12 +262,10 @@ namespace visualization_msgs
 
 			FrameLocked = BsonObject->GetBoolField(TEXT("frame_locked"));
 
-			TArray<TSharedPtr<FBsonValue>> ValuesPtrArr;
-
-			Points2.Empty();
+			Points.Empty();
 			ValuesPtrArr = BsonObject->GetArrayField(TEXT("points"));
 			for (auto &ptr : ValuesPtrArr)
-				Points2.Add(geometry_msgs::Point::GetFromBson(ptr->AsObject()));
+				Points.Add(geometry_msgs::Point::GetFromBson(ptr->AsObject()));
 
 			Colors.Empty();
 			ValuesPtrArr = BsonObject->GetArrayField(TEXT("colors"));
@@ -573,7 +274,7 @@ namespace visualization_msgs
 
 			Text = BsonObject->GetStringField(TEXT("text"));
 
-			MeshResource2 = BsonObject->GetStringField(TEXT("mesh_resource"));
+			MeshResource = BsonObject->GetStringField(TEXT("mesh_resource"));
 
 			MeshUseEmbeddedMaterials = BsonObject->GetBoolField(TEXT("mesh_use_embedded_materials"));
 
@@ -597,88 +298,130 @@ namespace visualization_msgs
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
-			Object->SetNumberField(TEXT("ARROW"), Arrow);
-			Object->SetNumberField(TEXT("CUBE"), Cube);
-			Object->SetNumberField(TEXT("SPHERE"), Sphere);
-			Object->SetNumberField(TEXT("CYLINDER"), Cylinder);
-			Object->SetNumberField(TEXT("LINE_STRIP"), LineStrip);
-			Object->SetNumberField(TEXT("LINE_LIST"), LineList);
-			Object->SetNumberField(TEXT("CUBE_LIST"), CubeList);
-			Object->SetNumberField(TEXT("SPHERE_LIST"), SphereList);
-			Object->SetNumberField(TEXT("POINTS"), Points);
-			Object->SetNumberField(TEXT("TEXT_VIEW_FACING"), TextViewFacing);
-			Object->SetNumberField(TEXT("MESH_RESOURCE"), MeshResource);
-			Object->SetNumberField(TEXT("TRIANGLE_LIST"), TriangleList);
-			Object->SetNumberField(TEXT("ADD"), Add);
-			Object->SetNumberField(TEXT("MODIFY"), Modify);
-			Object->SetNumberField(TEXT("DELETE"), Delete);
-			Object->SetNumberField(TEXT("DELETEALL"), Deleteall);
 			Object->SetObjectField(TEXT("header"), Header.ToJsonObject());
+
 			Object->SetStringField(TEXT("ns"), Ns);
+
 			Object->SetNumberField(TEXT("id"), Id);
+
 			Object->SetNumberField(TEXT("type"), Type);
+
 			Object->SetNumberField(TEXT("action"), Action);
+
 			Object->SetObjectField(TEXT("pose"), Pose.ToJsonObject());
+
 			Object->SetObjectField(TEXT("scale"), Scale.ToJsonObject());
+
 			Object->SetObjectField(TEXT("color"), Color.ToJsonObject());
-			Object->SetNumberField(TEXT("lifetime"), Lifetime);
+
+			TSharedPtr<FJsonObject> lifetime_ = MakeShareable<FJsonObject>(new FJsonObject());
+			lifetime_->SetNumberField(TEXT("secs"), Lifetime);
+			lifetime_->SetNumberField(TEXT("nsecs"), 0.0);
+			Object->SetObjectField(TEXT("lifetime"), lifetime_);
+
 			Object->SetBoolField(TEXT("frame_locked"), FrameLocked);
+
 			TArray<TSharedPtr<FJsonValue>> PointsArray;
-			for (auto &val : Points2)
+			for (auto &val : Points)
 				PointsArray.Add(MakeShareable(new FJsonValueObject(val.ToJsonObject())));
 			Object->SetArrayField(TEXT("points"), PointsArray);
+
 			TArray<TSharedPtr<FJsonValue>> ColorsArray;
 			for (auto &val : Colors)
 				ColorsArray.Add(MakeShareable(new FJsonValueObject(val.ToJsonObject())));
 			Object->SetArrayField(TEXT("colors"), ColorsArray);
+
 			Object->SetStringField(TEXT("text"), Text);
-			Object->SetStringField(TEXT("mesh_resource"), MeshResource2);
+
+			Object->SetStringField(TEXT("mesh_resource"), MeshResource);
+
 			Object->SetBoolField(TEXT("mesh_use_embedded_materials"), MeshUseEmbeddedMaterials);
+
 			return Object;
+
 		}
+
 		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
 		{
 			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
-			Object->SetNumberField(TEXT("ARROW"), Arrow);
-			Object->SetNumberField(TEXT("CUBE"), Cube);
-			Object->SetNumberField(TEXT("SPHERE"), Sphere);
-			Object->SetNumberField(TEXT("CYLINDER"), Cylinder);
-			Object->SetNumberField(TEXT("LINE_STRIP"), LineStrip);
-			Object->SetNumberField(TEXT("LINE_LIST"), LineList);
-			Object->SetNumberField(TEXT("CUBE_LIST"), CubeList);
-			Object->SetNumberField(TEXT("SPHERE_LIST"), SphereList);
-			Object->SetNumberField(TEXT("POINTS"), Points);
-			Object->SetNumberField(TEXT("TEXT_VIEW_FACING"), TextViewFacing);
-			Object->SetNumberField(TEXT("MESH_RESOURCE"), MeshResource);
-			Object->SetNumberField(TEXT("TRIANGLE_LIST"), TriangleList);
-			Object->SetNumberField(TEXT("ADD"), Add);
-			Object->SetNumberField(TEXT("MODIFY"), Modify);
-			Object->SetNumberField(TEXT("DELETE"), Delete);
-			Object->SetNumberField(TEXT("DELETEALL"), Deleteall);
 			Object->SetObjectField(TEXT("header"), Header.ToBsonObject());
+
 			Object->SetStringField(TEXT("ns"), Ns);
+
 			Object->SetNumberField(TEXT("id"), Id);
+
 			Object->SetNumberField(TEXT("type"), Type);
+
 			Object->SetNumberField(TEXT("action"), Action);
+
 			Object->SetObjectField(TEXT("pose"), Pose.ToBsonObject());
+
 			Object->SetObjectField(TEXT("scale"), Scale.ToBsonObject());
+
 			Object->SetObjectField(TEXT("color"), Color.ToBsonObject());
-			Object->SetNumberField(TEXT("lifetime"), Lifetime);
+
+			TSharedPtr<FBsonObject> lifetime_ = MakeShareable<FBsonObject>(new FBsonObject());
+			lifetime_->SetNumberField(TEXT("secs"), Lifetime);
+			lifetime_->SetNumberField(TEXT("nsecs"), 0.0);
+			Object->SetObjectField(TEXT("lifetime"), lifetime_);
+
 			Object->SetBoolField(TEXT("frame_locked"), FrameLocked);
+
 			TArray<TSharedPtr<FBsonValue>> PointsArray;
-			for (auto &val : Points2)
+			for (auto &val : Points)
 				PointsArray.Add(MakeShareable(new FBsonValueObject(val.ToBsonObject())));
 			Object->SetArrayField(TEXT("points"), PointsArray);
+
 			TArray<TSharedPtr<FBsonValue>> ColorsArray;
 			for (auto &val : Colors)
 				ColorsArray.Add(MakeShareable(new FBsonValueObject(val.ToBsonObject())));
 			Object->SetArrayField(TEXT("colors"), ColorsArray);
+
 			Object->SetStringField(TEXT("text"), Text);
-			Object->SetStringField(TEXT("mesh_resource"), MeshResource2);
+
+			Object->SetStringField(TEXT("mesh_resource"), MeshResource);
+
 			Object->SetBoolField(TEXT("mesh_use_embedded_materials"), MeshUseEmbeddedMaterials);
+
 			return Object;
+
 		}
+
+		virtual FString ToString() const override
+		{
+			FString LifetimeString = TEXT("Duration {  secs = ") + FString::FromInt(Lifetime) +
+				TEXT(" nsecs= ") + FString::FromInt(0.0) +
+				TEXT(" } ");
+
+			FString PointsString = "[ ";
+			for (auto &value : Points)
+				PointsString += value.ToString() + TEXT(", ");
+			PointsString += " ] ";
+			FString ColorsString = "[ ";
+			for (auto &value : Colors)
+				ColorsString += value.ToString() + TEXT(", ");
+			ColorsString += " ] ";
+			return TEXT("Marker {  header = ") + Header.ToString() +
+				TEXT(", ns = ") + Ns +
+				TEXT(", id = ") + FString::FromInt(Id) +
+				TEXT(", type = ") + ETypeAsString(Type) +
+				TEXT(", action = ") + EActionAsString(Action) +
+				TEXT(", pose = ") + Pose.ToString() +
+				TEXT(", scale = ") + Scale.ToString() +
+				TEXT(", color = ") + Color.ToString() +
+				TEXT(", lifetime = ") + LifetimeString +
+				TEXT(", frame_locked = ") + FString::FromInt(FrameLocked) +
+				TEXT(", points =") + PointsString +
+				TEXT(", colors =") + ColorsString +
+				TEXT(", text = ") + Text +
+				TEXT(", mesh_resource = ") + MeshResource +
+				TEXT(", mesh_use_embedded_materials = ") + FString::FromInt(MeshUseEmbeddedMaterials) +
+				TEXT(" } ");
+
+		}
+
+
 		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
@@ -686,5 +429,7 @@ namespace visualization_msgs
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
-} // namespace visualization_msgs
+	
+}

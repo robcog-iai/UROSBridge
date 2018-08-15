@@ -13,52 +13,49 @@ namespace geometry_msgs
 	public:
 		Point32()
 		{
-			MsgType = "geometry_msgs/Point32";
+			MsgType = TEXT("geometry_msgs/Point32");
 		}
-
-		Point32
-		(
-			float InX,
+		
+		Point32(float InX,
 			float InY,
-			float InZ
-		):
+			float InZ)
+			:
 			X(InX),
 			Y(InY),
 			Z(InZ)
 		{
+			MsgType = TEXT("geometry_msgs/Point32");
+		}
+
+		// DEPRECATED! Will be removed when the generator is used again.
+		Point32(FVector InVector)
+		{
 			MsgType = "geometry_msgs/Point32";
+			X = InVector.X; Y = InVector.Y; Z = InVector.Z;
 		}
 
 		~Point32() override {}
 
-		float GetX() const
+		// Getters 
+		float GetX() const { return X; }
+		float GetY() const { return Y; }
+		float GetZ() const { return Z; }
+
+		// DEPRECATED! Will be removed when the generator is used again.
+		FVector GetVector() const
 		{
-			return X;
+			return FVector(X, Y, Z);
 		}
 
-		float GetY() const
-		{
-			return Y;
-		}
+		// Setters 
+		void SetX(float InX) { X = InX; }
+		void SetY(float InY) { Y = InY; }
+		void SetZ(float InZ) { Z = InZ; }
 
-		float GetZ() const
+		// DEPRECATED! Will be removed when the generator is used again.
+		void SetVector(const FVector& Vector)
 		{
-			return Z;
-		}
-
-		void SetX(float InX)
-		{
-			X = InX;
-		}
-
-		void SetY(float InY)
-		{
-			Y = InY;
-		}
-
-		void SetZ(float InZ)
-		{
-			Z = InZ;
+			X = Vector.X; Y = Vector.Y; Z = Vector.Z;
 		}
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
@@ -100,19 +97,40 @@ namespace geometry_msgs
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
 			Object->SetNumberField(TEXT("x"), X);
+
 			Object->SetNumberField(TEXT("y"), Y);
+
 			Object->SetNumberField(TEXT("z"), Z);
+
 			return Object;
+
 		}
+
 		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
 		{
 			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
 			Object->SetNumberField(TEXT("x"), X);
+
 			Object->SetNumberField(TEXT("y"), Y);
+
 			Object->SetNumberField(TEXT("z"), Z);
+
 			return Object;
+
 		}
+
+		virtual FString ToString() const override
+		{
+							
+			return TEXT("Point32 { x = ") + FString::SanitizeFloat(X) +
+				TEXT(", y = ") + FString::SanitizeFloat(Y) +
+				TEXT(", z = ") + FString::SanitizeFloat(Z) +
+				TEXT(" } ");
+
+		}
+
+
 		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
@@ -120,5 +138,7 @@ namespace geometry_msgs
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
+	
 }

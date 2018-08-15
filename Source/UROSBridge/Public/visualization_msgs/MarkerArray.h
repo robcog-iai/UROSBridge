@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ROSBridgeMsg.h"
-
 #include "visualization_msgs/Marker.h"
+
 
 namespace visualization_msgs
 {
@@ -12,28 +12,41 @@ namespace visualization_msgs
 	public:
 		MarkerArray()
 		{
-			MsgType = "visualization_msgs/MarkerArray";
+			MsgType = TEXT("visualization_msgs/MarkerArray");
 		}
-
-		MarkerArray
-		(
-			const TArray<visualization_msgs::Marker>& InMarkers
-		):
+		
+		MarkerArray(TArray<visualization_msgs::Marker> InMarkers)
+			:
 			Markers(InMarkers)
 		{
-			MsgType = "visualization_msgs/MarkerArray";
+			MsgType = TEXT("visualization_msgs/MarkerArray");
 		}
 
 		~MarkerArray() override {}
 
-		TArray<visualization_msgs::Marker> GetMarkers() const
+		// Getters 
+		TArray<visualization_msgs::Marker> GetMarkers() const { return Markers; }
+
+		// DEPRECATED! Will be removed when the generator is used again.
+		visualization_msgs::Marker GetmarkerAt(int32 Index) const
 		{
-			return Markers;
+			check(Index < Markers.Num());
+			return Markers[Index];
 		}
 
-		void SetMarkers(TArray<visualization_msgs::Marker>& InMarkers)
+		// Setters 
+		void SetMarkers(TArray<visualization_msgs::Marker> InMarkers) { Markers = InMarkers; }
+
+		// DEPRECATED! Will be removed when the generator is used again.
+		void AddMarker(visualization_msgs::Marker InMarker)
 		{
-			Markers = InMarkers;
+			Markers.Add(InMarker);
+		}
+		
+		// DEPRECATED! Will be removed when the generator is used again.
+		void AppendMarkers(const TArray<visualization_msgs::Marker>& InMarkers)
+		{
+			Markers.Append(InMarkers);
 		}
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
@@ -80,8 +93,11 @@ namespace visualization_msgs
 			for (auto &val : Markers)
 				MarkersArray.Add(MakeShareable(new FJsonValueObject(val.ToJsonObject())));
 			Object->SetArrayField(TEXT("markers"), MarkersArray);
+
 			return Object;
+
 		}
+
 		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
 		{
 			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
@@ -90,8 +106,24 @@ namespace visualization_msgs
 			for (auto &val : Markers)
 				MarkersArray.Add(MakeShareable(new FBsonValueObject(val.ToBsonObject())));
 			Object->SetArrayField(TEXT("markers"), MarkersArray);
+
 			return Object;
+
 		}
+
+		virtual FString ToString() const override
+		{
+							
+			FString MarkersString = "[ ";
+			for (auto &value : Markers)
+				MarkersString += value.ToString() + TEXT(", ");
+			MarkersString += " ] ";
+			return TEXT("MarkerArray { markers =") + MarkersString +
+				TEXT(" } ");
+
+		}
+
+
 		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
@@ -99,5 +131,7 @@ namespace visualization_msgs
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
+	
 }

@@ -2,6 +2,8 @@
 
 #include "ROSBridgeSrv.h"
 
+
+
 namespace rospy_tutorials
 {
 	class AddTwoInts : public FROSBridgeSrv
@@ -66,7 +68,14 @@ namespace rospy_tutorials
 				return Req;
 			}
 			
-//			### TOSTRING ###
+			virtual FString ToString() const override
+			{
+									
+				return TEXT("AddTwoInts::Request { a = ") + FString::FromInt(A) +
+					TEXT(", b = ") + FString::FromInt(B) +
+					TEXT(" } ");
+
+			}
 			
 			virtual TSharedPtr<FJsonObject> ToJsonObject() const
 			{
@@ -103,7 +112,7 @@ namespace rospy_tutorials
 			Response(){ }
 			Response(int64 InSum)
 				:
-				Sum(InSum) { }
+				Sum(InSum){ }
 			
 			
 			// Getters 
@@ -140,7 +149,13 @@ namespace rospy_tutorials
 				return Resp;
 			}			
 			
-//			### TOSTRING ###
+			virtual FString ToString() const override
+			{
+									
+				return TEXT("AddTwoInts::Response { sum = ") + FString::FromInt(Sum) +
+					TEXT(" } ");
+
+			}
 			
 			virtual TSharedPtr<FJsonObject> ToJsonObject() const
 			{

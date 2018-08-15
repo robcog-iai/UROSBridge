@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ROSBridgeMsg.h"
-
 #include "geometry_msgs/Vector3.h"
+
 
 namespace geometry_msgs
 {
@@ -19,20 +19,18 @@ namespace geometry_msgs
 	public:
 		Inertia()
 		{
-			MsgType = "geometry_msgs/Inertia";
+			MsgType = TEXT("geometry_msgs/Inertia");
 		}
-
-		Inertia
-		(
-			double InM,
+		
+		Inertia(double InM,
 			geometry_msgs::Vector3 InCom,
 			double InIxx,
 			double InIxy,
 			double InIxz,
 			double InIyy,
 			double InIyz,
-			double InIzz
-		):
+			double InIzz)
+			:
 			M(InM),
 			Com(InCom),
 			Ixx(InIxx),
@@ -42,90 +40,30 @@ namespace geometry_msgs
 			Iyz(InIyz),
 			Izz(InIzz)
 		{
-			MsgType = "geometry_msgs/Inertia";
+			MsgType = TEXT("geometry_msgs/Inertia");
 		}
 
 		~Inertia() override {}
 
-		double GetM() const
-		{
-			return M;
-		}
+		// Getters 
+		double GetM() const { return M; }
+		geometry_msgs::Vector3 GetCom() const { return Com; }
+		double GetIxx() const { return Ixx; }
+		double GetIxy() const { return Ixy; }
+		double GetIxz() const { return Ixz; }
+		double GetIyy() const { return Iyy; }
+		double GetIyz() const { return Iyz; }
+		double GetIzz() const { return Izz; }
 
-		geometry_msgs::Vector3 GetCom() const
-		{
-			return Com;
-		}
-
-		double GetIxx() const
-		{
-			return Ixx;
-		}
-
-		double GetIxy() const
-		{
-			return Ixy;
-		}
-
-		double GetIxz() const
-		{
-			return Ixz;
-		}
-
-		double GetIyy() const
-		{
-			return Iyy;
-		}
-
-		double GetIyz() const
-		{
-			return Iyz;
-		}
-
-		double GetIzz() const
-		{
-			return Izz;
-		}
-
-		void SetM(double InM)
-		{
-			M = InM;
-		}
-
-		void SetCom(geometry_msgs::Vector3 InCom)
-		{
-			Com = InCom;
-		}
-
-		void SetIxx(double InIxx)
-		{
-			Ixx = InIxx;
-		}
-
-		void SetIxy(double InIxy)
-		{
-			Ixy = InIxy;
-		}
-
-		void SetIxz(double InIxz)
-		{
-			Ixz = InIxz;
-		}
-
-		void SetIyy(double InIyy)
-		{
-			Iyy = InIyy;
-		}
-
-		void SetIyz(double InIyz)
-		{
-			Iyz = InIyz;
-		}
-
-		void SetIzz(double InIzz)
-		{
-			Izz = InIzz;
-		}
+		// Setters 
+		void SetM(double InM) { M = InM; }
+		void SetCom(geometry_msgs::Vector3 InCom) { Com = InCom; }
+		void SetIxx(double InIxx) { Ixx = InIxx; }
+		void SetIxy(double InIxy) { Ixy = InIxy; }
+		void SetIxz(double InIxz) { Ixz = InIxz; }
+		void SetIyy(double InIyy) { Iyy = InIyy; }
+		void SetIyz(double InIyz) { Iyz = InIyz; }
+		void SetIzz(double InIzz) { Izz = InIzz; }
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
@@ -186,29 +124,65 @@ namespace geometry_msgs
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
 			Object->SetNumberField(TEXT("m"), M);
+
 			Object->SetObjectField(TEXT("com"), Com.ToJsonObject());
+
 			Object->SetNumberField(TEXT("ixx"), Ixx);
+
 			Object->SetNumberField(TEXT("ixy"), Ixy);
+
 			Object->SetNumberField(TEXT("ixz"), Ixz);
+
 			Object->SetNumberField(TEXT("iyy"), Iyy);
+
 			Object->SetNumberField(TEXT("iyz"), Iyz);
+
 			Object->SetNumberField(TEXT("izz"), Izz);
+
 			return Object;
+
 		}
+
 		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
 		{
 			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
 			Object->SetNumberField(TEXT("m"), M);
+
 			Object->SetObjectField(TEXT("com"), Com.ToBsonObject());
+
 			Object->SetNumberField(TEXT("ixx"), Ixx);
+
 			Object->SetNumberField(TEXT("ixy"), Ixy);
+
 			Object->SetNumberField(TEXT("ixz"), Ixz);
+
 			Object->SetNumberField(TEXT("iyy"), Iyy);
+
 			Object->SetNumberField(TEXT("iyz"), Iyz);
+
 			Object->SetNumberField(TEXT("izz"), Izz);
+
 			return Object;
+
 		}
+
+		virtual FString ToString() const override
+		{
+							
+			return TEXT("Inertia { m = ") + FString::SanitizeFloat(M) +
+				TEXT(", com = ") + Com.ToString() +
+				TEXT(", ixx = ") + FString::SanitizeFloat(Ixx) +
+				TEXT(", ixy = ") + FString::SanitizeFloat(Ixy) +
+				TEXT(", ixz = ") + FString::SanitizeFloat(Ixz) +
+				TEXT(", iyy = ") + FString::SanitizeFloat(Iyy) +
+				TEXT(", iyz = ") + FString::SanitizeFloat(Iyz) +
+				TEXT(", izz = ") + FString::SanitizeFloat(Izz) +
+				TEXT(" } ");
+
+		}
+
+
 		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
@@ -216,5 +190,7 @@ namespace geometry_msgs
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
+	
 }

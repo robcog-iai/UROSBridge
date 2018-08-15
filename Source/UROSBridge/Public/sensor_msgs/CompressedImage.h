@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ROSBridgeMsg.h"
-
 #include "std_msgs/Header.h"
+
 
 namespace sensor_msgs
 {
@@ -14,61 +14,39 @@ namespace sensor_msgs
 	public:
 		CompressedImage()
 		{
-			MsgType = "sensor_msgs/CompressedImage";
+			MsgType = TEXT("sensor_msgs/CompressedImage");
 		}
-
-		CompressedImage
-		(
-			std_msgs::Header InHeader,
+		
+		CompressedImage(std_msgs::Header InHeader,
 			FString InFormat,
-			const TArray<uint8>& InData
-		):
+			TArray<uint8> InData)
+			:
 			Header(InHeader),
 			Format(InFormat),
 			Data(InData)
 		{
-			MsgType = "sensor_msgs/CompressedImage";
+			MsgType = TEXT("sensor_msgs/CompressedImage");
 		}
 
 		~CompressedImage() override {}
 
-		std_msgs::Header GetHeader() const
-		{
-			return Header;
-		}
+		// Getters 
+		std_msgs::Header GetHeader() const { return Header; }
+		FString GetFormat() const { return Format; }
+		TArray<uint8> GetData() const { return Data; }
 
-		FString GetFormat() const
-		{
-			return Format;
-		}
-
-		TArray<uint8> GetData() const
-		{
-			return Data;
-		}
-
-		void SetHeader(std_msgs::Header InHeader)
-		{
-			Header = InHeader;
-		}
-
-		void SetFormat(FString InFormat)
-		{
-			Format = InFormat;
-		}
-
-		void SetData(TArray<uint8>& InData)
-		{
-			Data = InData;
-		}
+		// Setters 
+		void SetHeader(std_msgs::Header InHeader) { Header = InHeader; }
+		void SetFormat(FString InFormat) { Format = InFormat; }
+		void SetData(TArray<uint8> InData) { Data = InData; }
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
+			TArray<TSharedPtr<FJsonValue>> ValuesPtrArr;
+
 			Header = std_msgs::Header::GetFromJson(JsonObject->GetObjectField(TEXT("header")));
 
 			Format = JsonObject->GetStringField(TEXT("format"));
-
-			TArray<TSharedPtr<FJsonValue>> ValuesPtrArr;
 
 			Data.Empty();
 			ValuesPtrArr = JsonObject->GetArrayField(TEXT("data"));
@@ -79,11 +57,11 @@ namespace sensor_msgs
 
 		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
 		{
+			TArray<TSharedPtr<FBsonValue>> ValuesPtrArr;
+
 			Header = std_msgs::Header::GetFromBson(BsonObject->GetObjectField(TEXT("header")));
 
 			Format = BsonObject->GetStringField(TEXT("format"));
-
-			TArray<TSharedPtr<FBsonValue>> ValuesPtrArr;
 
 			Data.Empty();
 			ValuesPtrArr = BsonObject->GetArrayField(TEXT("data"));
@@ -111,25 +89,50 @@ namespace sensor_msgs
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
 			Object->SetObjectField(TEXT("header"), Header.ToJsonObject());
+
 			Object->SetStringField(TEXT("format"), Format);
+
 			TArray<TSharedPtr<FJsonValue>> DataArray;
 			for (auto &val : Data)
 				DataArray.Add(MakeShareable(new FJsonValueNumber(val)));
 			Object->SetArrayField(TEXT("data"), DataArray);
+
 			return Object;
+
 		}
+
 		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
 		{
 			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
 			Object->SetObjectField(TEXT("header"), Header.ToBsonObject());
+
 			Object->SetStringField(TEXT("format"), Format);
+
 			TArray<TSharedPtr<FBsonValue>> DataArray;
 			for (auto &val : Data)
 				DataArray.Add(MakeShareable(new FBsonValueNumber(val)));
 			Object->SetArrayField(TEXT("data"), DataArray);
+
 			return Object;
+
 		}
+
+		virtual FString ToString() const override
+		{
+							
+			FString DataString = "[ ";
+			for (auto &value : Data)
+				DataString += FString::FromInt(value) + TEXT(", ");
+			DataString += " ] ";
+			return TEXT("CompressedImage { header = ") + Header.ToString() +
+				TEXT(", format = ") + Format +
+				TEXT(", data =") + DataString +
+				TEXT(" } ");
+
+		}
+
+
 		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
@@ -137,5 +140,7 @@ namespace sensor_msgs
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
+	
 }

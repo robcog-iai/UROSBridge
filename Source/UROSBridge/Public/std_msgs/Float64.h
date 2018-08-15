@@ -11,29 +11,23 @@ namespace std_msgs
 	public:
 		Float64()
 		{
-			MsgType = "std_msgs/Float64";
+			MsgType = TEXT("std_msgs/Float64");
 		}
-
-		Float64
-		(
-			double InData
-		):
+		
+		Float64(double InData)
+			:
 			Data(InData)
 		{
-			MsgType = "std_msgs/Float64";
+			MsgType = TEXT("std_msgs/Float64");
 		}
 
 		~Float64() override {}
 
-		double GetData() const
-		{
-			return Data;
-		}
+		// Getters 
+		double GetData() const { return Data; }
 
-		void SetData(double InData)
-		{
-			Data = InData;
-		}
+		// Setters 
+		void SetData(double InData) { Data = InData; }
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
@@ -66,15 +60,30 @@ namespace std_msgs
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
 			Object->SetNumberField(TEXT("data"), Data);
+
 			return Object;
+
 		}
+
 		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
 		{
 			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
 			Object->SetNumberField(TEXT("data"), Data);
+
 			return Object;
+
 		}
+
+		virtual FString ToString() const override
+		{
+							
+			return TEXT("Float64 { data = ") + FString::SanitizeFloat(Data) +
+				TEXT(" } ");
+
+		}
+
+
 		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
@@ -82,5 +91,7 @@ namespace std_msgs
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
+	
 }

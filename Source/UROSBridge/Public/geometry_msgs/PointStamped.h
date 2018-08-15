@@ -1,9 +1,9 @@
 #pragma once
 
 #include "ROSBridgeMsg.h"
-
 #include "std_msgs/Header.h"
 #include "geometry_msgs/Point.h"
+
 
 namespace geometry_msgs
 {
@@ -14,41 +14,27 @@ namespace geometry_msgs
 	public:
 		PointStamped()
 		{
-			MsgType = "geometry_msgs/PointStamped";
+			MsgType = TEXT("geometry_msgs/PointStamped");
 		}
-
-		PointStamped
-		(
-			std_msgs::Header InHeader,
-			geometry_msgs::Point InPoint
-		):
+		
+		PointStamped(std_msgs::Header InHeader,
+			geometry_msgs::Point InPoint)
+			:
 			Header(InHeader),
 			Point(InPoint)
 		{
-			MsgType = "geometry_msgs/PointStamped";
+			MsgType = TEXT("geometry_msgs/PointStamped");
 		}
 
 		~PointStamped() override {}
 
-		std_msgs::Header GetHeader() const
-		{
-			return Header;
-		}
+		// Getters 
+		std_msgs::Header GetHeader() const { return Header; }
+		geometry_msgs::Point GetPoint() const { return Point; }
 
-		geometry_msgs::Point GetPoint() const
-		{
-			return Point;
-		}
-
-		void SetHeader(std_msgs::Header InHeader)
-		{
-			Header = InHeader;
-		}
-
-		void SetPoint(geometry_msgs::Point InPoint)
-		{
-			Point = InPoint;
-		}
+		// Setters 
+		void SetHeader(std_msgs::Header InHeader) { Header = InHeader; }
+		void SetPoint(geometry_msgs::Point InPoint) { Point = InPoint; }
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
@@ -85,17 +71,35 @@ namespace geometry_msgs
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
 			Object->SetObjectField(TEXT("header"), Header.ToJsonObject());
+
 			Object->SetObjectField(TEXT("point"), Point.ToJsonObject());
+
 			return Object;
+
 		}
+
 		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
 		{
 			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
 			Object->SetObjectField(TEXT("header"), Header.ToBsonObject());
+
 			Object->SetObjectField(TEXT("point"), Point.ToBsonObject());
+
 			return Object;
+
 		}
+
+		virtual FString ToString() const override
+		{
+							
+			return TEXT("PointStamped { header = ") + Header.ToString() +
+				TEXT(", point = ") + Point.ToString() +
+				TEXT(" } ");
+
+		}
+
+
 		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
@@ -103,5 +107,7 @@ namespace geometry_msgs
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
+	
 }

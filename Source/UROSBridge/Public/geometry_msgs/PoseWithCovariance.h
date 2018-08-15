@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ROSBridgeMsg.h"
-
 #include "geometry_msgs/Pose.h"
+
 
 namespace geometry_msgs
 {
@@ -13,47 +13,33 @@ namespace geometry_msgs
 	public:
 		PoseWithCovariance()
 		{
-			MsgType = "geometry_msgs/PoseWithCovariance";
+			MsgType = TEXT("geometry_msgs/PoseWithCovariance");
 		}
-
-		PoseWithCovariance
-		(
-			geometry_msgs::Pose InPose,
-			const TArray<double>& InCovariance
-		):
+		
+		PoseWithCovariance(geometry_msgs::Pose InPose,
+			TArray<double> InCovariance)
+			:
 			Pose(InPose),
 			Covariance(InCovariance)
 		{
-			MsgType = "geometry_msgs/PoseWithCovariance";
+			MsgType = TEXT("geometry_msgs/PoseWithCovariance");
 		}
 
 		~PoseWithCovariance() override {}
 
-		geometry_msgs::Pose GetPose() const
-		{
-			return Pose;
-		}
+		// Getters 
+		geometry_msgs::Pose GetPose() const { return Pose; }
+		TArray<double> GetCovariance() const { return Covariance; }
 
-		TArray<double> GetCovariance() const
-		{
-			return Covariance;
-		}
-
-		void SetPose(geometry_msgs::Pose InPose)
-		{
-			Pose = InPose;
-		}
-
-		void SetCovariance(TArray<double>& InCovariance)
-		{
-			Covariance = InCovariance;
-		}
+		// Setters 
+		void SetPose(geometry_msgs::Pose InPose) { Pose = InPose; }
+		void SetCovariance(TArray<double> InCovariance) { Covariance = InCovariance; }
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
-			Pose = geometry_msgs::Pose::GetFromJson(JsonObject->GetObjectField(TEXT("pose")));
-
 			TArray<TSharedPtr<FJsonValue>> ValuesPtrArr;
+
+			Pose = geometry_msgs::Pose::GetFromJson(JsonObject->GetObjectField(TEXT("pose")));
 
 			Covariance.Empty();
 			ValuesPtrArr = JsonObject->GetArrayField(TEXT("covariance"));
@@ -64,9 +50,9 @@ namespace geometry_msgs
 
 		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
 		{
-			Pose = geometry_msgs::Pose::GetFromBson(BsonObject->GetObjectField(TEXT("pose")));
-
 			TArray<TSharedPtr<FBsonValue>> ValuesPtrArr;
+
+			Pose = geometry_msgs::Pose::GetFromBson(BsonObject->GetObjectField(TEXT("pose")));
 
 			Covariance.Empty();
 			ValuesPtrArr = BsonObject->GetArrayField(TEXT("covariance"));
@@ -94,23 +80,45 @@ namespace geometry_msgs
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
 			Object->SetObjectField(TEXT("pose"), Pose.ToJsonObject());
+
 			TArray<TSharedPtr<FJsonValue>> CovarianceArray;
 			for (auto &val : Covariance)
 				CovarianceArray.Add(MakeShareable(new FJsonValueNumber(val)));
 			Object->SetArrayField(TEXT("covariance"), CovarianceArray);
+
 			return Object;
+
 		}
+
 		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
 		{
 			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
 			Object->SetObjectField(TEXT("pose"), Pose.ToBsonObject());
+
 			TArray<TSharedPtr<FBsonValue>> CovarianceArray;
 			for (auto &val : Covariance)
 				CovarianceArray.Add(MakeShareable(new FBsonValueNumber(val)));
 			Object->SetArrayField(TEXT("covariance"), CovarianceArray);
+
 			return Object;
+
 		}
+
+		virtual FString ToString() const override
+		{
+							
+			FString CovarianceString = "[ ";
+			for (auto &value : Covariance)
+				CovarianceString += FString::SanitizeFloat(value) + TEXT(", ");
+			CovarianceString += " ] ";
+			return TEXT("PoseWithCovariance { pose = ") + Pose.ToString() +
+				TEXT(", covariance =") + CovarianceString +
+				TEXT(" } ");
+
+		}
+
+
 		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
@@ -118,5 +126,7 @@ namespace geometry_msgs
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
+	
 }

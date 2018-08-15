@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ROSBridgeMsg.h"
-
 #include "geometry_msgs/TransformStamped.h"
+
 
 namespace tf2_msgs
 {
@@ -12,28 +12,41 @@ namespace tf2_msgs
 	public:
 		TFMessage()
 		{
-			MsgType = "tf2_msgs/TFMessage";
+			MsgType = TEXT("tf2_msgs/TFMessage");
 		}
-
-		TFMessage
-		(
-			const TArray<geometry_msgs::TransformStamped>& InTransforms
-		):
+		
+		TFMessage(TArray<geometry_msgs::TransformStamped> InTransforms)
+			:
 			Transforms(InTransforms)
 		{
-			MsgType = "tf2_msgs/TFMessage";
+			MsgType = TEXT("tf2_msgs/TFMessage");
 		}
 
 		~TFMessage() override {}
 
-		TArray<geometry_msgs::TransformStamped> GetTransforms() const
+		// Getters 
+		TArray<geometry_msgs::TransformStamped> GetTransforms() const { return Transforms; }
+
+		// DEPRECATED! Will be removed when the generator is used again.
+		geometry_msgs::TransformStamped GetTransformAt(int32 Index)
 		{
-			return Transforms;
+			check(Index < Transforms.Num());
+			return Transforms[Index];
 		}
 
-		void SetTransforms(TArray<geometry_msgs::TransformStamped>& InTransforms)
+		// Setters 
+		void SetTransforms(TArray<geometry_msgs::TransformStamped> InTransforms) { Transforms = InTransforms; }
+
+		// DEPRECATED! Will be removed when the generator is used again.
+		void AddTransform(geometry_msgs::TransformStamped InTransform)
 		{
-			Transforms = InTransforms;
+			Transforms.Add(InTransform);
+		}
+
+		// DEPRECATED! Will be removed when the generator is used again.
+		void AppendTransforms(const TArray<geometry_msgs::TransformStamped>& InTransforms)
+		{
+			Transforms.Append(InTransforms);
 		}
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
@@ -80,8 +93,11 @@ namespace tf2_msgs
 			for (auto &val : Transforms)
 				TransformsArray.Add(MakeShareable(new FJsonValueObject(val.ToJsonObject())));
 			Object->SetArrayField(TEXT("transforms"), TransformsArray);
+
 			return Object;
+
 		}
+
 		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
 		{
 			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
@@ -90,8 +106,24 @@ namespace tf2_msgs
 			for (auto &val : Transforms)
 				TransformsArray.Add(MakeShareable(new FBsonValueObject(val.ToBsonObject())));
 			Object->SetArrayField(TEXT("transforms"), TransformsArray);
+
 			return Object;
+
 		}
+
+		virtual FString ToString() const override
+		{
+							
+			FString TransformsString = "[ ";
+			for (auto &value : Transforms)
+				TransformsString += value.ToString() + TEXT(", ");
+			TransformsString += " ] ";
+			return TEXT("TFMessage { transforms =") + TransformsString +
+				TEXT(" } ");
+
+		}
+
+
 		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
@@ -99,5 +131,7 @@ namespace tf2_msgs
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
+	
 }

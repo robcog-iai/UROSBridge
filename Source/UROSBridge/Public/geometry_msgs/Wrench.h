@@ -1,9 +1,8 @@
 #pragma once
 
 #include "ROSBridgeMsg.h"
+#include "geometry_msgs/Vector3.h"
 
-#include "geometry_msgs/Vector3.h"
-#include "geometry_msgs/Vector3.h"
 
 namespace geometry_msgs
 {
@@ -14,41 +13,27 @@ namespace geometry_msgs
 	public:
 		Wrench()
 		{
-			MsgType = "geometry_msgs/Wrench";
+			MsgType = TEXT("geometry_msgs/Wrench");
 		}
-
-		Wrench
-		(
-			geometry_msgs::Vector3 InForce,
-			geometry_msgs::Vector3 InTorque
-		):
+		
+		Wrench(geometry_msgs::Vector3 InForce,
+			geometry_msgs::Vector3 InTorque)
+			:
 			Force(InForce),
 			Torque(InTorque)
 		{
-			MsgType = "geometry_msgs/Wrench";
+			MsgType = TEXT("geometry_msgs/Wrench");
 		}
 
 		~Wrench() override {}
 
-		geometry_msgs::Vector3 GetForce() const
-		{
-			return Force;
-		}
+		// Getters 
+		geometry_msgs::Vector3 GetForce() const { return Force; }
+		geometry_msgs::Vector3 GetTorque() const { return Torque; }
 
-		geometry_msgs::Vector3 GetTorque() const
-		{
-			return Torque;
-		}
-
-		void SetForce(geometry_msgs::Vector3 InForce)
-		{
-			Force = InForce;
-		}
-
-		void SetTorque(geometry_msgs::Vector3 InTorque)
-		{
-			Torque = InTorque;
-		}
+		// Setters 
+		void SetForce(geometry_msgs::Vector3 InForce) { Force = InForce; }
+		void SetTorque(geometry_msgs::Vector3 InTorque) { Torque = InTorque; }
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
@@ -85,17 +70,35 @@ namespace geometry_msgs
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
 			Object->SetObjectField(TEXT("force"), Force.ToJsonObject());
+
 			Object->SetObjectField(TEXT("torque"), Torque.ToJsonObject());
+
 			return Object;
+
 		}
+
 		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
 		{
 			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
 			Object->SetObjectField(TEXT("force"), Force.ToBsonObject());
+
 			Object->SetObjectField(TEXT("torque"), Torque.ToBsonObject());
+
 			return Object;
+
 		}
+
+		virtual FString ToString() const override
+		{
+							
+			return TEXT("Wrench { force = ") + Force.ToString() +
+				TEXT(", torque = ") + Torque.ToString() +
+				TEXT(" } ");
+
+		}
+
+
 		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
@@ -103,5 +106,7 @@ namespace geometry_msgs
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
+	
 }

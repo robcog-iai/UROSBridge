@@ -1,9 +1,8 @@
 #pragma once
 
 #include "ROSBridgeMsg.h"
+#include "geometry_msgs/Vector3.h"
 
-#include "geometry_msgs/Vector3.h"
-#include "geometry_msgs/Vector3.h"
 
 namespace geometry_msgs
 {
@@ -14,41 +13,27 @@ namespace geometry_msgs
 	public:
 		Twist()
 		{
-			MsgType = "geometry_msgs/Twist";
+			MsgType = TEXT("geometry_msgs/Twist");
 		}
-
-		Twist
-		(
-			geometry_msgs::Vector3 InLinear,
-			geometry_msgs::Vector3 InAngular
-		):
+		
+		Twist(geometry_msgs::Vector3 InLinear,
+			geometry_msgs::Vector3 InAngular)
+			:
 			Linear(InLinear),
 			Angular(InAngular)
 		{
-			MsgType = "geometry_msgs/Twist";
+			MsgType = TEXT("geometry_msgs/Twist");
 		}
 
 		~Twist() override {}
 
-		geometry_msgs::Vector3 GetLinear() const
-		{
-			return Linear;
-		}
+		// Getters 
+		geometry_msgs::Vector3 GetLinear() const { return Linear; }
+		geometry_msgs::Vector3 GetAngular() const { return Angular; }
 
-		geometry_msgs::Vector3 GetAngular() const
-		{
-			return Angular;
-		}
-
-		void SetLinear(geometry_msgs::Vector3 InLinear)
-		{
-			Linear = InLinear;
-		}
-
-		void SetAngular(geometry_msgs::Vector3 InAngular)
-		{
-			Angular = InAngular;
-		}
+		// Setters 
+		void SetLinear(geometry_msgs::Vector3 InLinear) { Linear = InLinear; }
+		void SetAngular(geometry_msgs::Vector3 InAngular) { Angular = InAngular; }
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
@@ -85,17 +70,35 @@ namespace geometry_msgs
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
 			Object->SetObjectField(TEXT("linear"), Linear.ToJsonObject());
+
 			Object->SetObjectField(TEXT("angular"), Angular.ToJsonObject());
+
 			return Object;
+
 		}
+
 		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
 		{
 			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
 			Object->SetObjectField(TEXT("linear"), Linear.ToBsonObject());
+
 			Object->SetObjectField(TEXT("angular"), Angular.ToBsonObject());
+
 			return Object;
+
 		}
+
+		virtual FString ToString() const override
+		{
+							
+			return TEXT("Twist { linear = ") + Linear.ToString() +
+				TEXT(", angular = ") + Angular.ToString() +
+				TEXT(" } ");
+
+		}
+
+
 		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
@@ -103,5 +106,7 @@ namespace geometry_msgs
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
+	
 }

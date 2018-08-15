@@ -37,6 +37,13 @@ public:
 		return FROSTime(Secs, NSecs);
 	}
 
+	static FROSTime GetFromBson(TSharedPtr<FBsonObject> BsonObject)
+	{
+		uint32 Secs = (uint32)(BsonObject->GetNumberField("secs"));
+		uint32 NSecs = (uint32)(BsonObject->GetNumberField("nsecs"));
+		return FROSTime(Secs, NSecs);
+	}
+
 	FString ToString() const
 	{
 		return TEXT("Time { secs = ") + FString::FromInt(Secs)
@@ -46,6 +53,14 @@ public:
 	TSharedPtr<FJsonObject> ToJsonObject() const 
 	{
 		TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
+		Object->SetNumberField(TEXT("secs"), Secs);
+		Object->SetNumberField(TEXT("nsecs"), NSecs);
+		return Object;
+	}
+
+	TSharedPtr<FBsonObject> ToBsonObject() const
+	{
+		TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 		Object->SetNumberField(TEXT("secs"), Secs);
 		Object->SetNumberField(TEXT("nsecs"), NSecs);
 		return Object;

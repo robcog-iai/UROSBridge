@@ -1,9 +1,9 @@
 #pragma once
 
 #include "ROSBridgeMsg.h"
-
 #include "std_msgs/Header.h"
 #include "geometry_msgs/Transform.h"
+
 
 namespace geometry_msgs
 {
@@ -15,53 +15,31 @@ namespace geometry_msgs
 	public:
 		TransformStamped()
 		{
-			MsgType = "geometry_msgs/TransformStamped";
+			MsgType = TEXT("geometry_msgs/TransformStamped");
 		}
-
-		TransformStamped
-		(
-			std_msgs::Header InHeader,
+		
+		TransformStamped(std_msgs::Header InHeader,
 			FString InChildFrameId,
-			geometry_msgs::Transform InTransform
-		):
+			geometry_msgs::Transform InTransform)
+			:
 			Header(InHeader),
 			ChildFrameId(InChildFrameId),
 			Transform(InTransform)
 		{
-			MsgType = "geometry_msgs/TransformStamped";
+			MsgType = TEXT("geometry_msgs/TransformStamped");
 		}
 
 		~TransformStamped() override {}
 
-		std_msgs::Header GetHeader() const
-		{
-			return Header;
-		}
+		// Getters 
+		std_msgs::Header GetHeader() const { return Header; }
+		FString GetChildFrameId() const { return ChildFrameId; }
+		geometry_msgs::Transform GetTransform() const { return Transform; }
 
-		FString GetChildFrameId() const
-		{
-			return ChildFrameId;
-		}
-
-		geometry_msgs::Transform GetTransform() const
-		{
-			return Transform;
-		}
-
-		void SetHeader(std_msgs::Header InHeader)
-		{
-			Header = InHeader;
-		}
-
-		void SetChildFrameId(FString InChildFrameId)
-		{
-			ChildFrameId = InChildFrameId;
-		}
-
-		void SetTransform(geometry_msgs::Transform InTransform)
-		{
-			Transform = InTransform;
-		}
+		// Setters 
+		void SetHeader(std_msgs::Header InHeader) { Header = InHeader; }
+		void SetChildFrameId(FString InChildFrameId) { ChildFrameId = InChildFrameId; }
+		void SetTransform(geometry_msgs::Transform InTransform) { Transform = InTransform; }
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
@@ -102,19 +80,40 @@ namespace geometry_msgs
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
 			Object->SetObjectField(TEXT("header"), Header.ToJsonObject());
+
 			Object->SetStringField(TEXT("child_frame_id"), ChildFrameId);
+
 			Object->SetObjectField(TEXT("transform"), Transform.ToJsonObject());
+
 			return Object;
+
 		}
+
 		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
 		{
 			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
 			Object->SetObjectField(TEXT("header"), Header.ToBsonObject());
+
 			Object->SetStringField(TEXT("child_frame_id"), ChildFrameId);
+
 			Object->SetObjectField(TEXT("transform"), Transform.ToBsonObject());
+
 			return Object;
+
 		}
+
+		virtual FString ToString() const override
+		{
+							
+			return TEXT("TransformStamped { header = ") + Header.ToString() +
+				TEXT(", child_frame_id = ") + ChildFrameId +
+				TEXT(", transform = ") + Transform.ToString() +
+				TEXT(" } ");
+
+		}
+
+
 		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
@@ -122,5 +121,7 @@ namespace geometry_msgs
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
+	
 }

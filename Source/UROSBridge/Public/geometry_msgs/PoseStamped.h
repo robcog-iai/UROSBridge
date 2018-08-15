@@ -1,9 +1,9 @@
 #pragma once
 
 #include "ROSBridgeMsg.h"
-
 #include "std_msgs/Header.h"
 #include "geometry_msgs/Pose.h"
+
 
 namespace geometry_msgs
 {
@@ -14,41 +14,27 @@ namespace geometry_msgs
 	public:
 		PoseStamped()
 		{
-			MsgType = "geometry_msgs/PoseStamped";
+			MsgType = TEXT("geometry_msgs/PoseStamped");
 		}
-
-		PoseStamped
-		(
-			std_msgs::Header InHeader,
-			geometry_msgs::Pose InPose
-		):
+		
+		PoseStamped(std_msgs::Header InHeader,
+			geometry_msgs::Pose InPose)
+			:
 			Header(InHeader),
 			Pose(InPose)
 		{
-			MsgType = "geometry_msgs/PoseStamped";
+			MsgType = TEXT("geometry_msgs/PoseStamped");
 		}
 
 		~PoseStamped() override {}
 
-		std_msgs::Header GetHeader() const
-		{
-			return Header;
-		}
+		// Getters 
+		std_msgs::Header GetHeader() const { return Header; }
+		geometry_msgs::Pose GetPose() const { return Pose; }
 
-		geometry_msgs::Pose GetPose() const
-		{
-			return Pose;
-		}
-
-		void SetHeader(std_msgs::Header InHeader)
-		{
-			Header = InHeader;
-		}
-
-		void SetPose(geometry_msgs::Pose InPose)
-		{
-			Pose = InPose;
-		}
+		// Setters 
+		void SetHeader(std_msgs::Header InHeader) { Header = InHeader; }
+		void SetPose(geometry_msgs::Pose InPose) { Pose = InPose; }
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
@@ -85,17 +71,35 @@ namespace geometry_msgs
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
 			Object->SetObjectField(TEXT("header"), Header.ToJsonObject());
+
 			Object->SetObjectField(TEXT("pose"), Pose.ToJsonObject());
+
 			return Object;
+
 		}
+
 		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
 		{
 			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
 			Object->SetObjectField(TEXT("header"), Header.ToBsonObject());
+
 			Object->SetObjectField(TEXT("pose"), Pose.ToBsonObject());
+
 			return Object;
+
 		}
+
+		virtual FString ToString() const override
+		{
+							
+			return TEXT("PoseStamped { header = ") + Header.ToString() +
+				TEXT(", pose = ") + Pose.ToString() +
+				TEXT(" } ");
+
+		}
+
+
 		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
@@ -103,5 +107,7 @@ namespace geometry_msgs
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
+	
 }

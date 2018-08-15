@@ -5,45 +5,40 @@
 
 namespace rosgraph_msgs
 {
+	// WARNING!! DO NOT GENERATE THIS CLASS WITH THE AUTOMATiC GENERATOR UNLESS YOU RENAME THE VARIABLE IN THE .MSG FILE FIRST! (call it Time)
 	class Clock : public FROSBridgeMsg
 	{
-		FROSTime Clock;
+		FROSTime Time;
 	public:
 		Clock()
 		{
-			MsgType = "rosgraph_msgs/Clock";
+			MsgType = TEXT("rosgraph_msgs/Clock");
 		}
-
-		Clock
-		(
-			FROSTime InClock
-		):
-			Clock(InClock)
+		
+		Clock(FROSTime InTime)
+			:
+			Time(InTime)
 		{
-			MsgType = "rosgraph_msgs/Clock";
+			MsgType = TEXT("rosgraph_msgs/Clock");
 		}
 
 		~Clock() override {}
 
-		FROSTime GetClock() const
-		{
-			return Clock;
-		}
+		// Getters 
+		FROSTime GetClock() const { return Time; }
 
-		void SetClock(FROSTime InClock)
-		{
-			Clock = InClock;
-		}
+		// Setters 
+		void SetClock(FROSTime InTime) { Time = InTime; }
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
-			Clock = FROSTime::GetFromJson(JsonObject->GetObjectField(TEXT("clock")));
+			Time = FROSTime::GetFromJson(JsonObject->GetObjectField(TEXT("clock")));
 
 		}
 
 		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
 		{
-			Clock = FROSTime::GetFromBson(BsonObject->GetObjectField(TEXT("clock")));
+			Time = FROSTime::GetFromBson(BsonObject->GetObjectField(TEXT("clock")));
 
 		}
 
@@ -65,16 +60,31 @@ namespace rosgraph_msgs
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
-			Object->SetObjectField(TEXT("clock"), Clock.ToJsonObject());
+			Object->SetObjectField(TEXT("clock"), Time.ToJsonObject());
+
 			return Object;
+
 		}
+
 		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
 		{
 			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
-			Object->SetObjectField(TEXT("clock"), Clock.ToBsonObject());
+			Object->SetObjectField(TEXT("clock"), Time.ToBsonObject());
+
 			return Object;
+
 		}
+
+		virtual FString ToString() const override
+		{
+							
+			return TEXT("Clock { clock = ") + Time.ToString() +
+				TEXT(" } ");
+
+		}
+
+
 		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
@@ -82,5 +92,7 @@ namespace rosgraph_msgs
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
+	
 }

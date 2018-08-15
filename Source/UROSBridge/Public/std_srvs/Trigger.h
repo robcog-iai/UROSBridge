@@ -2,8 +2,11 @@
 
 #include "ROSBridgeSrv.h"
 
+
+
 namespace std_srvs
 {
+	// WARNING! DO NOT GENERATE THIS WITH THE AUTOMATIC GENERATOR
 	class Trigger : public FROSBridgeSrv
 	{
 	public:
@@ -19,14 +22,6 @@ namespace std_srvs
 					
 		public:
 			Request(){ }
-			Re)
-				 { }
-			
-			
-			// Getters 
-			
-			
-			// Setters 
 			
 			virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 			{
@@ -52,7 +47,12 @@ namespace std_srvs
 				return Req;
 			}
 			
-//			### TOSTRING ###
+			virtual FString ToString() const override
+			{
+									
+				return TEXT("Trigger::Request  {} ");
+
+			}
 			
 			virtual TSharedPtr<FJsonObject> ToJsonObject() const
 			{
@@ -127,7 +127,14 @@ namespace std_srvs
 				return Resp;
 			}			
 			
-//			### TOSTRING ###
+			virtual FString ToString() const override
+			{
+									
+				return TEXT("Trigger::Response { success = ") + FString::FromInt(Success) +
+					TEXT(", message = ") + Message +
+					TEXT(" } ");
+
+			}
 			
 			virtual TSharedPtr<FJsonObject> ToJsonObject() const
 			{

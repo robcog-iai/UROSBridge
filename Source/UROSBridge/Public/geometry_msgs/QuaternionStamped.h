@@ -1,9 +1,9 @@
 #pragma once
 
 #include "ROSBridgeMsg.h"
-
 #include "std_msgs/Header.h"
 #include "geometry_msgs/Quaternion.h"
+
 
 namespace geometry_msgs
 {
@@ -14,41 +14,27 @@ namespace geometry_msgs
 	public:
 		QuaternionStamped()
 		{
-			MsgType = "geometry_msgs/QuaternionStamped";
+			MsgType = TEXT("geometry_msgs/QuaternionStamped");
 		}
-
-		QuaternionStamped
-		(
-			std_msgs::Header InHeader,
-			geometry_msgs::Quaternion InQuaternion
-		):
+		
+		QuaternionStamped(std_msgs::Header InHeader,
+			geometry_msgs::Quaternion InQuaternion)
+			:
 			Header(InHeader),
 			Quaternion(InQuaternion)
 		{
-			MsgType = "geometry_msgs/QuaternionStamped";
+			MsgType = TEXT("geometry_msgs/QuaternionStamped");
 		}
 
 		~QuaternionStamped() override {}
 
-		std_msgs::Header GetHeader() const
-		{
-			return Header;
-		}
+		// Getters 
+		std_msgs::Header GetHeader() const { return Header; }
+		geometry_msgs::Quaternion GetQuaternion() const { return Quaternion; }
 
-		geometry_msgs::Quaternion GetQuaternion() const
-		{
-			return Quaternion;
-		}
-
-		void SetHeader(std_msgs::Header InHeader)
-		{
-			Header = InHeader;
-		}
-
-		void SetQuaternion(geometry_msgs::Quaternion InQuaternion)
-		{
-			Quaternion = InQuaternion;
-		}
+		// Setters 
+		void SetHeader(std_msgs::Header InHeader) { Header = InHeader; }
+		void SetQuaternion(geometry_msgs::Quaternion InQuaternion) { Quaternion = InQuaternion; }
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
@@ -85,17 +71,35 @@ namespace geometry_msgs
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
 			Object->SetObjectField(TEXT("header"), Header.ToJsonObject());
+
 			Object->SetObjectField(TEXT("quaternion"), Quaternion.ToJsonObject());
+
 			return Object;
+
 		}
+
 		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
 		{
 			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
 			Object->SetObjectField(TEXT("header"), Header.ToBsonObject());
+
 			Object->SetObjectField(TEXT("quaternion"), Quaternion.ToBsonObject());
+
 			return Object;
+
 		}
+
+		virtual FString ToString() const override
+		{
+							
+			return TEXT("QuaternionStamped { header = ") + Header.ToString() +
+				TEXT(", quaternion = ") + Quaternion.ToString() +
+				TEXT(" } ");
+
+		}
+
+
 		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
@@ -103,5 +107,7 @@ namespace geometry_msgs
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
+	
 }

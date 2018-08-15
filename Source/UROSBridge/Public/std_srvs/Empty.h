@@ -4,6 +4,7 @@
 
 namespace std_srvs
 {
+	// WARNING! DO NOT GENERATE THIS WITH THE AUTOMATIC GENERATOR
 	class Empty : public FROSBridgeSrv
 	{
 	public:
@@ -18,7 +19,7 @@ namespace std_srvs
 			
 					
 		public:
-			Request(){ }
+			Request(){ }				
 			
 			virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 			{
@@ -44,7 +45,12 @@ namespace std_srvs
 				return Req;
 			}
 			
-//			### TOSTRING ###
+			virtual FString ToString() const override
+			{
+									
+				return TEXT("Empty::Request {} ");
+
+			}
 			
 			virtual TSharedPtr<FJsonObject> ToJsonObject() const
 			{
@@ -70,7 +76,7 @@ namespace std_srvs
 			
 			
 		public:
-			Response(){ }
+			Response(){ }		
 			
 			virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 			{
@@ -96,7 +102,12 @@ namespace std_srvs
 				return Resp;
 			}			
 			
-//			### TOSTRING ###
+			virtual FString ToString() const override
+			{
+									
+				return TEXT("Empty::Response {} ");
+
+			}
 			
 			virtual TSharedPtr<FJsonObject> ToJsonObject() const
 			{

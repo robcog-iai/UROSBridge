@@ -1,9 +1,9 @@
 #pragma once
 
 #include "ROSBridgeMsg.h"
-
 #include "std_msgs/Header.h"
 #include "geometry_msgs/Polygon.h"
+
 
 namespace geometry_msgs
 {
@@ -14,41 +14,27 @@ namespace geometry_msgs
 	public:
 		PolygonStamped()
 		{
-			MsgType = "geometry_msgs/PolygonStamped";
+			MsgType = TEXT("geometry_msgs/PolygonStamped");
 		}
-
-		PolygonStamped
-		(
-			std_msgs::Header InHeader,
-			geometry_msgs::Polygon InPolygon
-		):
+		
+		PolygonStamped(std_msgs::Header InHeader,
+			geometry_msgs::Polygon InPolygon)
+			:
 			Header(InHeader),
 			Polygon(InPolygon)
 		{
-			MsgType = "geometry_msgs/PolygonStamped";
+			MsgType = TEXT("geometry_msgs/PolygonStamped");
 		}
 
 		~PolygonStamped() override {}
 
-		std_msgs::Header GetHeader() const
-		{
-			return Header;
-		}
+		// Getters 
+		std_msgs::Header GetHeader() const { return Header; }
+		geometry_msgs::Polygon GetPolygon() const { return Polygon; }
 
-		geometry_msgs::Polygon GetPolygon() const
-		{
-			return Polygon;
-		}
-
-		void SetHeader(std_msgs::Header InHeader)
-		{
-			Header = InHeader;
-		}
-
-		void SetPolygon(geometry_msgs::Polygon InPolygon)
-		{
-			Polygon = InPolygon;
-		}
+		// Setters 
+		void SetHeader(std_msgs::Header InHeader) { Header = InHeader; }
+		void SetPolygon(geometry_msgs::Polygon InPolygon) { Polygon = InPolygon; }
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
@@ -85,17 +71,35 @@ namespace geometry_msgs
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
 			Object->SetObjectField(TEXT("header"), Header.ToJsonObject());
+
 			Object->SetObjectField(TEXT("polygon"), Polygon.ToJsonObject());
+
 			return Object;
+
 		}
+
 		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
 		{
 			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
 			Object->SetObjectField(TEXT("header"), Header.ToBsonObject());
+
 			Object->SetObjectField(TEXT("polygon"), Polygon.ToBsonObject());
+
 			return Object;
+
 		}
+
+		virtual FString ToString() const override
+		{
+							
+			return TEXT("PolygonStamped { header = ") + Header.ToString() +
+				TEXT(", polygon = ") + Polygon.ToString() +
+				TEXT(" } ");
+
+		}
+
+
 		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
@@ -103,5 +107,7 @@ namespace geometry_msgs
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
+	
 }

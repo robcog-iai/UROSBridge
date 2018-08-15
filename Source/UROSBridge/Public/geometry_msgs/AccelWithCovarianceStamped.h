@@ -1,9 +1,9 @@
 #pragma once
 
 #include "ROSBridgeMsg.h"
-
 #include "std_msgs/Header.h"
 #include "geometry_msgs/AccelWithCovariance.h"
+
 
 namespace geometry_msgs
 {
@@ -14,41 +14,27 @@ namespace geometry_msgs
 	public:
 		AccelWithCovarianceStamped()
 		{
-			MsgType = "geometry_msgs/AccelWithCovarianceStamped";
+			MsgType = TEXT("geometry_msgs/AccelWithCovarianceStamped");
 		}
-
-		AccelWithCovarianceStamped
-		(
-			std_msgs::Header InHeader,
-			geometry_msgs::AccelWithCovariance InAccel
-		):
+		
+		AccelWithCovarianceStamped(std_msgs::Header InHeader,
+			geometry_msgs::AccelWithCovariance InAccel)
+			:
 			Header(InHeader),
 			Accel(InAccel)
 		{
-			MsgType = "geometry_msgs/AccelWithCovarianceStamped";
+			MsgType = TEXT("geometry_msgs/AccelWithCovarianceStamped");
 		}
 
 		~AccelWithCovarianceStamped() override {}
 
-		std_msgs::Header GetHeader() const
-		{
-			return Header;
-		}
+		// Getters 
+		std_msgs::Header GetHeader() const { return Header; }
+		geometry_msgs::AccelWithCovariance GetAccel() const { return Accel; }
 
-		geometry_msgs::AccelWithCovariance GetAccel() const
-		{
-			return Accel;
-		}
-
-		void SetHeader(std_msgs::Header InHeader)
-		{
-			Header = InHeader;
-		}
-
-		void SetAccel(geometry_msgs::AccelWithCovariance InAccel)
-		{
-			Accel = InAccel;
-		}
+		// Setters 
+		void SetHeader(std_msgs::Header InHeader) { Header = InHeader; }
+		void SetAccel(geometry_msgs::AccelWithCovariance InAccel) { Accel = InAccel; }
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
@@ -85,17 +71,35 @@ namespace geometry_msgs
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
 			Object->SetObjectField(TEXT("header"), Header.ToJsonObject());
+
 			Object->SetObjectField(TEXT("accel"), Accel.ToJsonObject());
+
 			return Object;
+
 		}
+
 		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
 		{
 			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
 			Object->SetObjectField(TEXT("header"), Header.ToBsonObject());
+
 			Object->SetObjectField(TEXT("accel"), Accel.ToBsonObject());
+
 			return Object;
+
 		}
+
+		virtual FString ToString() const override
+		{
+							
+			return TEXT("AccelWithCovarianceStamped { header = ") + Header.ToString() +
+				TEXT(", accel = ") + Accel.ToString() +
+				TEXT(" } ");
+
+		}
+
+
 		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
@@ -103,5 +107,7 @@ namespace geometry_msgs
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
+	
 }

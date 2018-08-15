@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ROSBridgeMsg.h"
-
 #include "geometry_msgs/Point32.h"
+
 
 namespace geometry_msgs
 {
@@ -12,28 +12,41 @@ namespace geometry_msgs
 	public:
 		Polygon()
 		{
-			MsgType = "geometry_msgs/Polygon";
+			MsgType = TEXT("geometry_msgs/Polygon");
 		}
-
-		Polygon
-		(
-			const TArray<geometry_msgs::Point32>& InPoints
-		):
+		
+		Polygon(TArray<geometry_msgs::Point32> InPoints)
+			:
 			Points(InPoints)
 		{
-			MsgType = "geometry_msgs/Polygon";
+			MsgType = TEXT("geometry_msgs/Polygon");
 		}
 
 		~Polygon() override {}
 
-		TArray<geometry_msgs::Point32> GetPoints() const
+		// Getters 
+		TArray<geometry_msgs::Point32> GetPoints() const { return Points; }
+
+		// DEPRECATED! Will be removed when the generator is used again.
+		geometry_msgs::Point32 GetPointAt(uint32 Index)
 		{
-			return Points;
+			check(Index < Points.Num());
+			return Points[Index];
 		}
 
-		void SetPoints(TArray<geometry_msgs::Point32>& InPoints)
+		// Setters 
+		void SetPoints(TArray<geometry_msgs::Point32> InPoints) { Points = InPoints; }
+
+		// DEPRECATED! Will be removed when the generator is used again.
+		void AddPoint(geometry_msgs::Point32 point)
 		{
-			Points = InPoints;
+			Points.Add(point);
+		}
+
+		// DEPRECATED! Will be removed when the generator is used again.
+		void AppendPoints(const TArray<geometry_msgs::Point32>& InPoints)
+		{
+			Points.Append(InPoints);
 		}
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
@@ -80,8 +93,11 @@ namespace geometry_msgs
 			for (auto &val : Points)
 				PointsArray.Add(MakeShareable(new FJsonValueObject(val.ToJsonObject())));
 			Object->SetArrayField(TEXT("points"), PointsArray);
+
 			return Object;
+
 		}
+
 		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
 		{
 			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
@@ -90,8 +106,24 @@ namespace geometry_msgs
 			for (auto &val : Points)
 				PointsArray.Add(MakeShareable(new FBsonValueObject(val.ToBsonObject())));
 			Object->SetArrayField(TEXT("points"), PointsArray);
+
 			return Object;
+
 		}
+
+		virtual FString ToString() const override
+		{
+							
+			FString PointsString = "[ ";
+			for (auto &value : Points)
+				PointsString += value.ToString() + TEXT(", ");
+			PointsString += " ] ";
+			return TEXT("Polygon { points =") + PointsString +
+				TEXT(" } ");
+
+		}
+
+
 		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
@@ -99,5 +131,7 @@ namespace geometry_msgs
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
+	
 }

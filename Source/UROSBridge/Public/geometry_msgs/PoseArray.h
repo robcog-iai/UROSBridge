@@ -1,9 +1,9 @@
 #pragma once
 
 #include "ROSBridgeMsg.h"
-
 #include "std_msgs/Header.h"
 #include "geometry_msgs/Pose.h"
+
 
 namespace geometry_msgs
 {
@@ -14,47 +14,52 @@ namespace geometry_msgs
 	public:
 		PoseArray()
 		{
-			MsgType = "geometry_msgs/PoseArray";
+			MsgType = TEXT("geometry_msgs/PoseArray");
 		}
-
-		PoseArray
-		(
-			std_msgs::Header InHeader,
-			const TArray<geometry_msgs::Pose>& InPoses
-		):
+		
+		PoseArray(std_msgs::Header InHeader,
+			TArray<geometry_msgs::Pose> InPoses)
+			:
 			Header(InHeader),
 			Poses(InPoses)
 		{
-			MsgType = "geometry_msgs/PoseArray";
+			MsgType = TEXT("geometry_msgs/PoseArray");
 		}
 
 		~PoseArray() override {}
 
-		std_msgs::Header GetHeader() const
+		// Getters 
+		std_msgs::Header GetHeader() const { return Header; }
+		TArray<geometry_msgs::Pose> GetPoses() const { return Poses; }
+
+		// DEPRECATED! Will be removed when the generator is used again.
+		geometry_msgs::Pose GetPoseAt(int32 Index)
 		{
-			return Header;
+			check(Index < Poses.Num());
+			return Poses[Index];
 		}
 
-		TArray<geometry_msgs::Pose> GetPoses() const
+		// Setters 
+		void SetHeader(std_msgs::Header InHeader) { Header = InHeader; }
+		void SetPoses(TArray<geometry_msgs::Pose> InPoses) { Poses = InPoses; }
+
+		// DEPRECATED! Will be removed when the generator is used again.
+		void AddPose(geometry_msgs::Pose InPose)
 		{
-			return Poses;
+			Poses.Add(InPose);
 		}
 
-		void SetHeader(std_msgs::Header InHeader)
+		// DEPRECATED! Will be removed when the generator is used again.
+		void AppendPoses(const TArray<geometry_msgs::Pose>& InPoses)
 		{
-			Header = InHeader;
-		}
-
-		void SetPoses(TArray<geometry_msgs::Pose>& InPoses)
-		{
-			Poses = InPoses;
+			Poses.Append(InPoses);
 		}
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
-			Header = std_msgs::Header::GetFromJson(JsonObject->GetObjectField(TEXT("header")));
-
 			TArray<TSharedPtr<FJsonValue>> ValuesPtrArr;
+
+			Header = std_msgs::Header::GetFromJson(JsonObject->GetObjectField(TEXT("header")));
 
 			Poses.Empty();
 			ValuesPtrArr = JsonObject->GetArrayField(TEXT("poses"));
@@ -65,9 +70,9 @@ namespace geometry_msgs
 
 		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
 		{
-			Header = std_msgs::Header::GetFromBson(BsonObject->GetObjectField(TEXT("header")));
-
 			TArray<TSharedPtr<FBsonValue>> ValuesPtrArr;
+
+			Header = std_msgs::Header::GetFromBson(BsonObject->GetObjectField(TEXT("header")));
 
 			Poses.Empty();
 			ValuesPtrArr = BsonObject->GetArrayField(TEXT("poses"));
@@ -95,23 +100,45 @@ namespace geometry_msgs
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
 			Object->SetObjectField(TEXT("header"), Header.ToJsonObject());
+
 			TArray<TSharedPtr<FJsonValue>> PosesArray;
 			for (auto &val : Poses)
 				PosesArray.Add(MakeShareable(new FJsonValueObject(val.ToJsonObject())));
 			Object->SetArrayField(TEXT("poses"), PosesArray);
+
 			return Object;
+
 		}
+
 		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
 		{
 			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
 			Object->SetObjectField(TEXT("header"), Header.ToBsonObject());
+
 			TArray<TSharedPtr<FBsonValue>> PosesArray;
 			for (auto &val : Poses)
 				PosesArray.Add(MakeShareable(new FBsonValueObject(val.ToBsonObject())));
 			Object->SetArrayField(TEXT("poses"), PosesArray);
+
 			return Object;
+
 		}
+
+		virtual FString ToString() const override
+		{
+							
+			FString PosesString = "[ ";
+			for (auto &value : Poses)
+				PosesString += value.ToString() + TEXT(", ");
+			PosesString += " ] ";
+			return TEXT("PoseArray { header = ") + Header.ToString() +
+				TEXT(", poses =") + PosesString +
+				TEXT(" } ");
+
+		}
+
+
 		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
@@ -119,5 +146,7 @@ namespace geometry_msgs
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
+	
 }

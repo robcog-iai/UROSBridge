@@ -1,9 +1,9 @@
 #pragma once
 
 #include "ROSBridgeMsg.h"
-
 #include "std_msgs/Header.h"
 #include "geometry_msgs/Wrench.h"
+
 
 namespace geometry_msgs
 {
@@ -14,41 +14,27 @@ namespace geometry_msgs
 	public:
 		WrenchStamped()
 		{
-			MsgType = "geometry_msgs/WrenchStamped";
+			MsgType = TEXT("geometry_msgs/WrenchStamped");
 		}
-
-		WrenchStamped
-		(
-			std_msgs::Header InHeader,
-			geometry_msgs::Wrench InWrench
-		):
+		
+		WrenchStamped(std_msgs::Header InHeader,
+			geometry_msgs::Wrench InWrench)
+			:
 			Header(InHeader),
 			Wrench(InWrench)
 		{
-			MsgType = "geometry_msgs/WrenchStamped";
+			MsgType = TEXT("geometry_msgs/WrenchStamped");
 		}
 
 		~WrenchStamped() override {}
 
-		std_msgs::Header GetHeader() const
-		{
-			return Header;
-		}
+		// Getters 
+		std_msgs::Header GetHeader() const { return Header; }
+		geometry_msgs::Wrench GetWrench() const { return Wrench; }
 
-		geometry_msgs::Wrench GetWrench() const
-		{
-			return Wrench;
-		}
-
-		void SetHeader(std_msgs::Header InHeader)
-		{
-			Header = InHeader;
-		}
-
-		void SetWrench(geometry_msgs::Wrench InWrench)
-		{
-			Wrench = InWrench;
-		}
+		// Setters 
+		void SetHeader(std_msgs::Header InHeader) { Header = InHeader; }
+		void SetWrench(geometry_msgs::Wrench InWrench) { Wrench = InWrench; }
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
@@ -85,17 +71,35 @@ namespace geometry_msgs
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
 			Object->SetObjectField(TEXT("header"), Header.ToJsonObject());
+
 			Object->SetObjectField(TEXT("wrench"), Wrench.ToJsonObject());
+
 			return Object;
+
 		}
+
 		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
 		{
 			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
 			Object->SetObjectField(TEXT("header"), Header.ToBsonObject());
+
 			Object->SetObjectField(TEXT("wrench"), Wrench.ToBsonObject());
+
 			return Object;
+
 		}
+
+		virtual FString ToString() const override
+		{
+							
+			return TEXT("WrenchStamped { header = ") + Header.ToString() +
+				TEXT(", wrench = ") + Wrench.ToString() +
+				TEXT(" } ");
+
+		}
+
+
 		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
@@ -103,5 +107,7 @@ namespace geometry_msgs
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
+	
 }

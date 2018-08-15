@@ -1,9 +1,9 @@
 #pragma once
 
 #include "ROSBridgeMsg.h"
-
 #include "std_msgs/Header.h"
 #include "geometry_msgs/Vector3.h"
+
 
 namespace geometry_msgs
 {
@@ -14,41 +14,27 @@ namespace geometry_msgs
 	public:
 		Vector3Stamped()
 		{
-			MsgType = "geometry_msgs/Vector3Stamped";
+			MsgType = TEXT("geometry_msgs/Vector3Stamped");
 		}
-
-		Vector3Stamped
-		(
-			std_msgs::Header InHeader,
-			geometry_msgs::Vector3 InVector
-		):
+		
+		Vector3Stamped(std_msgs::Header InHeader,
+			geometry_msgs::Vector3 InVector)
+			:
 			Header(InHeader),
 			Vector(InVector)
 		{
-			MsgType = "geometry_msgs/Vector3Stamped";
+			MsgType = TEXT("geometry_msgs/Vector3Stamped");
 		}
 
 		~Vector3Stamped() override {}
 
-		std_msgs::Header GetHeader() const
-		{
-			return Header;
-		}
+		// Getters 
+		std_msgs::Header GetHeader() const { return Header; }
+		geometry_msgs::Vector3 GetVector() const { return Vector; }
 
-		geometry_msgs::Vector3 GetVector() const
-		{
-			return Vector;
-		}
-
-		void SetHeader(std_msgs::Header InHeader)
-		{
-			Header = InHeader;
-		}
-
-		void SetVector(geometry_msgs::Vector3 InVector)
-		{
-			Vector = InVector;
-		}
+		// Setters 
+		void SetHeader(std_msgs::Header InHeader) { Header = InHeader; }
+		void SetVector(geometry_msgs::Vector3 InVector) { Vector = InVector; }
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
@@ -85,17 +71,35 @@ namespace geometry_msgs
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
 			Object->SetObjectField(TEXT("header"), Header.ToJsonObject());
+
 			Object->SetObjectField(TEXT("vector"), Vector.ToJsonObject());
+
 			return Object;
+
 		}
+
 		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
 		{
 			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
 			Object->SetObjectField(TEXT("header"), Header.ToBsonObject());
+
 			Object->SetObjectField(TEXT("vector"), Vector.ToBsonObject());
+
 			return Object;
+
 		}
+
+		virtual FString ToString() const override
+		{
+							
+			return TEXT("Vector3Stamped { header = ") + Header.ToString() +
+				TEXT(", vector = ") + Vector.ToString() +
+				TEXT(" } ");
+
+		}
+
+
 		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
@@ -103,5 +107,7 @@ namespace geometry_msgs
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
+	
 }

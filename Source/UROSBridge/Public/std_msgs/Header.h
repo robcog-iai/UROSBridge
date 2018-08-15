@@ -13,53 +13,31 @@ namespace std_msgs
 	public:
 		Header()
 		{
-			MsgType = "std_msgs/Header";
+			MsgType = TEXT("std_msgs/Header");
 		}
-
-		Header
-		(
-			uint32 InSeq,
+		
+		Header(uint32 InSeq,
 			FROSTime InStamp,
-			FString InFrameId
-		):
+			FString InFrameId)
+			:
 			Seq(InSeq),
 			Stamp(InStamp),
 			FrameId(InFrameId)
 		{
-			MsgType = "std_msgs/Header";
+			MsgType = TEXT("std_msgs/Header");
 		}
 
 		~Header() override {}
 
-		uint32 GetSeq() const
-		{
-			return Seq;
-		}
+		// Getters 
+		uint32 GetSeq() const { return Seq; }
+		FROSTime GetStamp() const { return Stamp; }
+		FString GetFrameId() const { return FrameId; }
 
-		FROSTime GetStamp() const
-		{
-			return Stamp;
-		}
-
-		FString GetFrameId() const
-		{
-			return FrameId;
-		}
-
-		void SetSeq(uint32 InSeq)
-		{
-			Seq = InSeq;
-		}
-
-		void SetStamp(FROSTime InStamp)
-		{
-			Stamp = InStamp;
-		}
-
-		void SetFrameId(FString InFrameId)
-		{
-			FrameId = InFrameId;
-		}
+		// Setters 
+		void SetSeq(uint32 InSeq) { Seq = InSeq; }
+		void SetStamp(FROSTime InStamp) { Stamp = InStamp; }
+		void SetFrameId(FString InFrameId) { FrameId = InFrameId; }
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
@@ -100,19 +78,40 @@ namespace std_msgs
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
 			Object->SetNumberField(TEXT("seq"), Seq);
+
 			Object->SetObjectField(TEXT("stamp"), Stamp.ToJsonObject());
+
 			Object->SetStringField(TEXT("frame_id"), FrameId);
+
 			return Object;
+
 		}
+
 		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
 		{
 			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
 			Object->SetNumberField(TEXT("seq"), Seq);
+
 			Object->SetObjectField(TEXT("stamp"), Stamp.ToBsonObject());
+
 			Object->SetStringField(TEXT("frame_id"), FrameId);
+
 			return Object;
+
 		}
+
+		virtual FString ToString() const override
+		{
+							
+			return TEXT("Header { seq = ") + FString::FromInt(Seq) +
+				TEXT(", stamp = ") + Stamp.ToString() +
+				TEXT(", frame_id = ") + FrameId +
+				TEXT(" } ");
+
+		}
+
+
 		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
@@ -120,5 +119,7 @@ namespace std_msgs
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
+	
 }

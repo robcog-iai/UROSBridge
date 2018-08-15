@@ -1,9 +1,9 @@
 #pragma once
 
 #include "ROSBridgeMsg.h"
-
 #include "geometry_msgs/Vector3.h"
 #include "geometry_msgs/Quaternion.h"
+
 
 namespace geometry_msgs
 {
@@ -14,41 +14,27 @@ namespace geometry_msgs
 	public:
 		Transform()
 		{
-			MsgType = "geometry_msgs/Transform";
+			MsgType = TEXT("geometry_msgs/Transform");
 		}
-
-		Transform
-		(
-			geometry_msgs::Vector3 InTranslation,
-			geometry_msgs::Quaternion InRotation
-		):
+		
+		Transform(geometry_msgs::Vector3 InTranslation,
+			geometry_msgs::Quaternion InRotation)
+			:
 			Translation(InTranslation),
 			Rotation(InRotation)
 		{
-			MsgType = "geometry_msgs/Transform";
+			MsgType = TEXT("geometry_msgs/Transform");
 		}
 
 		~Transform() override {}
 
-		geometry_msgs::Vector3 GetTranslation() const
-		{
-			return Translation;
-		}
+		// Getters 
+		geometry_msgs::Vector3 GetTranslation() const { return Translation; }
+		geometry_msgs::Quaternion GetRotation() const { return Rotation; }
 
-		geometry_msgs::Quaternion GetRotation() const
-		{
-			return Rotation;
-		}
-
-		void SetTranslation(geometry_msgs::Vector3 InTranslation)
-		{
-			Translation = InTranslation;
-		}
-
-		void SetRotation(geometry_msgs::Quaternion InRotation)
-		{
-			Rotation = InRotation;
-		}
+		// Setters 
+		void SetTranslation(geometry_msgs::Vector3 InTranslation) { Translation = InTranslation; }
+		void SetRotation(geometry_msgs::Quaternion InRotation) { Rotation = InRotation; }
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
@@ -85,17 +71,35 @@ namespace geometry_msgs
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
 			Object->SetObjectField(TEXT("translation"), Translation.ToJsonObject());
+
 			Object->SetObjectField(TEXT("rotation"), Rotation.ToJsonObject());
+
 			return Object;
+
 		}
+
 		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
 		{
 			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
 			Object->SetObjectField(TEXT("translation"), Translation.ToBsonObject());
+
 			Object->SetObjectField(TEXT("rotation"), Rotation.ToBsonObject());
+
 			return Object;
+
 		}
+
+		virtual FString ToString() const override
+		{
+							
+			return TEXT("Transform { translation = ") + Translation.ToString() +
+				TEXT(", rotation = ") + Rotation.ToString() +
+				TEXT(" } ");
+
+		}
+
+
 		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
@@ -103,5 +107,7 @@ namespace geometry_msgs
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
+	
 }

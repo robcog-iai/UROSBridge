@@ -13,22 +13,21 @@ namespace geometry_msgs
 	public:
 		Vector3()
 		{
-			MsgType = "geometry_msgs/Vector3";
+			MsgType = TEXT("geometry_msgs/Vector3");
 		}
-
-		Vector3
-		(
-			double InX,
+		
+		Vector3(double InX,
 			double InY,
-			double InZ
-		):
+			double InZ)
+			:
 			X(InX),
 			Y(InY),
 			Z(InZ)
 		{
-			MsgType = "geometry_msgs/Vector3";
+			MsgType = TEXT("geometry_msgs/Vector3");
 		}
 
+		// DEPRECATED! Will be removed when the generator is used again.
 		Vector3(const FVector& InVector)
 		{
 			MsgType = "geometry_msgs/Vector3";
@@ -39,44 +38,26 @@ namespace geometry_msgs
 
 		~Vector3() override {}
 
-		double GetX() const
-		{
-			return X;
-		}
+		// Getters 
+		double GetX() const { return X; }
+		double GetY() const { return Y; }
+		double GetZ() const { return Z; }
 
-		double GetY() const
-		{
-			return Y;
-		}
-
-		double GetZ() const
-		{
-			return Z;
-		}
-
+		// DEPRECATED! Will be removed when the generator is used again.
 		FVector GetVector() const
 		{
 			return FVector(X, Y, Z);
 		}
 
-		void SetX(double InX)
-		{
-			X = InX;
-		}
+		// Setters 
+		void SetX(double InX) { X = InX; }
+		void SetY(double InY) { Y = InY; }
+		void SetZ(double InZ) { Z = InZ; }
 
-		void SetY(double InY)
+		// DEPRECATED! Will be removed when the generator is used again.
+		void SetVector(const FVector& InVector)
 		{
-			Y = InY;
-		}
-
-		void SetZ(double InZ)
-		{
-			Z = InZ;
-		}
-
-		void SetVector(const FVector& InVector) 
-		{
-			Z = InVector.X;
+			X = InVector.X;
 			Y = InVector.Y;
 			Z = InVector.Z;
 		}
@@ -120,19 +101,40 @@ namespace geometry_msgs
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
 			Object->SetNumberField(TEXT("x"), X);
+
 			Object->SetNumberField(TEXT("y"), Y);
+
 			Object->SetNumberField(TEXT("z"), Z);
+
 			return Object;
+
 		}
+
 		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
 		{
 			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
 			Object->SetNumberField(TEXT("x"), X);
+
 			Object->SetNumberField(TEXT("y"), Y);
+
 			Object->SetNumberField(TEXT("z"), Z);
+
 			return Object;
+
 		}
+
+		virtual FString ToString() const override
+		{
+							
+			return TEXT("Vector3 { x = ") + FString::SanitizeFloat(X) +
+				TEXT(", y = ") + FString::SanitizeFloat(Y) +
+				TEXT(", z = ") + FString::SanitizeFloat(Z) +
+				TEXT(" } ");
+
+		}
+
+
 		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
@@ -140,5 +142,7 @@ namespace geometry_msgs
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
+	
 }
