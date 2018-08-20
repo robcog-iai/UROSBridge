@@ -12,6 +12,8 @@ Most standard ros msgs are supported (`std_msgs`, `sensor_msgs`, `geometry_msgs`
 
 * See the [ex-ros-tf-robosim](https://github.com/robcog-iai/RobCoG/tree/ex-ros-tf-robosim) branch of RobCoG as an Unreal Project example to test all these functionalities.
 
+* To switch from the default serialization format (Json) to Bson, add ESerializationMode::MODE_BSON as a third parameter when instantiating the FROSBridgeHandler. FROSBridgeSubscriber, FROSBridgeSrvClient and FROSBridgeSrvServer each have seperate methods for handling Bson which you then need to implememnt.
+
 #### How to include the plugin
 
 -   Add the plugin to your project (e.g `MyProject/Plugins/UROSBridge`)      
