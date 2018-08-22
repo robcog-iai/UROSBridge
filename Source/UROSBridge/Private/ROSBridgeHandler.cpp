@@ -564,14 +564,7 @@ void FROSBridgeHandler::PublishServiceResponse(const FString& InService, const F
 	if (!bIsClientConnected) return;
 
 	FString MsgToSend = FROSBridgeSrv::ServiceResponse(InService, InId, InResponse);
-	if (SerializationMode == ESerializationMode::MODE_BSON) {
-		// Convert the automatically generated message from Json to Bson
-		FBsonObject BsonObj = FBsonObject(MsgToSend);
-		Client->Send((uint8_t*)BsonObj.GetDataPointer(), BsonObj.GetDataLength());
-	}
-	else {
-		Client->Send(MsgToSend);
-	}
+	SendBySerializationMode(MsgToSend);
 }
 
 void FROSBridgeHandler::PublishMsg(const FString& InTopic, TSharedPtr<FROSBridgeMsg> InMsg)
@@ -580,14 +573,7 @@ void FROSBridgeHandler::PublishMsg(const FString& InTopic, TSharedPtr<FROSBridge
 	if (!bIsClientConnected) return;
 
 	FString MsgToSend = FROSBridgeMsg::Publish(InTopic, InMsg);
-	if (SerializationMode == ESerializationMode::MODE_BSON) {
-		// Convert the automatically generated message from Json to Bson
-		FBsonObject BsonObj = FBsonObject(MsgToSend);
-		Client->Send((uint8_t*)BsonObj.GetDataPointer(), BsonObj.GetDataLength());
-	}
-	else {
-		Client->Send(MsgToSend);
-	}
+	SendBySerializationMode(MsgToSend);
 }
 
 void FROSBridgeHandler::CallService(TSharedPtr<FROSBridgeSrvClient> InSrvClient,
@@ -614,12 +600,6 @@ void FROSBridgeHandler::CallServiceImpl(const FString& Name, TSharedPtr<FROSBrid
 
 	FString MsgToSend = FROSBridgeSrv::CallService(Name, Request, Id);
 	
-	if (SerializationMode == ESerializationMode::MODE_BSON) {
-		// Convert the automatically generated message from Json to Bson
-		FBsonObject BsonObj = FBsonObject(MsgToSend);
-		Client->Send((uint8_t*)BsonObj.GetDataPointer(), BsonObj.GetDataLength());
-	}
-	else {
-		Client->Send(MsgToSend);
-	}
+	SendBySerializationMode(MsgToSend);
+	
 }

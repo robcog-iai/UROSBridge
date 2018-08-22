@@ -375,8 +375,7 @@ void FWebSocket::OnRawRecieve(void* Data, uint32 Size, bool isBinary)
 		{
 			uint32 BytesToBeRead = *(uint32*)RecievedBuffer.GetData();
 			// UE_LOG(LogROS, Warning, TEXT("BytesToBeRead = %d"), BytesToBeRead);
-
-			if (BytesToBeRead <= ((uint32)RecievedBuffer.Num() - sizeof(uint32)))
+			if (BytesToBeRead <= ((uint32)RecievedBuffer.Num()))
 			{
 				RecievedCallBack.ExecuteIfBound((void*)RecievedBuffer.GetData(), BytesToBeRead);
 				RecievedBuffer.RemoveAt(0, BytesToBeRead );
