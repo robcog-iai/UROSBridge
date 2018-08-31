@@ -6,42 +6,42 @@
 
 namespace ue4_srvs
 {
-	class SelectModel : public FROSBridgeSrv
+	class SelectActor : public FROSBridgeSrv
 	{
 	public:
-		SelectModel()
+		SelectActor()
 		{
-			SrvType = TEXT("ue4_srvs/SelectModel");
+			SrvType = TEXT("ue4_srvs/SelectActor");
 		}
 
 		class Request : public SrvRequest
 		{
 		private:
-			FString ModelName;
+			FString ActorName;
 					
 		public:
 			Request(){ }
-			Request(FString InModelName)
+			Request(FString InActorName)
 				:
-				ModelName(InModelName) { }
+				ActorName(InActorName) { }
 			
 			
 			// Getters 
-			FString GetModelName() const { return ModelName; }
+			FString GetActorName() const { return ActorName; }
 			
 			
 			// Setters 
-			void SetModelName(FString InModelName) { ModelName = InModelName; }
+			void SetActorName(FString InActorName) { ActorName = InActorName; }
 			
 			virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 			{
-				ModelName = JsonObject->GetStringField(TEXT("model_name"));
+				ActorName = JsonObject->GetStringField(TEXT("actor_name"));
 
 			}
 			
 			virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
 			{
-				ModelName = BsonObject->GetStringField(TEXT("model_name"));
+				ActorName = BsonObject->GetStringField(TEXT("actor_name"));
 
 			}
 			
@@ -62,7 +62,7 @@ namespace ue4_srvs
 			virtual FString ToString() const override
 			{
 									
-				return TEXT("SelectModel::Request { model_name = ") + ModelName +
+				return TEXT("SelectActor::Request { actor_name = ") + ActorName +
 					TEXT(" } ");
 
 			}
@@ -71,7 +71,7 @@ namespace ue4_srvs
 			{
 				TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
-				Object->SetStringField(TEXT("model_name"), ModelName);
+				Object->SetStringField(TEXT("actor_name"), ActorName);
 
 				return Object;
 
@@ -81,7 +81,7 @@ namespace ue4_srvs
 			{
 				TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
 
-				Object->SetStringField(TEXT("model_name"), ModelName);
+				Object->SetStringField(TEXT("actor_name"), ActorName);
 
 				return Object;
 
@@ -138,7 +138,7 @@ namespace ue4_srvs
 			virtual FString ToString() const override
 			{
 									
-				return TEXT("SelectModel::Response { success = ") + FString::FromInt(Success) +
+				return TEXT("SelectActor::Response { success = ") + FString::FromInt(Success) +
 					TEXT(" } ");
 
 			}
