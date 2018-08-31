@@ -4,66 +4,128 @@
 
 namespace std_srvs
 {
+	// WARNING! DO NOT GENERATE THIS WITH THE AUTOMATIC GENERATOR
 	class Empty : public FROSBridgeSrv
 	{
-
-	protected:
-		FString SrvType;
-
 	public:
 		Empty()
 		{
-			SrvType = TEXT("srd_srvs/Empty");
+			SrvType = TEXT("std_srvs/Empty");
 		}
 
-		class Request : public SrvRequest 
+		class Request : public SrvRequest
 		{
+		private:
+			
+					
 		public:
-
-			virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
+			Request(){ }				
+			
+			virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 			{
+				
 			}
-
+			
+			virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
+			{
+				
+			}
+			
 			static Request GetFromJson(TSharedPtr<FJsonObject> JsonObject)
 			{
-				return Request();
+				Request Req;
+				Req.FromJson(JsonObject);
+				return Req;
 			}
-
+			
+			static Request GetFromBson(TSharedPtr<FBsonObject> BsonObject)
+			{
+				Request Req;
+				Req.FromBson(BsonObject);
+				return Req;
+			}
+			
 			virtual FString ToString() const override
 			{
+									
 				return TEXT("Empty::Request {} ");
-			}
 
-			virtual TSharedPtr<FJsonObject> ToJsonObject() const 
+			}
+			
+			virtual TSharedPtr<FJsonObject> ToJsonObject() const
 			{
 				TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
+
 				return Object;
+
+			}
+			
+			virtual TSharedPtr<FBsonObject> ToBsonObject() const
+			{
+				TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
+
+				return Object;
+
 			}
 		};
-
-		class Response : public SrvResponse 
+		
+		class Response : public SrvResponse
 		{
+		private:
+			
+			
+			
 		public:
-			virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
+			Response(){ }		
+			
+			virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 			{
+				
 			}
-
+			
+			virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
+			{
+				
+			}
+			
 			static Response GetFromJson(TSharedPtr<FJsonObject> JsonObject)
 			{
-				return Response();
+				Response Resp;
+				Resp.FromJson(JsonObject);
+				return Resp;
 			}
-
+			
+			static Response GetFromBson(TSharedPtr<FBsonObject> BsonObject)
+			{
+				Response Resp; 
+				Resp.FromBson(BsonObject);
+				return Resp;
+			}			
+			
 			virtual FString ToString() const override
 			{
+									
 				return TEXT("Empty::Response {} ");
-			}
 
-			virtual TSharedPtr<FJsonObject> ToJsonObject() const 
+			}
+			
+			virtual TSharedPtr<FJsonObject> ToJsonObject() const
 			{
 				TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
+
 				return Object;
+
+			}
+			
+			virtual TSharedPtr<FBsonObject> ToBsonObject() const
+			{
+				TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
+
+				return Object;
+
 			}
 		};
+		
 	};
-} // namespace std_srvs
-
+	
+}

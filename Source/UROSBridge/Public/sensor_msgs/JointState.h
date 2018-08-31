@@ -1,116 +1,114 @@
 #pragma once
-#include "ROSBridgeMsg.h"
 
-#include "std_msgs/String.h"
+#include "ROSBridgeMsg.h"
 #include "std_msgs/Header.h"
+
+
 namespace sensor_msgs
 {
 	class JointState : public FROSBridgeMsg
 	{
 		std_msgs::Header Header;
-
 	public:
-		TArray<FString> Names;
-		TArray<double> Positions;
-		TArray<double> Velocities;
-		TArray<double> Efforts;
-
+		// WARNING! Will be private when the generator is used again. Use Getters and Setters instead of direct access.
+		TArray<FString> Name;
+		// WARNING! Will be private when the generator is used again. Use Getters and Setters instead of direct access.
+		TArray<double> Position;
+		// WARNING! Will be private when the generator is used again. Use Getters and Setters instead of direct access.
+		TArray<double> Velocity;
+		// WARNING! Will be private when the generator is used again. Use Getters and Setters instead of direct access.
+		TArray<double> Effort;
+		
 		JointState()
 		{
-			MsgType = "sensor_msgs/JointState";
+			MsgType = TEXT("sensor_msgs/JointState");
 		}
-
-		JointState(
-			const std_msgs::Header& InHeader,
-			const TArray<FString>& InNames,
-			const TArray<double>& InPositions,
-			const TArray<double>& InVelocities,
-			const TArray<double>& InEfforts) :
+		
+		JointState(std_msgs::Header InHeader,
+			TArray<FString> InName,
+			TArray<double> InPosition,
+			TArray<double> InVelocity,
+			TArray<double> InEffort)
+			:
 			Header(InHeader),
-			Names(InNames),
-			Positions(InPositions),
-			Velocities(InVelocities),
-			Efforts(InEfforts)
+			Name(InName),
+			Position(InPosition),
+			Velocity(InVelocity),
+			Effort(InEffort)
 		{
-			MsgType = "sensor_msgs/JointState";
+			MsgType = TEXT("sensor_msgs/JointState");
 		}
 
 		~JointState() override {}
 
-		std_msgs::Header GetHeader() const 
-		{
-			return Header;
-		}
+		// Getters 
+		std_msgs::Header GetHeader() const { return Header; }
+		TArray<FString> GetName() const { return Name; }
+		TArray<double> GetPosition() const { return Position; }
+		TArray<double> GetVelocity() const { return Velocity; }
+		TArray<double> GetEffort() const { return Effort; }
 
-		TArray<FString> GetName() const 
-		{
-			return Names;
-		}
+		// Setters 
+		void SetHeader(std_msgs::Header InHeader) { Header = InHeader; }
+		void SetName(TArray<FString> InName) { Name = InName; }
+		void SetPosition(TArray<double> InPosition) { Position = InPosition; }
+		void SetVelocity(TArray<double> InVelocity) { Velocity = InVelocity; }
+		void SetEffort(TArray<double> InEffort) { Effort = InEffort; }
 
-		TArray<double> GetPosition() const 
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
-			return Positions; 
-		}
-		
-		TArray<double> GetVelocity() const 
-		{ 
-			return Velocities; 
-		}
-
-		TArray<double> GetEffort() const 
-		{
-			return Efforts; 
-		}
-
-		void SetHeader(const std_msgs::Header& InHeaders) 
-		{
-			Header = InHeaders; 
-		}
-
-		void SetName(const TArray<FString>& InNames) 
-		{
-			Names = InNames; 
-		}
-
-		void SetPosition(const TArray<double>& InPositions)
-		{
-			Positions = InPositions; 
-		}
-
-		void SetVelocity(const TArray<double>& InVelocities) 
-		{
-			Velocities = InVelocities;
-		}
-
-		void SetEffort(const TArray<double>& InEfforts) 
-		{ 
-			Efforts = InEfforts; 
-		}
-
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
-		{
-			Header = std_msgs::Header::GetFromJson(JsonObject->GetObjectField(TEXT("header")));
 			TArray<TSharedPtr<FJsonValue>> ValuesPtrArr;
 
-			Names.Empty();
+			Header = std_msgs::Header::GetFromJson(JsonObject->GetObjectField(TEXT("header")));
+
+			Name.Empty();
 			ValuesPtrArr = JsonObject->GetArrayField(TEXT("name"));
 			for (auto &ptr : ValuesPtrArr)
-				Names.Add(ptr->AsString());
+				Name.Add(ptr->AsString());
 
-			Positions.Empty();
+			Position.Empty();
 			ValuesPtrArr = JsonObject->GetArrayField(TEXT("position"));
 			for (auto &ptr : ValuesPtrArr)
-				Positions.Add(ptr->AsNumber());
+				Position.Add(ptr->AsNumber());
 
-			Velocities.Empty();
+			Velocity.Empty();
 			ValuesPtrArr = JsonObject->GetArrayField(TEXT("velocity"));
 			for (auto &ptr : ValuesPtrArr)
-				Velocities.Add(ptr->AsNumber());
+				Velocity.Add(ptr->AsNumber());
 
-			Efforts.Empty();
+			Effort.Empty();
 			ValuesPtrArr = JsonObject->GetArrayField(TEXT("effort"));
 			for (auto &ptr : ValuesPtrArr)
-				Efforts.Add(ptr->AsNumber());
+				Effort.Add(ptr->AsNumber());
+
+		}
+
+		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
+		{
+			TArray<TSharedPtr<FBsonValue>> ValuesPtrArr;
+
+			Header = std_msgs::Header::GetFromBson(BsonObject->GetObjectField(TEXT("header")));
+
+			Name.Empty();
+			ValuesPtrArr = BsonObject->GetArrayField(TEXT("name"));
+			for (auto &ptr : ValuesPtrArr)
+				Name.Add(ptr->AsString());
+
+			Position.Empty();
+			ValuesPtrArr = BsonObject->GetArrayField(TEXT("position"));
+			for (auto &ptr : ValuesPtrArr)
+				Position.Add(ptr->AsNumber());
+
+			Velocity.Empty();
+			ValuesPtrArr = BsonObject->GetArrayField(TEXT("velocity"));
+			for (auto &ptr : ValuesPtrArr)
+				Velocity.Add(ptr->AsNumber());
+
+			Effort.Empty();
+			ValuesPtrArr = BsonObject->GetArrayField(TEXT("effort"));
+			for (auto &ptr : ValuesPtrArr)
+				Effort.Add(ptr->AsNumber());
+
 		}
 
 		static JointState GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -120,64 +118,110 @@ namespace sensor_msgs
 			return Result;
 		}
 
-		virtual FString ToString() const override
+		static JointState GetFromBson(TSharedPtr<FBsonObject> BsonObject)
 		{
-			FString NamesString = "[ ";
-			for (auto &str : Names)
-				NamesString += str + TEXT(", ");
-			NamesString += " ]";
-
-			FString PositionString = "[ ";
-			for (auto &value : Positions)
-				PositionString += FString::SanitizeFloat(value) + TEXT(", ");
-			PositionString += " ]";
-
-			FString VelocityString = "[ ";
-			for (auto &value : Velocities)
-				VelocityString += FString::SanitizeFloat(value) + TEXT(", ");
-			VelocityString += " ]";
-
-			FString EffortString = "[ ";
-			for (auto &value : Efforts)
-				EffortString += FString::SanitizeFloat(value) + TEXT(", ");
-			EffortString += " ]";
-
-			return TEXT("JointState { header = ") + Header.ToString() +
-				TEXT(", name = ") + NamesString +
-				TEXT(", position = ") + PositionString +
-				TEXT(", velocity = ") + VelocityString +
-				TEXT(", effort = ") + EffortString +
-				TEXT(" } ");
+			JointState Result;
+			Result.FromBson(BsonObject);
+			return Result;
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const override 
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
-			TArray<TSharedPtr<FJsonValue>> NameArray, PositionArray, VelocityArray, EffortArray;
-			for (auto &str : Names)
-				NameArray.Add(MakeShareable(new FJsonValueString(str))); // TODO check if FJsonValueString should be used
-			for (auto &val : Positions)
-				PositionArray.Add(MakeShareable(new FJsonValueNumber(val)));
-			for (auto &val : Velocities)
-				VelocityArray.Add(MakeShareable(new FJsonValueNumber(val)));
-			for (auto &val : Efforts)
-				EffortArray.Add(MakeShareable(new FJsonValueNumber(val)));
-
 			Object->SetObjectField(TEXT("header"), Header.ToJsonObject());
+
+			TArray<TSharedPtr<FJsonValue>> NameArray;
+			for (auto &val : Name)
+				NameArray.Add(MakeShareable(new FJsonValueString(val)));
 			Object->SetArrayField(TEXT("name"), NameArray);
+
+			TArray<TSharedPtr<FJsonValue>> PositionArray;
+			for (auto &val : Position)
+				PositionArray.Add(MakeShareable(new FJsonValueNumber(val)));
 			Object->SetArrayField(TEXT("position"), PositionArray);
+
+			TArray<TSharedPtr<FJsonValue>> VelocityArray;
+			for (auto &val : Velocity)
+				VelocityArray.Add(MakeShareable(new FJsonValueNumber(val)));
 			Object->SetArrayField(TEXT("velocity"), VelocityArray);
+
+			TArray<TSharedPtr<FJsonValue>> EffortArray;
+			for (auto &val : Effort)
+				EffortArray.Add(MakeShareable(new FJsonValueNumber(val)));
 			Object->SetArrayField(TEXT("effort"), EffortArray);
+
 			return Object;
+
 		}
 
-		virtual FString ToYamlString() const override 
+		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
+		{
+			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
+
+			Object->SetObjectField(TEXT("header"), Header.ToBsonObject());
+
+			TArray<TSharedPtr<FBsonValue>> NameArray;
+			for (auto &val : Name)
+				NameArray.Add(MakeShareable(new FBsonValueString(val)));
+			Object->SetArrayField(TEXT("name"), NameArray);
+
+			TArray<TSharedPtr<FBsonValue>> PositionArray;
+			for (auto &val : Position)
+				PositionArray.Add(MakeShareable(new FBsonValueNumber(val)));
+			Object->SetArrayField(TEXT("position"), PositionArray);
+
+			TArray<TSharedPtr<FBsonValue>> VelocityArray;
+			for (auto &val : Velocity)
+				VelocityArray.Add(MakeShareable(new FBsonValueNumber(val)));
+			Object->SetArrayField(TEXT("velocity"), VelocityArray);
+
+			TArray<TSharedPtr<FBsonValue>> EffortArray;
+			for (auto &val : Effort)
+				EffortArray.Add(MakeShareable(new FBsonValueNumber(val)));
+			Object->SetArrayField(TEXT("effort"), EffortArray);
+
+			return Object;
+
+		}
+
+		virtual FString ToString() const override
+		{
+							
+			FString NameString = "[ ";
+			for (auto &value : Name)
+				NameString += value + TEXT(", ");
+			NameString += " ] ";
+			FString PositionString = "[ ";
+			for (auto &value : Position)
+				PositionString += FString::SanitizeFloat(value) + TEXT(", ");
+			PositionString += " ] ";
+			FString VelocityString = "[ ";
+			for (auto &value : Velocity)
+				VelocityString += FString::SanitizeFloat(value) + TEXT(", ");
+			VelocityString += " ] ";
+			FString EffortString = "[ ";
+			for (auto &value : Effort)
+				EffortString += FString::SanitizeFloat(value) + TEXT(", ");
+			EffortString += " ] ";
+			return TEXT("JointState { header = ") + Header.ToString() +
+				TEXT(", name =") + NameString +
+				TEXT(", position =") + PositionString +
+				TEXT(", velocity =") + VelocityString +
+				TEXT(", effort =") + EffortString +
+				TEXT(" } ");
+
+		}
+
+
+		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
 			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
-} // namespace sensor_msgs
+	
+}

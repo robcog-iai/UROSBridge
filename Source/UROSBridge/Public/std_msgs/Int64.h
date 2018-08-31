@@ -1,66 +1,97 @@
 #pragma once
+
 #include "ROSBridgeMsg.h"
+
 
 namespace std_msgs
 {
 	class Int64 : public FROSBridgeMsg
 	{
 		int64 Data;
-
 	public:
 		Int64()
 		{
-			MsgType = "std_msgs/Int64";
+			MsgType = TEXT("std_msgs/Int64");
 		}
-
+		
 		Int64(int64 InData)
+			:
+			Data(InData)
 		{
-			MsgType = "std_msgs/Int64";
-			Data = InData;
+			MsgType = TEXT("std_msgs/Int64");
 		}
 
-		~FROSBridgeMsgStdmsgsInt32() override {}
+		~Int64() override {}
 
-		int64 GetData()
+		// Getters 
+		int64 GetData() const { return Data; }
+
+		// Setters 
+		void SetData(int64 InData) { Data = InData; }
+
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
-			return Data;
+			Data = JsonObject->GetNumberField(TEXT("data"));
+
 		}
 
-		void SetData(int64 InData)
+		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
 		{
-			Data = InData;
+			Data = BsonObject->GetNumberField(TEXT("data"));
+
 		}
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
+		static Int64 GetFromJson(TSharedPtr<FJsonObject> JsonObject)
 		{
-			Data = (int64)(JsonObject->GetNumberField("data"));
+			Int64 Result;
+			Result.FromJson(JsonObject);
+			return Result;
+		}
+
+		static Int64 GetFromBson(TSharedPtr<FBsonObject> BsonObject)
+		{
+			Int64 Result;
+			Result.FromBson(BsonObject);
+			return Result;
+		}
+
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
+		{
+			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
+
+			Object->SetNumberField(TEXT("data"), Data);
+
+			return Object;
+
+		}
+
+		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
+		{
+			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
+
+			Object->SetNumberField(TEXT("data"), Data);
+
+			return Object;
+
 		}
 
 		virtual FString ToString() const override
 		{
-			char CharData[21];
-			sprintf(CharData, "%lld", Data);
-			FString StringData(UTF8_TO_TCHAR(CharData));
+							
+			return TEXT("Int64 { data = ") + FString::FromInt(Data) +
+				TEXT(" } ");
 
-			return TEXT("Int64 { data = \"" + StringData + "\" }");
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const override 
-		{
-			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-			Object->SetNumberField(TEXT("data"), Data);
-			return Object;
-		}
 
-		virtual FString ToYamlString() const override 
+		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
-			FJsonObject Object;
-			Object.SetNumberField(TEXT("data"), Data);
-
 			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
-			FJsonSerializer::Serialize(Object, Writer);
+			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
-} // namespace std_msgs
+	
+}

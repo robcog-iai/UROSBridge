@@ -1,74 +1,73 @@
 #pragma once
+
 #include "ROSBridgeMsg.h"
 #include "std_msgs/Header.h"
-#include "Base64.h"
-#include <iostream>
-#include <chrono>  // for high_resolution_clock
+
 
 namespace sensor_msgs
 {
 	class CompressedImage : public FROSBridgeMsg
 	{
 		std_msgs::Header Header;
-		FString Format; // 'png' or 'jpeg'
-		// NB: ROSBridge encodes uint8[] as a Base64 string
+		FString Format;
 		TArray<uint8> Data;
-
 	public:
-
 		CompressedImage()
 		{
-			MsgType = "sensor_msgs/CompressedImage";
+			MsgType = TEXT("sensor_msgs/CompressedImage");
 		}
-
-		CompressedImage
-		(std_msgs::Header InHeader, FString InFormat, const TArray<uint8>& InData)
+		
+		CompressedImage(std_msgs::Header InHeader,
+			FString InFormat,
+			TArray<uint8> InData)
 			:
 			Header(InHeader),
 			Format(InFormat),
 			Data(InData)
 		{
-			MsgType = "sensor_msgs/CompressedImage";
+			MsgType = TEXT("sensor_msgs/CompressedImage");
 		}
 
 		~CompressedImage() override {}
 
-		std_msgs::Header GetHeader() const
-		{
-			return Header;
-		}
+		// Getters 
+		std_msgs::Header GetHeader() const { return Header; }
+		FString GetFormat() const { return Format; }
+		TArray<uint8> GetData() const { return Data; }
 
-		FString GetFormat() const
-		{
-			return Format;
-		}
-
-		TArray<uint8> GetData() const
-		{
-			return Data;
-		}
-
-		void SetHeader(std_msgs::Header InHeader)
-		{
-			Header = InHeader;
-		}
-
-		void SetFormat(FString InFormat)
-		{
-			Format = InFormat;
-		}
-
-		void SetData(const TArray<uint8>& InData)
-		{
-			Data = InData;
-		}
+		// Setters 
+		void SetHeader(std_msgs::Header InHeader) { Header = InHeader; }
+		void SetFormat(FString InFormat) { Format = InFormat; }
+		void SetData(TArray<uint8> InData) { Data = InData; }
 
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
+			TArray<TSharedPtr<FJsonValue>> ValuesPtrArr;
+
 			Header = std_msgs::Header::GetFromJson(JsonObject->GetObjectField(TEXT("header")));
+
 			Format = JsonObject->GetStringField(TEXT("format"));
+
 			Data.Empty();
-			FBase64::Decode(JsonObject->GetStringField(TEXT("data")), Data);
+			ValuesPtrArr = JsonObject->GetArrayField(TEXT("data"));
+			for (auto &ptr : ValuesPtrArr)
+				Data.Add(ptr->AsNumber());
+
+		}
+
+		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
+		{
+			TArray<TSharedPtr<FBsonValue>> ValuesPtrArr;
+
+			Header = std_msgs::Header::GetFromBson(BsonObject->GetObjectField(TEXT("header")));
+
+			Format = BsonObject->GetStringField(TEXT("format"));
+
+			Data.Empty();
+			ValuesPtrArr = BsonObject->GetArrayField(TEXT("data"));
+			for (auto &ptr : ValuesPtrArr)
+				Data.Add(ptr->AsNumber());
+
 		}
 
 		static CompressedImage GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -78,70 +77,70 @@ namespace sensor_msgs
 			return Result;
 		}
 
-		virtual FString ToString() const override
+		static CompressedImage GetFromBson(TSharedPtr<FBsonObject> BsonObject)
 		{
-			FString DataString = "[ ";
-			for (auto &value : Data)
-				DataString += FString::FromInt(value) + TEXT(", ");
-			DataString += " ]";
-
-			return TEXT("CompressedImage { header = ") + Header.ToString() +
-				TEXT(", format =") + Format +
-				TEXT(", data = ") + DataString +
-				TEXT(" } ");
+			CompressedImage Result;
+			Result.FromBson(BsonObject);
+			return Result;
 		}
 
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
-			TArray<TSharedPtr<FJsonValue>> DataArray;
-			for (auto &datum : Data)
-			{
-				TSharedPtr<FJsonValue> Ptr = MakeShareable(new FJsonValueNumber(datum));
-				DataArray.Add(Ptr);
-			}
-
 			Object->SetObjectField(TEXT("header"), Header.ToJsonObject());
+
 			Object->SetStringField(TEXT("format"), Format);
-			Object->SetStringField(TEXT("data"), *(FBase64::Encode(Data)));
+
+			TArray<TSharedPtr<FJsonValue>> DataArray;
+			for (auto &val : Data)
+				DataArray.Add(MakeShareable(new FJsonValueNumber(val)));
+			Object->SetArrayField(TEXT("data"), DataArray);
 
 			return Object;
+
 		}
+
+		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
+		{
+			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
+
+			Object->SetObjectField(TEXT("header"), Header.ToBsonObject());
+
+			Object->SetStringField(TEXT("format"), Format);
+
+			TArray<TSharedPtr<FBsonValue>> DataArray;
+			for (auto &val : Data)
+				DataArray.Add(MakeShareable(new FBsonValueNumber(val)));
+			Object->SetArrayField(TEXT("data"), DataArray);
+
+			return Object;
+
+		}
+
+		virtual FString ToString() const override
+		{
+							
+			FString DataString = "[ ";
+			for (auto &value : Data)
+				DataString += FString::FromInt(value) + TEXT(", ");
+			DataString += " ] ";
+			return TEXT("CompressedImage { header = ") + Header.ToString() +
+				TEXT(", format = ") + Format +
+				TEXT(", data =") + DataString +
+				TEXT(" } ");
+
+		}
+
 
 		virtual FString ToYamlString() const override
 		{
-			// Record start time
-			auto start = std::chrono::high_resolution_clock::now();
-
 			FString OutputString;
 			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
-
-			// Record end time
-			auto finish = std::chrono::high_resolution_clock::now();
-			std::chrono::duration<double> elapsed = finish - start;
-			UE_LOG(LogUnrealCV, Error, TEXT("TJsonWriterFactory<>::Create(&OutputString) elapsed time: %fs"), elapsed.count());
-
-			// Record start time
-			start = std::chrono::high_resolution_clock::now();
-
-			auto test = ToJsonObject().ToSharedRef();
-
-			// Record end time
-			finish = std::chrono::high_resolution_clock::now();
-			elapsed = finish - start;
-			UE_LOG(LogUnrealCV, Error, TEXT("ToJsonObject().ToSharedRef() elapsed time: %fs"), elapsed.count());
-
-			// Record start time
-			start = std::chrono::high_resolution_clock::now();
-
-			FJsonSerializer::Serialize(test, Writer);
-
-			// Record end time
-			finish = std::chrono::high_resolution_clock::now();
-			elapsed = finish - start;
-			UE_LOG(LogUnrealCV, Error, TEXT("FJsonSerializer::Serialize(test, Writer) elapsed time: %fs"), elapsed.count());
+			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
-} // namespace sensor_msgs#pragma once
+	
+}

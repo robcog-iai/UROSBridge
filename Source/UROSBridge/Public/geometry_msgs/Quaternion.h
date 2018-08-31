@@ -1,5 +1,7 @@
 #pragma once
+
 #include "ROSBridgeMsg.h"
+
 
 namespace geometry_msgs
 {
@@ -9,26 +11,26 @@ namespace geometry_msgs
 		double Y;
 		double Z;
 		double W;
-
 	public:
 		Quaternion()
 		{
-			MsgType = "geometry_msgs/Quaternion";
+			MsgType = TEXT("geometry_msgs/Quaternion");
 		}
-
-		Quaternion(
-			double InX,
+		
+		Quaternion(double InX,
 			double InY,
 			double InZ,
-			double InW) :
+			double InW)
+			:
 			X(InX),
 			Y(InY),
 			Z(InZ),
 			W(InW)
 		{
-			MsgType = "geometry_msgs/Quaternion";
+			MsgType = TEXT("geometry_msgs/Quaternion");
 		}
 
+		// DEPRECATED! Will be removed when the generator is used again.
 		Quaternion(const FQuat& Quat)
 		{
 			MsgType = "geometry_msgs/Quaternion";
@@ -40,51 +42,25 @@ namespace geometry_msgs
 
 		~Quaternion() override {}
 
-		double GetX() const
-		{
-			return X;
-		}
+		// Getters 
+		double GetX() const { return X; }
+		double GetY() const { return Y; }
+		double GetZ() const { return Z; }
+		double GetW() const { return W; }
 
-		double GetY() const
-		{
-			return Y;
-		}
-
-		double GetZ() const
-		{
-			return Z;
-		}
-
-		double GetW() const
-		{
-			return W;
-		}
-
+		// DEPRECATED! Will be removed when the generator is used again.
 		FQuat GetQuat() const
 		{
 			return FQuat(X, Y, Z, W);
 		}
 
-		void SetX(double InX)
-		{
-			X = InX;
-		}
-
-		void SetY(double InY)
-		{
-			Y = InY;
-		}
-
-		void SetZ(double InZ)
-		{
-			Z = InZ;
-		}
-
-		void SetW(double InW)
-		{
-			W = InW;
-		}
-
+		// Setters 
+		void SetX(double InX) { X = InX; }
+		void SetY(double InY) { Y = InY; }
+		void SetZ(double InZ) { Z = InZ; }
+		void SetW(double InW) { W = InW; }
+		
+		// DEPRECATED! Will be removed when the generator is used again.
 		void SetQuat(const FQuat& InQuat)
 		{
 			X = InQuat.X;
@@ -93,12 +69,28 @@ namespace geometry_msgs
 			W = InQuat.W;
 		}
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
-			X = (double)(JsonObject->GetNumberField(TEXT("x")));
-			Y = (double)(JsonObject->GetNumberField(TEXT("y")));
-			Z = (double)(JsonObject->GetNumberField(TEXT("z")));
-			W = (double)(JsonObject->GetNumberField(TEXT("w")));
+			X = JsonObject->GetNumberField(TEXT("x"));
+
+			Y = JsonObject->GetNumberField(TEXT("y"));
+
+			Z = JsonObject->GetNumberField(TEXT("z"));
+
+			W = JsonObject->GetNumberField(TEXT("w"));
+
+		}
+
+		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
+		{
+			X = BsonObject->GetNumberField(TEXT("x"));
+
+			Y = BsonObject->GetNumberField(TEXT("y"));
+
+			Z = BsonObject->GetNumberField(TEXT("z"));
+
+			W = BsonObject->GetNumberField(TEXT("w"));
+
 		}
 
 		static Quaternion GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -108,30 +100,65 @@ namespace geometry_msgs
 			return Result;
 		}
 
+		static Quaternion GetFromBson(TSharedPtr<FBsonObject> BsonObject)
+		{
+			Quaternion Result;
+			Result.FromBson(BsonObject);
+			return Result;
+		}
+
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
+		{
+			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
+
+			Object->SetNumberField(TEXT("x"), X);
+
+			Object->SetNumberField(TEXT("y"), Y);
+
+			Object->SetNumberField(TEXT("z"), Z);
+
+			Object->SetNumberField(TEXT("w"), W);
+
+			return Object;
+
+		}
+
+		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
+		{
+			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
+
+			Object->SetNumberField(TEXT("x"), X);
+
+			Object->SetNumberField(TEXT("y"), Y);
+
+			Object->SetNumberField(TEXT("z"), Z);
+
+			Object->SetNumberField(TEXT("w"), W);
+
+			return Object;
+
+		}
+
 		virtual FString ToString() const override
 		{
+							
 			return TEXT("Quaternion { x = ") + FString::SanitizeFloat(X) +
 				TEXT(", y = ") + FString::SanitizeFloat(Y) +
 				TEXT(", z = ") + FString::SanitizeFloat(Z) +
-				TEXT(", w = ") + FString::SanitizeFloat(W) + TEXT(" } ");
+				TEXT(", w = ") + FString::SanitizeFloat(W) +
+				TEXT(" } ");
+
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const override 
-		{
-			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-			Object->SetNumberField(TEXT("x"), X);
-			Object->SetNumberField(TEXT("y"), Y);
-			Object->SetNumberField(TEXT("z"), Z);
-			Object->SetNumberField(TEXT("w"), W);
-			return Object;
-		}
 
-		virtual FString ToYamlString() const override 
+		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
 			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
-} // namespace geometry_msgs
+	
+}

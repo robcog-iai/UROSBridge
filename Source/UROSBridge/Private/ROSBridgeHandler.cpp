@@ -5,7 +5,7 @@
 #include "Core.h"
 #include "Modules/ModuleManager.h"
 #include "Networking.h"
-#include "Json.h"
+#include "FBson.h"
 
 int32 FROSBridgeHandler::ThreadInstanceIdx = 0;
 
@@ -48,6 +48,16 @@ bool FROSBridgeHandler::FROSBridgeHandlerRunnable::Init()
 	Handler->Client->Connect();
 
 	return true;
+}
+
+void FROSBridgeHandler::SendBySerializationMode(FString JsonMessage) {
+	if (SerializationMode == ESerializationMode::MODE_BSON) {
+		// Convert the message from Json to Bson
+		FBsonObject BsonObj = FBsonObject(JsonMessage);
+		Client->Send((uint8_t*)BsonObj.GetDataPointer(), BsonObj.GetDataLength());
+	}
+	else
+		Client->Send(JsonMessage);
 }
 
 // Process subscribed messages
@@ -96,8 +106,9 @@ uint32 FROSBridgeHandler::FROSBridgeHandlerRunnable::Run()
 				UE_LOG(LogROS, Log, TEXT("[%s] Subscribing Topic %s"),
 					*FString(__FUNCTION__), *Subscriber->GetTopic());
 				FString WebSocketMessage = FROSBridgeMsg::Subscribe(Subscriber->GetTopic(), Subscriber->GetType());
-				Handler->Client->Send(WebSocketMessage);
-
+				
+				Handler->SendBySerializationMode(WebSocketMessage);
+				
 				Handler->ListSubscribers.Push(Subscriber);
 			}
 
@@ -108,7 +119,8 @@ uint32 FROSBridgeHandler::FROSBridgeHandlerRunnable::Run()
 				UE_LOG(LogROS, Log, TEXT("[%s] Advertising Topic %s"),
 					*FString(__FUNCTION__), *Publisher->GetTopic());
 				FString WebSocketMessage = FROSBridgeMsg::Advertise(Publisher->GetTopic(), Publisher->GetType());
-				Handler->Client->Send(WebSocketMessage);
+				
+				Handler->SendBySerializationMode(WebSocketMessage);
 
 				Handler->ListPublishers.Push(Publisher);
 			}
@@ -120,7 +132,8 @@ uint32 FROSBridgeHandler::FROSBridgeHandlerRunnable::Run()
 				UE_LOG(LogROS, Log, TEXT("[%s] Advertising Service [%s] of type [%s]"),
 					*FString(__FUNCTION__), *ServiceServer->GetName(), *ServiceServer->GetType());
 				FString WebSocketMessage = FROSBridgeSrv::AdvertiseService(ServiceServer->GetName(), ServiceServer->GetType());
-				Handler->Client->Send(WebSocketMessage);
+				
+				Handler->SendBySerializationMode(WebSocketMessage);
 
 				Handler->ListServiceServers.Push(ServiceServer);
 			}
@@ -143,30 +156,135 @@ void FROSBridgeHandler::FROSBridgeHandlerRunnable::Exit()
 {
 }
 
-// Callback function when message comes from WebSocket
-void FROSBridgeHandler::OnMessage(void* InData, int32 InLength)
+void FROSBridgeHandler::ProcessMessageByMode(TSharedPtr<FBsonObject> BsonObject) 
 {
-	char * CharMessage = new char [InLength + 1];
-	memcpy(CharMessage, InData, InLength);
-	CharMessage[InLength] = 0;
-	const FString JsonMessage = UTF8_TO_TCHAR(CharMessage);
-	delete[] CharMessage;
+	const FString Op = BsonObject->GetStringField(TEXT("op"));
 
-#if UE_BUILD_DEBUG
-UE_LOG(LogROS, Log, TEXT("[%s] Json Message: %s"), *FString(__FUNCTION__), *JsonMessage);
-#endif
-
-	// Parse Json Message Here
-	TSharedRef< TJsonReader<> > Reader = TJsonReaderFactory<>::Create(JsonMessage);
-	TSharedPtr< FJsonObject > JsonObject;
-	bool DeserializeState = FJsonSerializer::Deserialize(Reader, JsonObject);
-	if (!DeserializeState)
+	if (Op == TEXT("publish")) // Message
 	{
-		UE_LOG(LogROS, Error, TEXT("[%s] Deserialization Error. Message Contents: %s"),
-			*FString(__FUNCTION__), *JsonMessage);
-		return;
-	}
+		const FString Topic = BsonObject->GetStringField(TEXT("topic"));
+		// UE_LOG(LogROS, Log, TEXT("[%s] Received message at Topic [%s]."),
+		// 	*FString(__FUNCTION__), *Topic);
 
+		TSharedPtr< FBsonObject > MsgObject = BsonObject->GetObjectField(TEXT("msg"));
+
+		// Find corresponding subscriber
+		bool IsTopicFound = false;
+		TSharedPtr<FROSBridgeSubscriber> Subscriber;
+		for (int i = 0; i < ListSubscribers.Num(); i++)
+		{
+			if (ListSubscribers[i]->GetTopic() == Topic)
+			{
+#if UE_BUILD_DEBUG
+				UE_LOG(LogROS, Log, TEXT("[%s] Subscriber Found. Id = %d. "), *FString(__FUNCTION__), i);
+#endif
+				Subscriber = ListSubscribers[i];
+				IsTopicFound = true; break;
+			}
+		}
+
+		if (!IsTopicFound)
+		{
+			UE_LOG(LogROS, Error, TEXT("[%s] Error: Topic [%s] subscriber not Found. "),
+				*FString(__FUNCTION__), *Topic);
+		}
+		else
+		{
+			TSharedPtr<FROSBridgeMsg> ROSBridgeMsg;
+			ROSBridgeMsg = Subscriber->ParseMessage(MsgObject);
+			TSharedPtr<FProcessTask> ProcessTask = MakeShareable<FProcessTask>(new FProcessTask(Subscriber, Topic, ROSBridgeMsg));
+			QueueTask.Enqueue(ProcessTask);
+		}
+	}
+	else if (Op == TEXT("service_response"))
+	{
+		const FString Id = BsonObject->GetStringField(TEXT("id"));
+		const FString ServiceName = BsonObject->GetStringField(TEXT("service"));
+		TSharedPtr< FBsonObject > ValuesObj;
+		if (BsonObject->HasField("values"))
+		{
+			// has values
+			ValuesObj = BsonObject->GetObjectField(TEXT("values"));
+		}
+		else
+		{
+			ValuesObj = MakeShareable(new FBsonObject);
+		}
+
+		bool bFoundService = false;
+		LockArrayService.Lock(); // Lock mutex, when access ArrayService
+		for (int i = 0; i < ArrayService.Num(); i++)
+		{
+			if (ArrayService[i]->Name == ServiceName &&
+				ArrayService[i]->Id == Id)
+			{
+				ArrayService[i]->bIsResponsed = true;
+				check(ArrayService[i]->Response.IsValid());
+
+
+				ArrayService[i]->Response->FromBson(ValuesObj);
+
+				ArrayService[i]->Client->Callback(ArrayService[i]->Response);
+				bFoundService = true;
+
+				ArrayService.RemoveAt(i);
+			}
+		}
+		LockArrayService.Unlock(); // Unlock mutex
+
+		if (!bFoundService)
+		{
+			UE_LOG(LogROS, Error, TEXT("[%s] Error: Service Name [%s] Id [%s] not found. "),
+				*FString(__FUNCTION__), *ServiceName, *Id);
+		}
+	}
+	else if (Op == "call_service")
+	{
+		const FString Id = BsonObject->GetStringField(TEXT("id"));
+		// there is always an Id for rosbridge_server generated service call
+		const FString ServiceName = BsonObject->GetStringField(TEXT("service"));
+		TSharedPtr< FBsonObject > ArgsObj;
+		if (BsonObject->HasField("args"))
+		{
+			ArgsObj = BsonObject->GetObjectField(TEXT("args"));
+		}
+		else
+		{
+			ArgsObj = MakeShareable(new FBsonObject);
+		}
+
+		// Call service in block mode
+		bool bFoundService = false;
+		int FoundServiceIndex = -1;
+		for (int i = 0; i < ListServiceServers.Num(); i++)
+			if (ListServiceServers[i]->GetName() == ServiceName)
+			{
+				bFoundService = true;
+				FoundServiceIndex = i;
+				break;
+			}
+
+		if (!bFoundService)
+		{
+			UE_LOG(LogROS, Error, TEXT("[%s] Error: Service Name [%s] Id [%s] not found. "),
+				*FString(__FUNCTION__), *ServiceName, *Id);
+		}
+		else
+		{
+#if UE_BUILD_DEBUG
+			UE_LOG(LogROS, Log, TEXT("[%s] Info: Service Name [%s] Id [%s] found, calling callback function."),
+				*FString(__FUNCTION__), *ServiceName, *Id);
+#endif
+			
+			TSharedPtr<FROSBridgeSrv::SrvRequest> Request = ListServiceServers[FoundServiceIndex]->FromBson(ArgsObj);
+			TSharedPtr<FROSBridgeSrv::SrvResponse> Response = ListServiceServers[FoundServiceIndex]->Callback(Request); // block
+			PublishServiceResponse(ServiceName, Id, Response);
+		}
+	}
+}
+
+void FROSBridgeHandler::ProcessMessageByMode(TSharedPtr<FJsonObject> JsonObject)
+{
 	const FString Op = JsonObject->GetStringField(TEXT("op"));
 
 	if (Op == TEXT("publish")) // Message
@@ -289,6 +407,39 @@ UE_LOG(LogROS, Log, TEXT("[%s] Json Message: %s"), *FString(__FUNCTION__), *Json
 	}
 }
 
+// Callback function when message comes from WebSocket
+void FROSBridgeHandler::OnMessage(void* InData, int32 InLength)
+{
+	if(SerializationMode == ESerializationMode::MODE_BSON)
+		ProcessMessageByMode(MakeShareable(new FBsonObject((uint8_t*)InData, InLength)));
+	else {
+		char * CharMessage = new char[InLength + 1];
+		memcpy(CharMessage, InData, InLength);
+		CharMessage[InLength] = 0;
+		const FString JsonMessage = UTF8_TO_TCHAR(CharMessage);
+		delete[] CharMessage;
+
+#if UE_BUILD_DEBUG
+		UE_LOG(LogROS, Log, TEXT("[%s] Json Message: %s"), *FString(__FUNCTION__), *JsonMessage);
+#endif
+
+		// Parse Json Message Here
+		TSharedRef< TJsonReader<> > Reader = TJsonReaderFactory<>::Create(JsonMessage);
+		TSharedPtr< FJsonObject > JsonObject;
+
+
+		bool DeserializeState = FJsonSerializer::Deserialize(Reader, JsonObject);
+		if (!DeserializeState)
+		{
+			UE_LOG(LogROS, Error, TEXT("[%s] Deserialization Error. Message Contents: %s"),
+				*FString(__FUNCTION__), *JsonMessage);
+			return;
+		}
+		else
+			ProcessMessageByMode(JsonObject);
+	}
+}
+
 // Create runnable instance and run the thread;
 void FROSBridgeHandler::Connect()
 {
@@ -309,7 +460,8 @@ void FROSBridgeHandler::Disconnect()
 			UE_LOG(LogROS, Log, TEXT("[%s] Unsubscribing Topic %s"),
 				*FString(__FUNCTION__), *Sub->GetTopic());
 			FString WebSocketMessage = FROSBridgeMsg::UnSubscribe(Sub->GetTopic());
-			Client->Send(WebSocketMessage);
+			
+			SendBySerializationMode(WebSocketMessage);
 		}
 
 		// Unadvertise all topics
@@ -318,7 +470,9 @@ void FROSBridgeHandler::Disconnect()
 			UE_LOG(LogROS, Log, TEXT("[%s] Unadvertising Topic %s"),
 				*FString(__FUNCTION__), *Pub->GetTopic());
 			FString WebSocketMessage = FROSBridgeMsg::UnAdvertise(Pub->GetTopic());
-			Client->Send(WebSocketMessage);
+			
+			SendBySerializationMode(WebSocketMessage);
+
 		}
 
 		// Unadvertise all service servers
@@ -327,7 +481,9 @@ void FROSBridgeHandler::Disconnect()
 			UE_LOG(LogROS, Log, TEXT("[%s] Unadvertising Service [%s]"),
 				*FString(__FUNCTION__), *Srv->GetName());
 			FString WebSocketMessage = FROSBridgeSrv::UnadvertiseService(Srv->GetName());
-			Client->Send(WebSocketMessage);
+			
+			SendBySerializationMode(WebSocketMessage);
+
 		}
 
 #if UE_BUILD_DEBUG
@@ -408,7 +564,7 @@ void FROSBridgeHandler::PublishServiceResponse(const FString& InService, const F
 	if (!bIsClientConnected) return;
 
 	FString MsgToSend = FROSBridgeSrv::ServiceResponse(InService, InId, InResponse);
-	Client->Send(MsgToSend);
+	SendBySerializationMode(MsgToSend);
 }
 
 void FROSBridgeHandler::PublishMsg(const FString& InTopic, TSharedPtr<FROSBridgeMsg> InMsg)
@@ -417,7 +573,7 @@ void FROSBridgeHandler::PublishMsg(const FString& InTopic, TSharedPtr<FROSBridge
 	if (!bIsClientConnected) return;
 
 	FString MsgToSend = FROSBridgeMsg::Publish(InTopic, InMsg);
-	Client->Send(MsgToSend);
+	SendBySerializationMode(MsgToSend);
 }
 
 void FROSBridgeHandler::CallService(TSharedPtr<FROSBridgeSrvClient> InSrvClient,
@@ -443,5 +599,7 @@ void FROSBridgeHandler::CallServiceImpl(const FString& Name, TSharedPtr<FROSBrid
 	if (!bIsClientConnected) return;
 
 	FString MsgToSend = FROSBridgeSrv::CallService(Name, Request, Id);
-	Client->Send(MsgToSend);
+	
+	SendBySerializationMode(MsgToSend);
+	
 }

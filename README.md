@@ -6,11 +6,15 @@ Unereal ROS bridge plugin for communication with [rosbridge](http://wiki.ros.org
 
 Most standard ros msgs are supported (`std_msgs`, `sensor_msgs`, `geometry_msgs`, `std_srvs` etc.). If you are going to add new message / service types, please make a pull request. To add new message / service classes, please refer to `Source/UROSBridge/Public` directory (see [here](Source/UROSBridge/Public/)).
 
+You can generate the needed .h files for messages and services with one of [these python scripts](https://github.com/Funnyach/MsgGeneration). Check the readme for information on limitations. 
+
 ## Usage
 
 * [Tutorials](Documentation/Examples.md) on how to subscribe to topic, publish to topic, call external services and advertise to service calls.
 
 * See the [ex-ros-tf-robosim](https://github.com/robcog-iai/RobCoG/tree/ex-ros-tf-robosim) branch of RobCoG as an Unreal Project example to test all these functionalities.
+
+* To switch from the default serialization format (Json) to Bson, add ESerializationMode::MODE_BSON as a third parameter when instantiating the FROSBridgeHandler. FROSBridgeSubscriber, FROSBridgeSrvClient and FROSBridgeSrvServer each have seperate methods for handling Bson which you then need to implememnt.
 
 #### How to include the plugin
 

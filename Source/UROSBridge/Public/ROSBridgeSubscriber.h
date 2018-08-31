@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Json.h"
+#include "FBson.h"
+#include "UROSBridge.h"
 #include "ROSBridgeMsg.h"
 
 class UROSBRIDGE_API FROSBridgeSubscriber 
@@ -33,7 +35,15 @@ public:
 		return Topic;
 	}
 
-	virtual TSharedPtr<FROSBridgeMsg> ParseMessage(TSharedPtr<FJsonObject> JsonObject) const = 0;
+	virtual TSharedPtr<FROSBridgeMsg> ParseMessage(TSharedPtr<FJsonObject> JsonObject) const {
+		UE_LOG(LogROS, Warning, TEXT("ParseMessage() was not overwritten for Json based data transfer. Returning empty Message."));
+		return MakeShareable(new FROSBridgeMsg());
+	}
+
+	virtual TSharedPtr<FROSBridgeMsg> ParseMessage(TSharedPtr<FBsonObject> BsonObject) const {
+		UE_LOG(LogROS, Warning, TEXT("ParseMessage() was not overwritten for Bson based data transfer. Returning empty Message."));
+		return MakeShareable(new FROSBridgeMsg());
+	}
 
 	virtual void Callback(TSharedPtr<FROSBridgeMsg> Msg) = 0;
 };

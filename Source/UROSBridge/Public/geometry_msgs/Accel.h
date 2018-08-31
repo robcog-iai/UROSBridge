@@ -1,54 +1,54 @@
 #pragma once
-#include "ROSBridgeMsg.h"
 
+#include "ROSBridgeMsg.h"
 #include "geometry_msgs/Vector3.h"
+
 
 namespace geometry_msgs
 {
 	class Accel : public FROSBridgeMsg
 	{
-		FROSBridgeMsgGeometrymsgsVector3 Linear;
-		FROSBridgeMsgGeometrymsgsVector3 Angular;
-
+		geometry_msgs::Vector3 Linear;
+		geometry_msgs::Vector3 Angular;
 	public:
 		Accel()
 		{
-			MsgType = "geometry_msgs/Accel";
+			MsgType = TEXT("geometry_msgs/Accel");
 		}
-
-		Accel
-		(FROSBridgeMsgGeometrymsgsVector3 InLinear, FROSBridgeMsgGeometrymsgsVector3 InAngular) :
-			Linear(InLinear), Angular(InAngular)
+		
+		Accel(geometry_msgs::Vector3 InLinear,
+			geometry_msgs::Vector3 InAngular)
+			:
+			Linear(InLinear),
+			Angular(InAngular)
 		{
-			MsgType = "geometry_msgs/Accel";
+			MsgType = TEXT("geometry_msgs/Accel");
 		}
 
 		~Accel() override {}
 
-		FROSBridgeMsgGeometrymsgsVector3 GetLinear() const
+		// Getters 
+		geometry_msgs::Vector3 GetLinear() const { return Linear; }
+		geometry_msgs::Vector3 GetAngular() const { return Angular; }
+
+		// Setters 
+		void SetLinear(geometry_msgs::Vector3 InLinear) { Linear = InLinear; }
+		void SetAngular(geometry_msgs::Vector3 InAngular) { Angular = InAngular; }
+
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
-			return Linear;
+			Linear = geometry_msgs::Vector3::GetFromJson(JsonObject->GetObjectField(TEXT("linear")));
+
+			Angular = geometry_msgs::Vector3::GetFromJson(JsonObject->GetObjectField(TEXT("angular")));
+
 		}
 
-		FROSBridgeMsgGeometrymsgsVector3 GetAngular() const
+		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
 		{
-			return Angular;
-		}
+			Linear = geometry_msgs::Vector3::GetFromBson(BsonObject->GetObjectField(TEXT("linear")));
 
-		void SetLinear(FROSBridgeMsgGeometrymsgsVector3 InLinear)
-		{
-			Linear = InLinear;
-		}
+			Angular = geometry_msgs::Vector3::GetFromBson(BsonObject->GetObjectField(TEXT("angular")));
 
-		void SetAngular(FROSBridgeMsgGeometrymsgsVector3 InAngular)
-		{
-			Angular = InAngular;
-		}
-
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
-		{
-			Linear = FROSBridgeMsgGeometrymsgsVector3::GetFromJson(JsonObject->GetObjectField(TEXT("linear")));
-			Angular = FROSBridgeMsgGeometrymsgsVector3::GetFromJson(JsonObject->GetObjectField(TEXT("angular")));
 		}
 
 		static Accel GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -58,26 +58,55 @@ namespace geometry_msgs
 			return Result;
 		}
 
-		virtual FString ToString() const override
+		static Accel GetFromBson(TSharedPtr<FBsonObject> BsonObject)
 		{
-			return TEXT("Accel { linear = ") + Linear.ToString() +
-				TEXT(", angular = ") + Angular.ToString() + TEXT(" } ");
+			Accel Result;
+			Result.FromBson(BsonObject);
+			return Result;
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const override 
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
+
 			Object->SetObjectField(TEXT("linear"), Linear.ToJsonObject());
+
 			Object->SetObjectField(TEXT("angular"), Angular.ToJsonObject());
+
 			return Object;
+
 		}
 
-		virtual FString ToYamlString() const override 
+		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
+		{
+			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
+
+			Object->SetObjectField(TEXT("linear"), Linear.ToBsonObject());
+
+			Object->SetObjectField(TEXT("angular"), Angular.ToBsonObject());
+
+			return Object;
+
+		}
+
+		virtual FString ToString() const override
+		{
+							
+			return TEXT("Accel { linear = ") + Linear.ToString() +
+				TEXT(", angular = ") + Angular.ToString() +
+				TEXT(" } ");
+
+		}
+
+
+		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
 			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
-} // namespace geometry_msgs
+	
+}

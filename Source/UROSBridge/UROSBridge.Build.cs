@@ -28,10 +28,13 @@ public class UROSBridge : ModuleRules
 			new string[]
 			{
 				"Core",
+				
+                "UE4Bson",
+
 				"Sockets"
 				// ... add other public dependencies that you statically link with here ...
 			}
-			);
+            );
 			
 		
 		PrivateDependencyModuleNames.AddRange(
@@ -51,7 +54,7 @@ public class UROSBridge : ModuleRules
 				"JsonUtilities",
 				// ... add private dependencies that you statically link with here ...	
 			}
-			);
+            );
 		
 		
 		DynamicallyLoadedModuleNames.AddRange(

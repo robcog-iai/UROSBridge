@@ -1,5 +1,7 @@
 #pragma once
+
 #include "ROSBridgeMsg.h"
+
 
 namespace geometry_msgs
 {
@@ -8,19 +10,24 @@ namespace geometry_msgs
 		float X;
 		float Y;
 		float Z;
-
 	public:
 		Point32()
 		{
-			MsgType = "geometry_msgs/Point32";
+			MsgType = TEXT("geometry_msgs/Point32");
 		}
-
-		Point32(float InX, float InY, float InZ)
+		
+		Point32(float InX,
+			float InY,
+			float InZ)
+			:
+			X(InX),
+			Y(InY),
+			Z(InZ)
 		{
-			MsgType = "geometry_msgs/Point32";
-			X = InX; Y = InY; Z = InZ;
+			MsgType = TEXT("geometry_msgs/Point32");
 		}
 
+		// DEPRECATED! Will be removed when the generator is used again.
 		Point32(FVector InVector)
 		{
 			MsgType = "geometry_msgs/Point32";
@@ -29,51 +36,46 @@ namespace geometry_msgs
 
 		~Point32() override {}
 
-		float GetX() const
-		{
-			return X;
-		}
+		// Getters 
+		float GetX() const { return X; }
+		float GetY() const { return Y; }
+		float GetZ() const { return Z; }
 
-		float GetY() const
-		{
-			return Y;
-		}
-
-		float GetZ() const
-		{
-			return Z;
-		}
-
+		// DEPRECATED! Will be removed when the generator is used again.
 		FVector GetVector() const
 		{
 			return FVector(X, Y, Z);
 		}
 
-		void SetX(float InX)
-		{
-			X = InX;
-		}
+		// Setters 
+		void SetX(float InX) { X = InX; }
+		void SetY(float InY) { Y = InY; }
+		void SetZ(float InZ) { Z = InZ; }
 
-		void SetY(float InY)
-		{
-			Y = InY;
-		}
-
-		void SetZ(float InZ)
-		{
-			Z = InZ;
-		}
-
+		// DEPRECATED! Will be removed when the generator is used again.
 		void SetVector(const FVector& Vector)
 		{
 			X = Vector.X; Y = Vector.Y; Z = Vector.Z;
 		}
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
-			X = (float)(JsonObject->GetNumberField(TEXT("x")));
-			Y = (float)(JsonObject->GetNumberField(TEXT("y")));
-			Z = (float)(JsonObject->GetNumberField(TEXT("z")));
+			X = JsonObject->GetNumberField(TEXT("x"));
+
+			Y = JsonObject->GetNumberField(TEXT("y"));
+
+			Z = JsonObject->GetNumberField(TEXT("z"));
+
+		}
+
+		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
+		{
+			X = BsonObject->GetNumberField(TEXT("x"));
+
+			Y = BsonObject->GetNumberField(TEXT("y"));
+
+			Z = BsonObject->GetNumberField(TEXT("z"));
+
 		}
 
 		static Point32 GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -83,27 +85,60 @@ namespace geometry_msgs
 			return Result;
 		}
 
+		static Point32 GetFromBson(TSharedPtr<FBsonObject> BsonObject)
+		{
+			Point32 Result;
+			Result.FromBson(BsonObject);
+			return Result;
+		}
+
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
+		{
+			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
+
+			Object->SetNumberField(TEXT("x"), X);
+
+			Object->SetNumberField(TEXT("y"), Y);
+
+			Object->SetNumberField(TEXT("z"), Z);
+
+			return Object;
+
+		}
+
+		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
+		{
+			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
+
+			Object->SetNumberField(TEXT("x"), X);
+
+			Object->SetNumberField(TEXT("y"), Y);
+
+			Object->SetNumberField(TEXT("z"), Z);
+
+			return Object;
+
+		}
+
 		virtual FString ToString() const override
 		{
+							
 			return TEXT("Point32 { x = ") + FString::SanitizeFloat(X) +
 				TEXT(", y = ") + FString::SanitizeFloat(Y) +
-				TEXT(", z = ") + FString::SanitizeFloat(Z) + TEXT(" } ");
+				TEXT(", z = ") + FString::SanitizeFloat(Z) +
+				TEXT(" } ");
+
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const override {
-			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-			Object->SetNumberField(TEXT("x"), X);
-			Object->SetNumberField(TEXT("y"), Y);
-			Object->SetNumberField(TEXT("z"), Z);
-			return Object;
-		}
 
-		virtual FString ToYamlString() const override 
+		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
 			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
-} // geometry_msgs
+	
+}

@@ -4,6 +4,7 @@
 #include "UROSBridge.h"
 #include "HTML5NetworkingPrivate.h"
 #include "IPAddress.h"
+#include "FBson.h"
 
 #if PLATFORM_HTML5
 #include <errno.h>
@@ -159,7 +160,8 @@ bool FWebSocket::Send(uint8* Data, uint32 Size)
 	Buffer.AddDefaulted(LWS_PRE); // Reserve space for WS header data
 #endif
 
-	Buffer.Append((uint8*)&Size, sizeof (uint32)); // insert size.
+	// This Line was screwing with the deserialization, so I removed it.
+	// Buffer.Append((uint8*)&Size, sizeof (uint32)); // insert size.
 	Buffer.Append((uint8*)Data, Size);
 
 	CriticalSection.Lock();
@@ -373,11 +375,10 @@ void FWebSocket::OnRawRecieve(void* Data, uint32 Size, bool isBinary)
 		{
 			uint32 BytesToBeRead = *(uint32*)RecievedBuffer.GetData();
 			// UE_LOG(LogROS, Warning, TEXT("BytesToBeRead = %d"), BytesToBeRead);
-
-			if (BytesToBeRead <= ((uint32)RecievedBuffer.Num() - sizeof(uint32)))
+			if (BytesToBeRead <= ((uint32)RecievedBuffer.Num()))
 			{
-				RecievedCallBack.ExecuteIfBound((void*)((uint8*)RecievedBuffer.GetData() + sizeof(uint32)), BytesToBeRead);
-				RecievedBuffer.RemoveAt(0, sizeof(uint32) + BytesToBeRead );
+				RecievedCallBack.ExecuteIfBound((void*)RecievedBuffer.GetData(), BytesToBeRead);
+				RecievedBuffer.RemoveAt(0, BytesToBeRead );
 			}
 			else
 			{

@@ -4,6 +4,8 @@
 
 #include "Core.h"
 #include "Json.h"
+#include "UROSBridge.h"
+#include "FBson.h"
 
 class UROSBRIDGE_API FROSBridgeSrv
 {
@@ -25,13 +27,23 @@ public:
 		virtual ~Message() {}
 
 		// Need Implementation
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) = 0;
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) {
+			UE_LOG(LogTemp, Warning, TEXT("Service Object not changed. Did you forget to overwrite FromJson() somewhere?"));
+		}
+		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) {
+			UE_LOG(LogTemp, Warning, TEXT("Service Object not changed. Did you forget to overwrite FromBson() somewhere?"));
+		}
 
 		// Need Implementation
 		virtual TSharedPtr<FJsonObject> ToJsonObject() const
 		{
-			TSharedPtr<FJsonObject> NewObject = MakeShareable<FJsonObject>(new FJsonObject());
-			return NewObject;
+			UE_LOG(LogTemp, Warning, TEXT("Service Object created empty. Did you forget to overwrite ToJsonObject() somewhere?"));
+			return MakeShareable<FJsonObject>(new FJsonObject());
+		}
+		virtual TSharedPtr<FBsonObject> ToBsonObject() const 
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Service Object created empty. Did you forget to overwrite ToBsonObject() somewhere?"));
+			return MakeShareable(new FBsonObject());
 		}
 
 		virtual FString ToString() const

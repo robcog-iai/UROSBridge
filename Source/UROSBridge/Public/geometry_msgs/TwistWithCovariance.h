@@ -1,7 +1,8 @@
 #pragma once
-#include "ROSBridgeMsg.h"
 
+#include "ROSBridgeMsg.h"
 #include "geometry_msgs/Twist.h"
+
 
 namespace geometry_msgs
 {
@@ -9,52 +10,55 @@ namespace geometry_msgs
 	{
 		geometry_msgs::Twist Twist;
 		TArray<double> Covariance;
-
 	public:
 		TwistWithCovariance()
 		{
-			MsgType = "geometry_msgs/TwistWithCovariance";
-			Covariance.SetNumZeroed(36);
+			MsgType = TEXT("geometry_msgs/TwistWithCovariance");
 		}
-
-		TwistWithCovariance
-		(geometry_msgs::Twist InTwist, const TArray<double>& InCovariance) :
-			Twist(InTwist), Covariance(InCovariance)
+		
+		TwistWithCovariance(geometry_msgs::Twist InTwist,
+			TArray<double> InCovariance)
+			:
+			Twist(InTwist),
+			Covariance(InCovariance)
 		{
-			MsgType = "geometry_msgs/TwistWithCovariance";
+			MsgType = TEXT("geometry_msgs/TwistWithCovariance");
 		}
 
 		~TwistWithCovariance() override {}
 
-		geometry_msgs::Twist GetTwist() const
-		{
-			return Twist;
-		}
+		// Getters 
+		geometry_msgs::Twist GetTwist() const { return Twist; }
+		TArray<double> GetCovariance() const { return Covariance; }
 
-		TArray<double> GetCovariance() const
-		{
-			return Covariance;
-		}
+		// Setters 
+		void SetTwist(geometry_msgs::Twist InTwist) { Twist = InTwist; }
+		void SetCovariance(TArray<double> InCovariance) { Covariance = InCovariance; }
 
-		void SetTwist(geometry_msgs::Twist InTwist)
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
-			Twist = InTwist;
-		}
+			TArray<TSharedPtr<FJsonValue>> ValuesPtrArr;
 
-		void SetCovariance(const TArray<double>& InCovariance)
-		{
-			Covariance = InCovariance;
-		}
-
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
-		{
 			Twist = geometry_msgs::Twist::GetFromJson(JsonObject->GetObjectField(TEXT("twist")));
+
 			Covariance.Empty();
-			TArray<TSharedPtr<FJsonValue>> CovariancePtrArr = JsonObject->GetArrayField(TEXT("covariance"));
-			for (auto &ptr : CovariancePtrArr)
+			ValuesPtrArr = JsonObject->GetArrayField(TEXT("covariance"));
+			for (auto &ptr : ValuesPtrArr)
 				Covariance.Add(ptr->AsNumber());
 
-			check(Covariance.Num() == 36);
+		}
+
+		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
+		{
+			TArray<TSharedPtr<FBsonValue>> ValuesPtrArr;
+
+			Twist = geometry_msgs::Twist::GetFromBson(BsonObject->GetObjectField(TEXT("twist")));
+
+			Covariance.Empty();
+			ValuesPtrArr = BsonObject->GetArrayField(TEXT("covariance"));
+			for (auto &ptr : ValuesPtrArr)
+				Covariance.Add(ptr->AsNumber());
+
 		}
 
 		static TwistWithCovariance GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -64,36 +68,65 @@ namespace geometry_msgs
 			return Result;
 		}
 
-		virtual FString ToString() const override
+		static TwistWithCovariance GetFromBson(TSharedPtr<FBsonObject> BsonObject)
 		{
-			FString ArrayString = "[ ";
-			for (auto &cov_value : Covariance)
-				ArrayString += FString::SanitizeFloat(cov_value) + TEXT(", ");
-			ArrayString += " ]";
-
-			return TEXT("TwistWithCovariance { twist = ") + Twist.ToString() +
-				TEXT(", covariance = ") + ArrayString + TEXT(" } ");
+			TwistWithCovariance Result;
+			Result.FromBson(BsonObject);
+			return Result;
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const override 
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 
-			TArray<TSharedPtr<FJsonValue>> CovArray;
-			for (auto &val : Covariance)
-				CovArray.Add(MakeShareable(new FJsonValueNumber(val)));
-
 			Object->SetObjectField(TEXT("twist"), Twist.ToJsonObject());
-			Object->SetArrayField(TEXT("covariance"), CovArray);
+
+			TArray<TSharedPtr<FJsonValue>> CovarianceArray;
+			for (auto &val : Covariance)
+				CovarianceArray.Add(MakeShareable(new FJsonValueNumber(val)));
+			Object->SetArrayField(TEXT("covariance"), CovarianceArray);
+
 			return Object;
+
 		}
 
-		virtual FString ToYamlString() const override 
+		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
+		{
+			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
+
+			Object->SetObjectField(TEXT("twist"), Twist.ToBsonObject());
+
+			TArray<TSharedPtr<FBsonValue>> CovarianceArray;
+			for (auto &val : Covariance)
+				CovarianceArray.Add(MakeShareable(new FBsonValueNumber(val)));
+			Object->SetArrayField(TEXT("covariance"), CovarianceArray);
+
+			return Object;
+
+		}
+
+		virtual FString ToString() const override
+		{
+							
+			FString CovarianceString = "[ ";
+			for (auto &value : Covariance)
+				CovarianceString += FString::SanitizeFloat(value) + TEXT(", ");
+			CovarianceString += " ] ";
+			return TEXT("TwistWithCovariance { twist = ") + Twist.ToString() +
+				TEXT(", covariance =") + CovarianceString +
+				TEXT(" } ");
+
+		}
+
+
+		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
 			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
-} // namespace geometry_msgs
+	
+}

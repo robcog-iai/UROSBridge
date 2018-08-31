@@ -14,10 +14,16 @@
   "IsBetaVersion": false,
   "Installed": false,
   "Modules": [
-	{
-	  "Name": "UROSBridge",
-	  "Type": "Runtime",
-	  "LoadingPhase": "Default"
-	}
-  ]
+    {
+      "Name": "UROSBridge",
+      "Type": "Developer",
+      "LoadingPhase": "Default"
+    }
+  ],
+  "Plugins": [
+    {
+      "Name": "UE4Bson",
+      "Enabled": true
+    }
+	]
 }

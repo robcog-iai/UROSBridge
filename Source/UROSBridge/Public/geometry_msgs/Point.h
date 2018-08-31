@@ -1,5 +1,7 @@
 #pragma once
+
 #include "ROSBridgeMsg.h"
+
 
 namespace geometry_msgs
 {
@@ -8,19 +10,24 @@ namespace geometry_msgs
 		double X;
 		double Y;
 		double Z;
-
 	public:
 		Point()
 		{
-			MsgType = "geometry_msgs/Point";
+			MsgType = TEXT("geometry_msgs/Point");
 		}
-
-		Point(double InX, double InY, double InZ)
+		
+		Point(double InX,
+			double InY,
+			double InZ)
+			:
+			X(InX),
+			Y(InY),
+			Z(InZ)
 		{
-			MsgType = "geometry_msgs/Point";
-			X = InX; Y = InY; Z = InZ;
+			MsgType = TEXT("geometry_msgs/Point");
 		}
 
+		// DEPRECATED! Will be removed when the generator is used again.
 		Point(FVector InVector)
 		{
 			MsgType = "geometry_msgs/Point";
@@ -29,51 +36,46 @@ namespace geometry_msgs
 
 		~Point() override {}
 
-		double GetX() const
-		{
-			return X;
-		}
-
-		double GetY() const
-		{
-			return Y;
-		}
-
-		double GetZ() const
-		{
-			return Z;
-		}
-
+		// Getters 
+		double GetX() const { return X; }
+		double GetY() const { return Y; }
+		double GetZ() const { return Z; }
+		
+		// DEPRECATED! Will be removed when the generator is used again.
 		FVector GetVector() const
 		{
 			return FVector(X, Y, Z);
 		}
 
-		void SetX(double InX)
-		{
-			X = InX;
-		}
-
-		void SetY(double InY)
-		{
-			Y = InY;
-		}
-
-		void SetZ(double InZ)
-		{
-			Z = InZ;
-		}
-
+		// Setters 
+		void SetX(double InX) { X = InX; }
+		void SetY(double InY) { Y = InY; }
+		void SetZ(double InZ) { Z = InZ; }
+		
+		// DEPRECATED! Will be removed when the generator is used again.
 		void SetVector(const FVector& InVector)
 		{
 			X = InVector.X; Y = InVector.Y; Z = InVector.Z;
 		}
 
-		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
+		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override
 		{
-			X = (double)(JsonObject->GetNumberField(TEXT("x")));
-			Y = (double)(JsonObject->GetNumberField(TEXT("y")));
-			Z = (double)(JsonObject->GetNumberField(TEXT("z")));
+			X = JsonObject->GetNumberField(TEXT("x"));
+
+			Y = JsonObject->GetNumberField(TEXT("y"));
+
+			Z = JsonObject->GetNumberField(TEXT("z"));
+
+		}
+
+		virtual void FromBson(TSharedPtr<FBsonObject> BsonObject) override
+		{
+			X = BsonObject->GetNumberField(TEXT("x"));
+
+			Y = BsonObject->GetNumberField(TEXT("y"));
+
+			Z = BsonObject->GetNumberField(TEXT("z"));
+
 		}
 
 		static Point GetFromJson(TSharedPtr<FJsonObject> JsonObject)
@@ -83,28 +85,60 @@ namespace geometry_msgs
 			return Result;
 		}
 
-		virtual FString ToString() const override
+		static Point GetFromBson(TSharedPtr<FBsonObject> BsonObject)
 		{
-			return TEXT("Point { x = ") + FString::SanitizeFloat(X) +
-				TEXT(", y = ") + FString::SanitizeFloat(Y) +
-				TEXT(", z = ") + FString::SanitizeFloat(Z) + TEXT(" } ");
+			Point Result;
+			Result.FromBson(BsonObject);
+			return Result;
 		}
 
-		virtual TSharedPtr<FJsonObject> ToJsonObject() const override 
+		virtual TSharedPtr<FJsonObject> ToJsonObject() const override
 		{
 			TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
+
 			Object->SetNumberField(TEXT("x"), X);
+
 			Object->SetNumberField(TEXT("y"), Y);
+
 			Object->SetNumberField(TEXT("z"), Z);
+
 			return Object;
+
 		}
 
-		virtual FString ToYamlString() const override 
+		virtual TSharedPtr<FBsonObject> ToBsonObject() const override
+		{
+			TSharedPtr<FBsonObject> Object = MakeShareable<FBsonObject>(new FBsonObject());
+
+			Object->SetNumberField(TEXT("x"), X);
+
+			Object->SetNumberField(TEXT("y"), Y);
+
+			Object->SetNumberField(TEXT("z"), Z);
+
+			return Object;
+
+		}
+
+		virtual FString ToString() const override
+		{
+							
+			return TEXT("Point { x = ") + FString::SanitizeFloat(X) +
+				TEXT(", y = ") + FString::SanitizeFloat(Y) +
+				TEXT(", z = ") + FString::SanitizeFloat(Z) +
+				TEXT(" } ");
+
+		}
+
+
+		virtual FString ToYamlString() const override
 		{
 			FString OutputString;
 			TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
 			FJsonSerializer::Serialize(ToJsonObject().ToSharedRef(), Writer);
 			return OutputString;
 		}
+						
 	};
-} // geometry_msgs
+	
+}
