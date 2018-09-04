@@ -35,7 +35,7 @@ public:
 	 */
 	TSharedPtr<FROSBridgeHandler> GetHandlerRef();
 
-private:	
+private:
 	TSharedPtr<FROSBridgeHandler> Handler;
 
 };

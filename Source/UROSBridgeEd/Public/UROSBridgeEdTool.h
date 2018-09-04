@@ -57,8 +57,12 @@ public:
 	UWorld* GetWorld() const override;
 
 private:
+	UPROPERTY()
 	TArray<TSubclassOf<UROSPublisherBaseClass>> AlreadyRegistered;
+	UPROPERTY()
+	URosBridgeHandlerRefSingleton* RefSingelton;
 	TSharedPtr<FROSBridgeHandler>  RosHandler;
+
 	AROSBridgeRuntimeManager* GetRuntimeManager() const;
 
 };

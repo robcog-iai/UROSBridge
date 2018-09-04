@@ -8,19 +8,16 @@
 UUROSBridgeEdTool::UUROSBridgeEdTool(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	URosBridgeHandlerRefSingleton* RefSingelton = nullptr;
 	if (GEngine)
 		RefSingelton = Cast<URosBridgeHandlerRefSingleton>(GEngine->GameSingleton);
 
 	if (!RefSingelton)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("[%s]: GameSingleton is not set. New Handler Instance will be created, this might lead to multiple Handler instances/ Ros Connections"), *FString(__FUNCTION__));
-		RosHandler = MakeShareable<FROSBridgeHandler>(new FROSBridgeHandler(ServerAdress, ServerPort));
+		RefSingelton = NewObject<URosBridgeHandlerRefSingleton>();
 	}
-	else
-	{
-		RosHandler = RefSingelton->GetHandlerRef();
-	}
+	RosHandler = RefSingelton->GetHandlerRef();
+
 }
 
 
@@ -30,6 +27,11 @@ void UUROSBridgeEdTool::ConnectToRosBridge()
 
 	AROSBridgeRuntimeManager* RuntimeManager = GetRuntimeManager();
 
+	if (RuntimeManager) 
+	{
+		RefSingelton->Rename(*RefSingelton->GetName(), RuntimeManager);
+	//	RuntimeManager->RefSingelton = RefSingelton;
+	}
 	// Register Services, Publisher and Subcriber 
 	for (auto Pub : PublisherList)
 	{
@@ -44,6 +46,7 @@ void UUROSBridgeEdTool::ConnectToRosBridge()
 			// Make sure Outer is something GetWorld() can be called on.
 			if (RuntimeManager)
 			{
+				RuntimeManager->AlreadyRegistered.Add(Pub);
 				BaseClass->Rename(*BaseClass->GetName(), RuntimeManager);
 			}
 			else
@@ -75,15 +78,16 @@ void UUROSBridgeEdTool::ConnectToRosBridge()
 		}
 	}
 
+	bool bAdressChanged = (RosHandler->GetHost().Compare(ServerAdress) != 0) || (RosHandler->GetPort() != ServerPort);
 	// Set up Serveradress and callbacks
-	RosHandler->SetHost(ServerAdress);
-	RosHandler->SetPort(ServerPort);
 	RosHandler->AddToUserConnectedCallbacks(this, &UUROSBridgeEdTool::ConnectedCallback);
 	RosHandler->AddToUserErrorCallbacks(this, &UUROSBridgeEdTool::ConnectionErrorCallback);
 
 	// Connect
-	if (!RosHandler->IsClientConnected())
+	if (!RosHandler->IsClientConnected() || bAdressChanged)
 	{
+		RosHandler->SetHost(ServerAdress);
+		RosHandler->SetPort(ServerPort);
 		RosHandler->Connect();
 	}
 
@@ -155,7 +159,7 @@ void UUROSBridgeEdTool::PostEditChangeChainProperty(struct FPropertyChangedChain
 
 void UUROSBridgeEdTool::ConnectionErrorCallback()
 {
-	//AlreadyRegistered.Empty();
+	AlreadyRegistered.Empty();
 	ConnectionStatus = TEXT("Not connected.");
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Connection to RosBridge lost.")));
