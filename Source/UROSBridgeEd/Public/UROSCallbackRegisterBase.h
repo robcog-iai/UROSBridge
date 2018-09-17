@@ -7,29 +7,28 @@
 #include "ROSBridgeSrvServer.h"
 #include "ROSBridgePublisher.h"
 #include "ROSBridgeSubscriber.h"
-#include "ROSPublisherBaseClass.generated.h"
+#include "UROSCallbackRegisterBase.generated.h"
 
 /**
  * This class is essentially an Interface. It is not meant to be instantiated.
  * An actuall interface could not be used, because Editor selection does not support
- * arrays of interfaces.
+ * arrays of an interfaces type.
  */
 
-UCLASS()
-class UROSBRIDGE_API UROSPublisherBaseClass : public UObject
+UCLASS(abstract)
+class UROSBRIDGEED_API UROSCallbackRegisterBase : public UObject
 {
 	GENERATED_BODY()
 
 public:
-	UROSPublisherBaseClass(){}
-	~UROSPublisherBaseClass() {}
-
+	UROSCallbackRegisterBase(){}
+	~UROSCallbackRegisterBase() {}
 
 	/* 
 	 * After call to this function the Arrays are expected to be set up correctly.
 	 * If Namespace is not needed, just ignore it. It will always be provided.
 	 */
-	virtual void Init(FString DefaultNamespace)
+	virtual void Register(FString DefaultNamespace)
 	{
 		UE_LOG(LogTemp, Error, TEXT("[%s]: This function schould be overriden by derived class. This class is meant to function like an Interface."), *FString(__FUNCTION__));
 	};

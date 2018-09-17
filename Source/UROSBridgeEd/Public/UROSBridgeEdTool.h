@@ -4,15 +4,13 @@
 #include "UObject/ObjectMacros.h"
 #include "UObject/Object.h"
 #include "UROSBridgeEdMode.h"
-#include <ROSPublisherBaseClass.h>
+#include "UROSCallbackRegisterBase.h"
 #include "ROSBridgeHandler.h"
-#include "ROSBridgeRuntimeManager.h"
 #include "UROSBridgeEdTool.generated.h"
 
 class FUROSBridgeEdMode;
 
 UCLASS()
-
 class UUROSBridgeEdTool : public UObject
 {
 	GENERATED_UCLASS_BODY()
@@ -20,32 +18,40 @@ class UUROSBridgeEdTool : public UObject
 public:
 	FUROSBridgeEdMode* ParentMode;
 
-	UPROPERTY(VisibleInstanceOnly, Category = "RosBridge Websocket")
+	UPROPERTY(VisibleInstanceOnly, Category = "Network parameter")
 	FString ConnectionStatus = TEXT("Not connected.");
-	UPROPERTY(EditAnywhere, Category = "RosBridge Websocket")
+	
+	/* Adress of the RosBridge Websocket */
+	UPROPERTY(EditAnywhere, Category = "Network parameter")
 	FString ServerAdress = TEXT("127.0.0.1");
-	UPROPERTY(EditAnywhere, Category = "RosBridge Websocket")
+
+	/* Port of the RosBridge Websocket */
+	UPROPERTY(EditAnywhere, Category = "Network parameter")
 	int ServerPort = 9090;
 
-
-	UPROPERTY(EditAnywhere, Category = "ROS")
+	/* Namespace under which all calbacks are registerd in ROS.*/
+	UPROPERTY(EditAnywhere, Category = "Callbacks")
 	FString Namespace = TEXT("unreal");
 
+	/* 
+	  List of Callbacks that get registered when Connect button is clicked. 
+	  When adding Callbacks after a connection was established, you need to click Connect again to register the new callbacks.
+	*/
+	UPROPERTY(EditAnywhere, Category = "Callbacks")	
+	TArray<TSubclassOf<UROSCallbackRegisterBase>> PublisherList;
 
-	UPROPERTY(EditAnywhere, Category = "ROS")	
-	TArray<TSubclassOf<UROSPublisherBaseClass>> PublisherList;
 
-	/* If true, the publisher list will be shared with the Runtime Manager.
-	 * Turn off if you wish to publish diffrent list of publishers during runtime.*/
-	UPROPERTY(EditAnywhere, Category = "ROS")
-	bool bSharePublishers = true;
-	
 	UFUNCTION(Exec)
-	void ConnectToRosBridge();
+	void Disconnect();
 
-	void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
-	void PostEditChangeChainProperty(struct FPropertyChangedChainEvent& e) override;
-	
+	/* 
+	  Connect to Websocket and register Callbacks listed below.
+	  This button can be clicked again to register callbacks added to the list after initial connection.
+	*/
+	UFUNCTION(Exec)
+	void Connect();
+
+		
 	void SetParent(FUROSBridgeEdMode* NewParent)
 	{
 		ParentMode = NewParent;
@@ -58,11 +64,7 @@ public:
 
 private:
 	UPROPERTY()
-	TArray<TSubclassOf<UROSPublisherBaseClass>> AlreadyRegistered;
-	UPROPERTY()
-	URosBridgeHandlerRefSingleton* RefSingelton;
+	TArray<TSubclassOf<UROSCallbackRegisterBase>> AlreadyRegistered;
 	TSharedPtr<FROSBridgeHandler>  RosHandler;
-
-	AROSBridgeRuntimeManager* GetRuntimeManager() const;
 
 };

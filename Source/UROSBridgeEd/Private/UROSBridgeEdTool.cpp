@@ -1,61 +1,35 @@
 #include "UROSBridgeEdTool.h"
 #include "UObject/ConstructorHelpers.h"
-#include "RosBridgeHandlerRefSingleton.h"
 #include "LevelEditor.h"
 #include "Editor.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
 UUROSBridgeEdTool::UUROSBridgeEdTool(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
+{}
+
+
+void UUROSBridgeEdTool::Connect()
 {
-	if (GEngine)
-		RefSingelton = Cast<URosBridgeHandlerRefSingleton>(GEngine->GameSingleton);
-
-	if (!RefSingelton)
+	if(!RosHandler.IsValid())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[%s]: GameSingleton is not set. New Handler Instance will be created, this might lead to multiple Handler instances/ Ros Connections"), *FString(__FUNCTION__));
-		RefSingelton = NewObject<URosBridgeHandlerRefSingleton>();
+		RosHandler = MakeShareable<FROSBridgeHandler>(
+			new FROSBridgeHandler(ServerAdress, ServerPort));
 	}
-	RosHandler = RefSingelton->GetHandlerRef();
 
-}
-
-
-
-void UUROSBridgeEdTool::ConnectToRosBridge()
-{
-
-	AROSBridgeRuntimeManager* RuntimeManager = GetRuntimeManager();
-
-	if (RuntimeManager) 
-	{
-		RefSingelton->Rename(*RefSingelton->GetName(), RuntimeManager);
-	//	RuntimeManager->RefSingelton = RefSingelton;
-	}
 	// Register Services, Publisher and Subcriber 
 	for (auto Pub : PublisherList)
 	{
-
 		//This Avoids registering the same Servers Multiple times
 		if (Pub && AlreadyRegistered.Find(Pub) == INDEX_NONE)
 		{
 			AlreadyRegistered.Add(Pub);
 
-			auto BaseClass = Pub->GetDefaultObject<UROSPublisherBaseClass>();
+			auto BaseClass = Pub->GetDefaultObject<UROSCallbackRegisterBase>();
 
-			// Make sure Outer is something GetWorld() can be called on.
-			if (RuntimeManager)
-			{
-				RuntimeManager->AlreadyRegistered.Add(Pub);
-				BaseClass->Rename(*BaseClass->GetName(), RuntimeManager);
-			}
-			else
-			{
-				BaseClass->Rename(*BaseClass->GetName(), this);
-			}
-
-
-			BaseClass->Init(Namespace);
+			// Make sure Outer is something GetWorld() can be called on.			
+			BaseClass->Rename(*BaseClass->GetName(), this);
+			BaseClass->Register(Namespace);
 
 			// Register SrvServers
 			for (auto SrvServer : BaseClass->ServicesToPublish)
@@ -93,68 +67,11 @@ void UUROSBridgeEdTool::ConnectToRosBridge()
 
 }
 
-
-#if WITH_EDITOR
-void UUROSBridgeEdTool::PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent)
+void UUROSBridgeEdTool::Disconnect()
 {
-	FName PropertyName = (PropertyChangedEvent.Property != NULL) ? PropertyChangedEvent.Property->GetFName() : NAME_None;
-	AROSBridgeRuntimeManager* RuntimeManager = GetRuntimeManager();
-
-	if (RuntimeManager)
-	{
-		if (PropertyName == GET_MEMBER_NAME_CHECKED(UUROSBridgeEdTool, ServerAdress))
-		{
-			RuntimeManager->ServerAdress = ServerAdress;
-		}
-		else if (PropertyName == GET_MEMBER_NAME_CHECKED(UUROSBridgeEdTool, ServerPort))
-		{
-			RuntimeManager->ServerPort = ServerPort;
-		}
-		else if (PropertyName == GET_MEMBER_NAME_CHECKED(UUROSBridgeEdTool, Namespace))
-		{
-			RuntimeManager->Namespace = Namespace;
-		}
-		else if (PropertyName == GET_MEMBER_NAME_CHECKED(UUROSBridgeEdTool, bSharePublishers))
-		{
-
-			if (bSharePublishers)
-			{
-				// Sharing now active
-				for (auto Pub : PublisherList)
-				{
-					RuntimeManager->PublisherList.AddUnique(Pub);
-				}
-			}
-			else
-			{
-				// Sharing deactivated
-
-				for (auto Pub : PublisherList)
-				{
-					if (Pub && RuntimeManager->PublisherList.Remove(Pub) > 0)
-						UE_LOG(LogTemp, Log, TEXT("[%s]: '%s' was removed from RuntimeMangers Publisherlist."),
-							*FString(__FUNCTION__), *Pub->GetName());
-				}
-
-			}
-		}
-	}
+	RosHandler->Disconnect();
+	AlreadyRegistered.Empty();
 }
-
-void UUROSBridgeEdTool::PostEditChangeChainProperty(struct FPropertyChangedChainEvent& e)
-{
-
-	AROSBridgeRuntimeManager* RuntimeManager = GetRuntimeManager();
-
-	if (bSharePublishers && RuntimeManager)
-	{
-		RuntimeManager->PublisherList = PublisherList;
-	}
-
-	Super::PostEditChangeChainProperty(e);
-}
-#endif
-
 
 
 void UUROSBridgeEdTool::ConnectionErrorCallback()
@@ -179,24 +96,4 @@ UWorld* UUROSBridgeEdTool::GetWorld() const
 		return GEditor->GetEditorWorldContext().World();
 	return nullptr;
 
-}
-
-AROSBridgeRuntimeManager* UUROSBridgeEdTool::GetRuntimeManager() const
-{
-	TArray<AActor*> FoundActors;
-	UGameplayStatics::GetAllActorsOfClass(GEditor->GetEditorWorldContext().World(), AROSBridgeRuntimeManager::StaticClass(), FoundActors);
-	if (FoundActors.Num() == 1)
-	{
-		return StaticCast<AROSBridgeRuntimeManager*>(FoundActors.Pop());
-	}
-	else if (FoundActors.Num() == 0)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[%s]: No AROSRuntimeManger is placed in the world, this means URosBridge cannot effect the world during runtime."), *FString(__FUNCTION__));
-	}
-	else
-	{
-		//More then one Runtime Manager found.
-		UE_LOG(LogTemp, Error, TEXT("[%s]: More then one AROSRuntimeManger is placed in the world, UROSBridge does only work properly if there is exactly one AROSRuntimeManger."), *FString(__FUNCTION__));
-	}
-	return nullptr;
 }

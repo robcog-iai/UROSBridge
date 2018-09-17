@@ -25,7 +25,7 @@ void FUROSBridgeEdToolCustomization::CustomizeDetails(IDetailLayoutBuilder& Deta
 	}
 
 	//Create commands category
-	IDetailCategoryBuilder& Category = DetailBuilder.EditCategory("Functions");
+	IDetailCategoryBuilder& Category = DetailBuilder.EditCategory("RosBridge");
 
 	//Create button for each element
 	for (UClass* Class : Classes)

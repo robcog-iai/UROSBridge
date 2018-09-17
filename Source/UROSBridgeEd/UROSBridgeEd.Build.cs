@@ -44,7 +44,6 @@ public class UROSBridgeEd : ModuleRules
 				"InputCore",
 				"UnrealEd",
 				"LevelEditor",
-                "UROSWorldControl"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
