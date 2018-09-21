@@ -13,21 +13,21 @@
 #define USE_LIBWEBSOCKET 0
 #endif
 
-class FWebSocket
+class FROSWebSocket
 {
 
 public:
 
 	// Initialize as client side socket.
-	FWebSocket(const FInternetAddr& ServerAddress);
+	FROSWebSocket(const FInternetAddr& ServerAddress);
 
 #if USE_LIBWEBSOCKET
 	// Initialize as server side socket.
-	FWebSocket(WebSocketInternalContext* InContext, WebSocketInternal* Wsi);
+	FROSWebSocket(WebSocketInternalContext* InContext, WebSocketInternal* Wsi);
 #endif
 
 	// clean up.
-	~FWebSocket();
+	~FROSWebSocket();
 
 	void Connect();
 
@@ -36,9 +36,9 @@ public:
 	/************************************************************************/
 	/* Set various callbacks for Socket Events								*/
 	/************************************************************************/
-	void SetConnectedCallBack(FWebsocketInfoCallBack CallBack);
-	void SetErrorCallBack(FWebsocketInfoCallBack CallBack);
-	void SetRecieveCallBack(FWebsocketPacketRecievedCallBack CallBack);
+	void SetConnectedCallBack(FROSWebsocketInfoSignature CallBack);
+	void SetErrorCallBack(FROSWebsocketInfoSignature CallBack);
+	void SetRecieveCallBack(FROSWebsocketPacketRecievedSignature CallBack);
 
 	/** Send raw data to remote end point. */
 	bool Send(uint8* Data, uint32 Size);  // Send Binary
@@ -65,9 +65,9 @@ public:
 	/************************************************************************/
 	/*	Various Socket callbacks											*/
 	/************************************************************************/
-	FWebsocketPacketRecievedCallBack  RecievedCallBack;
-	FWebsocketInfoCallBack ConnectedCallBack;
-	FWebsocketInfoCallBack ErrorCallBack;
+	FROSWebsocketPacketRecievedSignature  OnRecieved;
+	FROSWebsocketInfoSignature OnConnection;
+	FROSWebsocketInfoSignature OnError;
 
 	/**  Recv and Send Buffers, serviced during the Tick */
 	TArray<uint8> RecievedBuffer;
@@ -90,8 +90,11 @@ public:
 	int SockFd;
 #endif
 
-	FString StrInetAddress;
-	int32 InetPort;
+	// Server address as string without port
+	FString ServerAddressAsString;
+
+	// Server port nr
+	int32 PortNr;
 
 	struct sockaddr_in RemoteAddr;
 

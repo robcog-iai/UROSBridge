@@ -25,8 +25,6 @@ public class UROSBridge : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core",
-				"Sockets"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -42,9 +40,10 @@ public class UROSBridge : ModuleRules
 				"Core",
 				"Networking",
 				"PacketHandler",
+				"Sockets",
 				"libWebSockets",
 				"OpenSSL",
-				"zlib",				
+				"zlib",
 				"Json",
 				"JsonUtilities",
 				// ... add private dependencies that you statically link with here ...	
@@ -58,5 +57,8 @@ public class UROSBridge : ModuleRules
 				// ... add any modules that your module loads dynamically here ...
 			}
 			);
+
+		// Log ros msgs
+		PublicDefinitions.Add("LOG_ROS_MSGS=1");
 	}
 }
