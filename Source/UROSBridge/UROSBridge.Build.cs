@@ -10,7 +10,6 @@ public class UROSBridge : ModuleRules
 		
 		PublicIncludePaths.AddRange(
 			new string[] {
-				"UROSBridge/Public"
 				// ... add public include paths required here ...
 			}
 			);
@@ -18,7 +17,6 @@ public class UROSBridge : ModuleRules
 		
 		PrivateIncludePaths.AddRange(
 			new string[] {
-				"UROSBridge/Private",
 				// ... add other private include paths required here ...
 			}
 			);

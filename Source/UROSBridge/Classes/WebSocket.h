@@ -1,14 +1,16 @@
-// Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
+// Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
 //
-// libwebsocket client wrapper.
+// libwebsocket client wrapper. Slightly modified version from the HTML5Networking plugin
 //
 #pragma  once
-#include "HTML5NetworkingPrivate.h"
+#include "ROSBridgePrivate.h"
 #include "Core.h"
 #if !PLATFORM_HTML5
 #include "Runtime/Sockets/Private/BSDSockets/SocketSubsystemBSD.h"
+#define USE_LIBWEBSOCKET 1
 #else
 #include <netinet/in.h>
+#define USE_LIBWEBSOCKET 0
 #endif
 
 class FWebSocket
@@ -16,10 +18,10 @@ class FWebSocket
 
 public:
 
-	// Initialize as client side socket. (do not connect)
+	// Initialize as client side socket.
 	FWebSocket(const FInternetAddr& ServerAddress);
 
-#if !PLATFORM_HTML5
+#if USE_LIBWEBSOCKET
 	// Initialize as server side socket.
 	FWebSocket(WebSocketInternalContext* InContext, WebSocketInternal* Wsi);
 #endif
@@ -32,7 +34,7 @@ public:
 	void Destroy();
 
 	/************************************************************************/
-	/* Set various callbacks for Socket Events							  */
+	/* Set various callbacks for Socket Events								*/
 	/************************************************************************/
 	void SetConnectedCallBack(FWebsocketInfoCallBack CallBack);
 	void SetErrorCallBack(FWebsocketInfoCallBack CallBack);
@@ -75,7 +77,7 @@ public:
 	/** Critical Section */
 	FCriticalSection CriticalSection;
 
-#if !PLATFORM_HTML5
+#if USE_LIBWEBSOCKET
 	/** libwebsocket internal context*/
 	WebSocketInternalContext* Context;
 
@@ -84,7 +86,7 @@ public:
 
 	/** libwebsocket Protocols that can be serviced by this implemenation*/
 	WebSocketInternalProtocol* Protocols;
-#else
+#else // ! USE_LIBWEBSOCKET -- HTML5 uses BSD network API
 	int SockFd;
 #endif
 
