@@ -1,8 +1,8 @@
 # UROSBridge
 
-Unreal ROS bridge plugin for communication with [rosbridge](http://wiki.ros.org/rosbridge_suite) using WebSockets. The plugin supports subscribing and publishing both ROS messages (topics) and services.
+* Unreal ROS bridge plugin for communication with [rosbridge](http://wiki.ros.org/rosbridge_suite) using WebSockets. The plugin supports subscribing and publishing both ROS messages (topics) and services.
 
-Supported engine version: **UE 4.21**
+* Supported engine version: **UE 4.21**
 
 ## Messages and Services
 
