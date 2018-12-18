@@ -6,12 +6,12 @@
 #include "UROSBridgeEdTool.h"
 #include "EdMode.h"
 
-class UUROSBridgeEdTool;
+class UROSBridgeEdTool;
 
 class FUROSBridgeEdMode : public FEdMode
 {
 public:
-	UUROSBridgeEdTool* UISettings;
+	UROSBridgeEdTool* UISettings;
 
 	const static FEditorModeID EM_UROSBridgeEdModeId;
 

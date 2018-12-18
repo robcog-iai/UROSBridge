@@ -4,12 +4,12 @@
 #include "Editor.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
-UUROSBridgeEdTool::UUROSBridgeEdTool(const FObjectInitializer& ObjectInitializer)
+UROSBridgeEdTool::UROSBridgeEdTool(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {}
 
 
-void UUROSBridgeEdTool::Connect()
+void UROSBridgeEdTool::Connect()
 {
 	if(!RosHandler.IsValid())
 	{
@@ -54,11 +54,11 @@ void UUROSBridgeEdTool::Connect()
 
 	bool bAdressChanged = (RosHandler->GetHost().Compare(ServerAdress) != 0) || (RosHandler->GetPort() != ServerPort);
 	// Set up Serveradress and callbacks
-	RosHandler->AddToUserConnectedCallbacks(this, &UUROSBridgeEdTool::ConnectedCallback);
-	RosHandler->AddToUserErrorCallbacks(this, &UUROSBridgeEdTool::ConnectionErrorCallback);
+	RosHandler->AddConnectedCallback(this, &UROSBridgeEdTool::ConnectedCallback);
+	RosHandler->AddErrorCallback(this, &UROSBridgeEdTool::ConnectionErrorCallback);
 
 	// Connect
-	if (!RosHandler->IsClientConnected() || bAdressChanged)
+	if (!RosHandler->IsConnected() || bAdressChanged)
 	{
 		RosHandler->SetHost(ServerAdress);
 		RosHandler->SetPort(ServerPort);
@@ -67,14 +67,14 @@ void UUROSBridgeEdTool::Connect()
 
 }
 
-void UUROSBridgeEdTool::Disconnect()
+void UROSBridgeEdTool::Disconnect()
 {
 	RosHandler->Disconnect();
 	AlreadyRegistered.Empty();
 }
 
 
-void UUROSBridgeEdTool::ConnectionErrorCallback()
+void UROSBridgeEdTool::ConnectionErrorCallback()
 {
 	AlreadyRegistered.Empty();
 	ConnectionStatus = TEXT("Not connected.");
@@ -82,7 +82,7 @@ void UUROSBridgeEdTool::ConnectionErrorCallback()
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Connection to RosBridge lost.")));
 }
 
-void UUROSBridgeEdTool::ConnectedCallback()
+void UROSBridgeEdTool::ConnectedCallback()
 {
 	ConnectionStatus = TEXT("Connected to Rosbridge.");
 	if (GEngine)
@@ -90,7 +90,7 @@ void UUROSBridgeEdTool::ConnectedCallback()
 			FString::Printf(TEXT("You are now connected to RosBridge.")));
 }
 
-UWorld* UUROSBridgeEdTool::GetWorld() const
+UWorld* UROSBridgeEdTool::GetWorld() const
 {
 	if (GEditor)
 		return GEditor->GetEditorWorldContext().World();

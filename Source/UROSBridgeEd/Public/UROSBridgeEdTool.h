@@ -11,7 +11,7 @@
 class FUROSBridgeEdMode;
 
 UCLASS()
-class UUROSBridgeEdTool : public UObject
+class UROSBridgeEdTool : public UObject
 {
 	GENERATED_UCLASS_BODY()
 

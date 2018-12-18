@@ -5,9 +5,9 @@
 #include "CoreMinimal.h"
 #include "Sockets.h"
 #include "SocketSubsystem.h"
-#include "ModuleManager.h"
+#include "Modules/ModuleManager.h"
 
-class FWebSocket; 
+class FROSWebSocket; 
 class FWebSocketServer; 
 class FROSBridgeHandler;
 
@@ -15,8 +15,6 @@ typedef struct lws_context WebSocketInternalContext;
 typedef struct lws WebSocketInternal;
 typedef struct lws_protocols WebSocketInternalProtocol;
 
-DECLARE_DELEGATE_TwoParams(FWebsocketPacketRecievedCallBack, void* /*Data*/, int32 /*Data Size*/);
-DECLARE_DELEGATE_OneParam(FWebsocketClientConnectedCallBack, FWebSocket* /*Socket*/);
-DECLARE_MULTICAST_DELEGATE(FWebsocketInfoCallBack);
-
-DECLARE_LOG_CATEGORY_EXTERN(LogHTML5Networking, Warning, All);
+DECLARE_DELEGATE_TwoParams(FROSWebsocketPacketRecievedSignature, void* /*Data*/, int32 /*Data Size*/);
+DECLARE_DELEGATE_OneParam(FROSWebsocketClientConnectedSignature, FROSWebSocket* /*Socket*/);
+DECLARE_MULTICAST_DELEGATE(FROSWebsocketInfoSignature);

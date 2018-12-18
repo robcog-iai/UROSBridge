@@ -9,7 +9,7 @@ const FEditorModeID FUROSBridgeEdMode::EM_UROSBridgeEdModeId = TEXT("EM_UROSBrid
 
 FUROSBridgeEdMode::FUROSBridgeEdMode()
 {
-	UISettings = NewObject<UUROSBridgeEdTool>(GetTransientPackage(), TEXT("UUROSBridgeEdTool"), RF_Transactional);
+	UISettings = NewObject<UROSBridgeEdTool>(GetTransientPackage(), TEXT("UROSBridgeEdTool"), RF_Transactional);
 	UISettings->SetParent(this);
 }
 

@@ -58,7 +58,7 @@ void SROSBridgeEd::Construct(const FArguments& InArgs,
 {
 	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(
 		"PropertyEditor");
-	PropertyEditorModule.RegisterCustomClassLayout("UROSBridgeEdTool",
+	PropertyEditorModule.RegisterCustomClassLayout("ROSBridgeEdTool",
 	                                               FOnGetDetailCustomizationInstance::CreateStatic(
 		                                               &FUROSBridgeEdToolCustomization::MakeInstance));
 	PropertyEditorModule.NotifyCustomizationModuleChanged();

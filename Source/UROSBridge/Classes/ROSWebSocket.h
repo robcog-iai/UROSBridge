@@ -1,42 +1,44 @@
-// Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
+// Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
 //
-// libwebsocket client wrapper.
+// libwebsocket client wrapper. Slightly modified version from the HTML5Networking plugin
 //
 #pragma  once
-#include "HTML5NetworkingPrivate.h"
+#include "ROSBridgePrivate.h"
 #include "Core.h"
 #if !PLATFORM_HTML5
 #include "Runtime/Sockets/Private/BSDSockets/SocketSubsystemBSD.h"
+#define USE_LIBWEBSOCKET 1
 #else
 #include <netinet/in.h>
+#define USE_LIBWEBSOCKET 0
 #endif
 
-class FWebSocket
+class FROSWebSocket
 {
 
 public:
 
-	// Initialize as client side socket. (do not connect)
-	FWebSocket(const FInternetAddr& ServerAddress);
+	// Initialize as client side socket.
+	FROSWebSocket(const FInternetAddr& ServerAddress);
 
-#if !PLATFORM_HTML5
+#if USE_LIBWEBSOCKET
 	// Initialize as server side socket.
-	FWebSocket(WebSocketInternalContext* InContext, WebSocketInternal* Wsi);
+	FROSWebSocket(WebSocketInternalContext* InContext, WebSocketInternal* Wsi);
 #endif
 
 	// clean up.
-	~FWebSocket();
+	~FROSWebSocket();
 
 	void Connect();
 
 	void Destroy();
 
 	/************************************************************************/
-	/* Set various callbacks for Socket Events							  */
+	/* Set various callbacks for Socket Events								*/
 	/************************************************************************/
-	void SetConnectedCallBack(FWebsocketInfoCallBack CallBack);
-	void SetErrorCallBack(FWebsocketInfoCallBack CallBack);
-	void SetRecieveCallBack(FWebsocketPacketRecievedCallBack CallBack);
+	void SetConnectedCallBack(FROSWebsocketInfoSignature CallBack);
+	void SetErrorCallBack(FROSWebsocketInfoSignature CallBack);
+	void SetRecieveCallBack(FROSWebsocketPacketRecievedSignature CallBack);
 
 	/** Send raw data to remote end point. */
 	bool Send(uint8* Data, uint32 Size);  // Send Binary
@@ -63,9 +65,9 @@ public:
 	/************************************************************************/
 	/*	Various Socket callbacks											*/
 	/************************************************************************/
-	FWebsocketPacketRecievedCallBack  RecievedCallBack;
-	FWebsocketInfoCallBack ConnectedCallBack;
-	FWebsocketInfoCallBack ErrorCallBack;
+	FROSWebsocketPacketRecievedSignature  OnRecieved;
+	FROSWebsocketInfoSignature OnConnection;
+	FROSWebsocketInfoSignature OnError;
 
 	/**  Recv and Send Buffers, serviced during the Tick */
 	TArray<uint8> RecievedBuffer;
@@ -75,7 +77,7 @@ public:
 	/** Critical Section */
 	FCriticalSection CriticalSection;
 
-#if !PLATFORM_HTML5
+#if USE_LIBWEBSOCKET
 	/** libwebsocket internal context*/
 	WebSocketInternalContext* Context;
 
@@ -84,12 +86,15 @@ public:
 
 	/** libwebsocket Protocols that can be serviced by this implemenation*/
 	WebSocketInternalProtocol* Protocols;
-#else
+#else // ! USE_LIBWEBSOCKET -- HTML5 uses BSD network API
 	int SockFd;
 #endif
 
-	FString StrInetAddress;
-	int32 InetPort;
+	// Server address as string without port
+	FString ServerAddressAsString;
+
+	// Server port nr
+	int32 PortNr;
 
 	struct sockaddr_in RemoteAddr;
 
