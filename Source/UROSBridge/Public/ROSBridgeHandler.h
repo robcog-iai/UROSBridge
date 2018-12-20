@@ -141,6 +141,21 @@ public:
 	// Add a new service server
 	void AddServiceServer(TSharedPtr<FROSBridgeSrvServer> InServer);
 
+
+	template<class T>
+	void AddConnectedCallback(T* UserObject, void (T::*FunctionPtr)())
+	{
+		ConnectedCallbacks.AddUObject<T>(UserObject, FunctionPtr);
+	}
+
+
+	template<class T>
+	void AddErrorCallback(T* UserObject, void (T::*FunctionPtr)())
+	{
+		ErrorCallbacks.AddUObject<T>(UserObject, FunctionPtr);
+	}
+
+
 	// Publish service response, used in service server
 	void PublishServiceResponse(const FString& Service, const FString& Id,
 		TSharedPtr<FROSBridgeSrv::SrvResponse> Response);
@@ -155,6 +170,10 @@ public:
 
 	// Trigger the callbacks on the received messages
 	void Process();
+
+	// Setters
+	void SetPort(int InPort){Port = InPort;}
+	void SetHost(const FString& InHost){Host = InHost;}
 
 	// Getters
 	bool IsConnected() const { return bIsConnected; }
@@ -218,9 +237,9 @@ private:
 
 	/** Callback delegate that will be triggered when an error occurs
 		User of the RosBridgeHandler can add their own callbacks by passing a 'FWebsocketInfoCallBack' to the Constructor */
-	FROSWebsocketInfoSignature ErrorCallback;
+	FROSWebsocketInfoSignature ErrorCallbacks;
 
 	/** Callback delegate that will be triggered when connection is established
 	User of the RosBridgeHandler can add their own callbacks by passing a 'FWebsocketInfoCallBack' to the Constructor */
-	FROSWebsocketInfoSignature ConnectedCallback;
+	FROSWebsocketInfoSignature ConnectedCallbacks;
 };

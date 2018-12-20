@@ -24,11 +24,11 @@ bool FROSBridgeHandlerRunnable::Init()
 	Handler->WSClient->SetRecieveCallBack(ReceivedCallback);
 
 	// Bind Connected callback
-	Handler->ConnectedCallback.AddRaw(Handler, &FROSBridgeHandler::OnConnection);
-	Handler->WSClient->SetConnectedCallBack(Handler->ConnectedCallback);
+	Handler->ConnectedCallbacks.AddRaw(Handler, &FROSBridgeHandler::OnConnection);
+	Handler->WSClient->SetConnectedCallBack(Handler->ConnectedCallbacks);
 
-	Handler->ErrorCallback.AddRaw(Handler, &FROSBridgeHandler::OnError);
-	Handler->WSClient->SetErrorCallBack(Handler->ErrorCallback);
+	Handler->ErrorCallbacks.AddRaw(Handler, &FROSBridgeHandler::OnError);
+	Handler->WSClient->SetErrorCallBack(Handler->ErrorCallbacks);
 	Handler->WSClient->Connect();
 
 	return true;
@@ -108,7 +108,7 @@ uint32 FROSBridgeHandlerRunnable::Run()
 
 		// Sleep the main loop
 		FPlatformProcess::Sleep(Handler->ThreadSleep);
-		
+
 		// Process queued messages by calling their callback functions
 		// TODO enable after testing, make private
 		//Handler->Process();
@@ -140,8 +140,8 @@ FROSBridgeHandler::FROSBridgeHandler(const FString& InHost, int32 InPort) :
 FROSBridgeHandler::FROSBridgeHandler(const FString& InHost, int32 InPort, FROSWebsocketInfoSignature InErrorCallback, FROSWebsocketInfoSignature InConnectedCallback) :
 	Host(InHost),
 	Port(InPort),
-	ErrorCallback(InErrorCallback),
-	ConnectedCallback(InConnectedCallback),
+	ErrorCallbacks(InErrorCallback),
+	ConnectedCallbacks(InConnectedCallback),
 	ThreadSleep(0.007),
 	bIsConnected(false)
 {
@@ -491,3 +491,4 @@ void FROSBridgeHandler::ThreadCleanup()
 		WSClient = NULL;
 	}
 }
+

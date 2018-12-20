@@ -41,6 +41,16 @@ namespace std_msgs
 			R = Vector.X; G = Vector.Y; B = Vector.Z; A = Vector.W;
 		}
 
+		FColor GetColor()
+		{
+			return FColor(R,G,B,A);
+		}
+
+		void SetColor(const FColor Color)
+		{
+			R = Color.R; G = Color.G; B = Color.B; A = Color.A;
+		}
+
 		virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
 		{
 			R = (float)(JsonObject->GetNumberField(TEXT("r")));

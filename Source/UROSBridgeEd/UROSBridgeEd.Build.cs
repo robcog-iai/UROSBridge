@@ -1,15 +1,16 @@
-// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
+// Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
 
 using UnrealBuildTool;
 
-public class UROSBridge : ModuleRules
+public class UROSBridgeEd : ModuleRules
 {
-	public UROSBridge(ReadOnlyTargetRules Target) : base(Target)
+	public UROSBridgeEd(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
 		PublicIncludePaths.AddRange(
 			new string[] {
+				"UROSBridgeEd/Public"
 				// ... add public include paths required here ...
 			}
 			);
@@ -17,6 +18,7 @@ public class UROSBridge : ModuleRules
 		
 		PrivateIncludePaths.AddRange(
 			new string[] {
+				"UROSBridgeEd/Private",
 				// ... add other private include paths required here ...
 			}
 			);
@@ -25,6 +27,8 @@ public class UROSBridge : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
+				"Core",
+                "UROSBridge"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -37,16 +41,9 @@ public class UROSBridge : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-				"Core",
-				"Networking",
-				"PacketHandler",
-				"Sockets",
-				"libWebSockets",
-				"OpenSSL",
-				"zlib",
-				"Json",
-				"JsonUtilities",
-                "UROSBridgeEd"
+				"InputCore",
+				"UnrealEd",
+				"LevelEditor",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
@@ -58,8 +55,5 @@ public class UROSBridge : ModuleRules
 				// ... add any modules that your module loads dynamically here ...
 			}
 			);
-
-		// Log ros msgs
-		//PublicDefinitions.Add("LOG_ROS_MSGS=1");
 	}
 }

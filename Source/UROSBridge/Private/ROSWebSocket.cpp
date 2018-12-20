@@ -74,7 +74,7 @@ FROSWebSocket::FROSWebSocket(const FInternetAddr& ServerAddress) : IsServerSide(
 	Info.gid = -1;
 	Info.uid = -1;
 	Info.user = this;
-	Info.options |= LWS_SERVER_OPTION_DO_SSL_GLOBAL_INIT;
+	//Info.options |= LWS_SERVER_OPTION_DO_SSL_GLOBAL_INIT;
 
 	Context = lws_create_context(&Info);
 	if (Context) 
