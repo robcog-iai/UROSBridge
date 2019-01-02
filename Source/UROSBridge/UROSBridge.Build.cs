@@ -45,8 +45,7 @@ public class UROSBridge : ModuleRules
 				"OpenSSL",
 				"zlib",
 				"Json",
-				"JsonUtilities",
-				"UROSBridgeEd"
+				"JsonUtilities"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
