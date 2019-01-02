@@ -22,6 +22,12 @@ namespace std_msgs
 			MsgType = "std_msgs/ColorRGBA";
 		}
 
+		ColorRGBA(FColor InColor)
+		{
+			this->SetColor(InColor);
+			MsgType = "std_msgs/ColorRGBA";
+		}
+
 		ColorRGBA(float InR, float InG, float InB, float InA)
 		{
 			MsgType = "std_msgs/ColorRGBA";
@@ -31,9 +37,14 @@ namespace std_msgs
 		~ColorRGBA() override {}
 
 
-		FVector GetColor() const
+		//FVector4 GetColor() const
+		//{
+		//	return FVector4(R, G, B, A);
+		//}
+
+		FColor GetColor() const
 		{
-			return FVector4(R, G, B, A);
+			return FColor(R, G, B, A);
 		}
 
 		void SetColor(const FVector4& Vector)
