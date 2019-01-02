@@ -141,20 +141,19 @@ public:
 	// Add a new service server
 	void AddServiceServer(TSharedPtr<FROSBridgeSrvServer> InServer);
 
-
+	// Add callbacks to be called on connect
 	template<class T>
 	void AddConnectedCallback(T* UserObject, void (T::*FunctionPtr)())
 	{
 		ConnectedCallbacks.AddUObject<T>(UserObject, FunctionPtr);
 	}
 
-
+	// Add callback to be called on disconnect
 	template<class T>
 	void AddErrorCallback(T* UserObject, void (T::*FunctionPtr)())
 	{
 		ErrorCallbacks.AddUObject<T>(UserObject, FunctionPtr);
 	}
-
 
 	// Publish service response, used in service server
 	void PublishServiceResponse(const FString& Service, const FString& Id,

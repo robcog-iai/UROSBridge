@@ -1,3 +1,5 @@
+// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
+
 #include "UROSBridgeEdToolCustomization.h"
 #include "PropertyEditing.h"
 #include "Widgets/Input/SButton.h"

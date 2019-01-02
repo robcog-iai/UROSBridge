@@ -46,7 +46,7 @@ public class UROSBridge : ModuleRules
 				"zlib",
 				"Json",
 				"JsonUtilities",
-                "UROSBridgeEd"
+				"UROSBridgeEd"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
@@ -60,6 +60,6 @@ public class UROSBridge : ModuleRules
 			);
 
 		// Log ros msgs
-		//PublicDefinitions.Add("LOG_ROS_MSGS=1");
+		PublicDefinitions.Add("LOG_ROS_MSGS=1");
 	}
 }

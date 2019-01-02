@@ -1,3 +1,5 @@
+// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
+
 #include "UROSBridgeEdTool.h"
 #include "UObject/ConstructorHelpers.h"
 #include "LevelEditor.h"

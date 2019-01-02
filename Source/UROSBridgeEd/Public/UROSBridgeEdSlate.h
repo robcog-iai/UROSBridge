@@ -1,4 +1,4 @@
-// Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
+// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
 
 #pragma once
 
@@ -40,10 +40,9 @@ private:
 class SROSBridgeEd : public SCompoundWidget
 {
 public:
-SLATE_BEGIN_ARGS(SROSBridgeEd)
-		{
-		}
-
+	SLATE_BEGIN_ARGS(SROSBridgeEd)
+	{
+	}
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs, TSharedRef<FUROSBridgeEdModeToolkit> InParentToolkit);

@@ -1,4 +1,4 @@
-// Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
+// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
 
 using UnrealBuildTool;
 
@@ -10,7 +10,6 @@ public class UROSBridgeEd : ModuleRules
 		
 		PublicIncludePaths.AddRange(
 			new string[] {
-				"UROSBridgeEd/Public"
 				// ... add public include paths required here ...
 			}
 			);
@@ -18,7 +17,6 @@ public class UROSBridgeEd : ModuleRules
 		
 		PrivateIncludePaths.AddRange(
 			new string[] {
-				"UROSBridgeEd/Private",
 				// ... add other private include paths required here ...
 			}
 			);
@@ -28,7 +26,7 @@ public class UROSBridgeEd : ModuleRules
 			new string[]
 			{
 				"Core",
-                "UROSBridge"
+				"UROSBridge"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

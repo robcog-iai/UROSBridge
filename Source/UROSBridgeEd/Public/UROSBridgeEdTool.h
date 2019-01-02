@@ -1,3 +1,5 @@
+// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
+
 #pragma once
 
 #include "CoreMinimal.h"
@@ -65,6 +67,6 @@ public:
 private:
 	UPROPERTY()
 	TArray<TSubclassOf<UROSCallbackRegisterBase>> AlreadyRegistered;
-	TSharedPtr<FROSBridgeHandler>  RosHandler;
+	TSharedPtr<FROSBridgeHandler> RosHandler;
 
 };
