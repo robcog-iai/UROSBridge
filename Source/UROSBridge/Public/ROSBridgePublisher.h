@@ -1,4 +1,4 @@
-// Copyright 2018, Institute for Artificial Intelligence - University of Bremen
+// Copyright 2017-2019, Institute for Artificial Intelligence - University of Bremen
 
 #pragma once
 
