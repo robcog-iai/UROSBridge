@@ -79,11 +79,11 @@ FROSWebSocket::FROSWebSocket(const FInternetAddr& ServerAddress) : IsServerSide(
 	Context = lws_create_context(&Info);
 	if (Context) 
 	{
-		UE_LOG(LogROS, Log, TEXT(">> %s::%d Libwebsocket context successfully created."), TEXT(__FUNCTION__), __LINE__);
+		UE_LOG(LogROS, Log, TEXT(">> %s::%d Libwebsocket context successfully created."), *FString(__func__), __LINE__);
 	}
 	else
 	{
-		UE_LOG(LogROS, Error, TEXT(">> %s::%d Could not create a libwebsocket context."), TEXT(__FUNCTION__), __LINE__);
+		UE_LOG(LogROS, Error, TEXT(">> %s::%d Could not create a libwebsocket context."), *FString(__func__), __LINE__);
 		return;
 	}
 #endif
@@ -98,11 +98,11 @@ void FROSWebSocket::Connect()
 	Wsi = lws_client_connect_via_info(&ConnectInfo);
 	if (Wsi)
 	{
-		UE_LOG(LogROS, Log, TEXT(">> %s::%d Websocket connection info successfully set."), TEXT(__FUNCTION__), __LINE__);
+		UE_LOG(LogROS, Log, TEXT(">> %s::%d Websocket connection info successfully set."), *FString(__func__), __LINE__);
 	}
 	else
 	{
-		UE_LOG(LogROS, Error, TEXT(">> %s::%d Could not set websocket connection info. Check if ip/port is correct."), TEXT(__FUNCTION__), __LINE__);
+		UE_LOG(LogROS, Error, TEXT(">> %s::%d Could not set websocket connection info. Check if ip/port is correct."), *FString(__func__), __LINE__);
 		return;
 	}
 

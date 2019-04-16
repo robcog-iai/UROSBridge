@@ -30,7 +30,7 @@ public:
 	 */
 	virtual void Register(FString DefaultNamespace)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[%s]: This function schould be overriden by derived class. This class is meant to function like an Interface."), *FString(__FUNCTION__));
+		UE_LOG(LogTemp, Error, TEXT("[%s]: This function schould be overriden by derived class. This class is meant to function like an Interface."), *FString(__func__));
 	};
 
 	TArray<TSharedPtr<FROSBridgeSrvServer>> ServicesToPublish;
