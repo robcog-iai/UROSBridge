@@ -59,7 +59,7 @@ uint32 FROSBridgeHandlerRunnable::Run()
 			{
 				Stop();
 				UE_LOG(LogROS, Warning, TEXT(">> %s::%d Could not connect to the rosbridge server (IP %s, port %d)!"),
-					TEXT(__FUNCTION__), __LINE__, *(Handler->GetHost()), Handler->GetPort());
+					*FString(__func__), __LINE__, *(Handler->GetHost()), Handler->GetPort());
 				continue;
 			}
 		}
@@ -74,7 +74,7 @@ uint32 FROSBridgeHandlerRunnable::Run()
 			{
 				auto Subscriber = Handler->ListPendingSubscribers.Pop();
 				UE_LOG(LogROS, Log, TEXT(">> %s::%d Subscribing Topic %s"),
-					TEXT(__FUNCTION__), __LINE__, *Subscriber->GetTopic());
+					*FString(__func__), __LINE__, *Subscriber->GetTopic());
 				FString WebSocketMessage = FROSBridgeMsg::Subscribe(Subscriber->GetTopic(), Subscriber->GetType());
 				Handler->WSClient->Send(WebSocketMessage);
 
@@ -86,7 +86,7 @@ uint32 FROSBridgeHandlerRunnable::Run()
 			{
 				auto Publisher = Handler->ListPendingPublishers.Pop();
 				UE_LOG(LogROS, Log, TEXT(">> %s::%d Advertising Topic %s"),
-					TEXT(__FUNCTION__), __LINE__, *Publisher->GetTopic());
+					*FString(__func__), __LINE__, *Publisher->GetTopic());
 				FString WebSocketMessage = FROSBridgeMsg::Advertise(Publisher->GetTopic(), Publisher->GetType());
 				Handler->WSClient->Send(WebSocketMessage);
 
@@ -98,7 +98,7 @@ uint32 FROSBridgeHandlerRunnable::Run()
 			{
 				auto ServiceServer = Handler->ListPendingServiceServers.Pop();
 				UE_LOG(LogROS, Log, TEXT(">> %s::%d Advertising Service [%s] of type [%s]"),
-					TEXT(__FUNCTION__), __LINE__, *ServiceServer->GetName(), *ServiceServer->GetType());
+					*FString(__func__), __LINE__, *ServiceServer->GetName(), *ServiceServer->GetType());
 				FString WebSocketMessage = FROSBridgeSrv::AdvertiseService(ServiceServer->GetName(), ServiceServer->GetType());
 				Handler->WSClient->Send(WebSocketMessage);
 
@@ -171,7 +171,7 @@ void FROSBridgeHandler::Disconnect()
 		for (const auto& Sub : ListSubscribers)
 		{
 			UE_LOG(LogROS, Log, TEXT(">> %s::%d Unsubscribing Topic %s"),
-				TEXT(__FUNCTION__), __LINE__, *Sub->GetTopic());
+				*FString(__func__), __LINE__, *Sub->GetTopic());
 			FString WebSocketMessage = FROSBridgeMsg::UnSubscribe(Sub->GetTopic());
 			WSClient->Send(WebSocketMessage);
 		}
@@ -180,7 +180,7 @@ void FROSBridgeHandler::Disconnect()
 		for (const auto& Pub : ListPublishers)
 		{
 			UE_LOG(LogROS, Log, TEXT(">> %s::%d Unadvertising Topic %s"),
-				TEXT(__FUNCTION__), __LINE__, *Pub->GetTopic());
+				*FString(__func__), __LINE__, *Pub->GetTopic());
 			FString WebSocketMessage = FROSBridgeMsg::UnAdvertise(Pub->GetTopic());
 			WSClient->Send(WebSocketMessage);
 		}
@@ -189,7 +189,7 @@ void FROSBridgeHandler::Disconnect()
 		for (const auto& Srv : ListServiceServers)
 		{
 			UE_LOG(LogROS, Log, TEXT(">> %s::%d Unadvertising Service [%s]"),
-				TEXT(__FUNCTION__), __LINE__, *Srv->GetName());
+				*FString(__func__), __LINE__, *Srv->GetName());
 			FString WebSocketMessage = FROSBridgeSrv::UnadvertiseService(Srv->GetName());
 			WSClient->Send(WebSocketMessage);
 		}
@@ -198,17 +198,17 @@ void FROSBridgeHandler::Disconnect()
 		if (ListPendingSubscribers.Num() > 0)
 		{
 			UE_LOG(LogROS, Log, TEXT(">> %s::%d ROSBridgeHandler is shutting down, but there were still pending subscribers"),
-				*FString(__FUNCTION__));
+				*FString(__func__));
 		}
 		if (ListPendingPublishers.Num() > 0)
 		{
 			UE_LOG(LogROS, Log, TEXT(">> %s::%d ROSBridgeHandler is shutting down, but there were still pending publishers"),
-				*FString(__FUNCTION__));
+				*FString(__func__));
 		}
 		if (ListPendingServiceServers.Num() > 0)
 		{
 			UE_LOG(LogROS, Log, TEXT(">> %s::%d ROSBridgeHandler is shutting down, but there were still pending service servers"),
-				*FString(__FUNCTION__));
+				*FString(__func__));
 		}
 #endif
 	}
@@ -245,7 +245,7 @@ void FROSBridgeHandler::Process()
 
 		TSharedPtr<FROSBridgeMsg> Msg = ProcessTask->Message;
 		// UE_LOG(LogROS, Log, TEXT(">> %s::%d Processing task [%s]"),
-		// 	TEXT(__FUNCTION__), __LINE__, *ProcessTask->Topic);
+		// 	*FString(__func__), __LINE__, *ProcessTask->Topic);
 		ProcessTask->Subscriber->Callback(Msg);
 		// delete Msg;
 	}
@@ -293,14 +293,14 @@ void FROSBridgeHandler::CallService(TSharedPtr<FROSBridgeSrvClient> InSrvClient,
 // Callback when the connection succeeded
 void FROSBridgeHandler::OnConnection()
 {
-	UE_LOG(LogROS, Warning, TEXT(">> %s::%d Websocket server connected."), TEXT(__FUNCTION__), __LINE__);
+	UE_LOG(LogROS, Warning, TEXT(">> %s::%d Websocket server connected."), *FString(__func__), __LINE__);
 	bIsConnected.AtomicSet(true);
 }
 
 // Callback on connection error
 void FROSBridgeHandler::OnError()
 {
-	UE_LOG(LogROS, Warning, TEXT(">> %s::%d Error in Websocket."), TEXT(__FUNCTION__), __LINE__);
+	UE_LOG(LogROS, Warning, TEXT(">> %s::%d Error in Websocket."), *FString(__func__), __LINE__);
 	bIsConnected.AtomicSet(false);
 }
 
@@ -314,7 +314,7 @@ void FROSBridgeHandler::OnMessage(void* InData, int32 InLength)
 	delete[] CharMessage;
 
 #if LOG_ROS_MSGS
-	UE_LOG(LogROS, Log, TEXT(">> %s::%d Json Message: %s"), TEXT(__FUNCTION__), __LINE__, *JsonMessage);
+	UE_LOG(LogROS, Log, TEXT(">> %s::%d Json Message: %s"), *FString(__func__), __LINE__, *JsonMessage);
 #endif // LOG_ROS_MSGS
 
 	// Parse Json Message Here
@@ -324,7 +324,7 @@ void FROSBridgeHandler::OnMessage(void* InData, int32 InLength)
 	if (!DeserializeState)
 	{
 		UE_LOG(LogROS, Error, TEXT(">> %s::%d Deserialization Error. Message Contents: %s"),
-			TEXT(__FUNCTION__), __LINE__, *JsonMessage);
+			*FString(__func__), __LINE__, *JsonMessage);
 		return;
 	}
 
@@ -334,7 +334,7 @@ void FROSBridgeHandler::OnMessage(void* InData, int32 InLength)
 	{
 		const FString Topic = JsonObject->GetStringField(TEXT("topic"));
 		// UE_LOG(LogROS, Log, TEXT(">> %s::%d Received message at Topic [%s]."),
-		// 	TEXT(__FUNCTION__), __LINE__, *Topic);
+		// 	*FString(__func__), __LINE__, *Topic);
 
 		TSharedPtr< FJsonObject > MsgObject = JsonObject->GetObjectField(TEXT("msg"));
 
@@ -346,7 +346,7 @@ void FROSBridgeHandler::OnMessage(void* InData, int32 InLength)
 			if (ListSubscribers[i]->GetTopic() == Topic)
 			{
 #if UE_BUILD_DEBUG
-				UE_LOG(LogROS, Log, TEXT(">> %s::%d Subscriber Found. Id = %d. "), TEXT(__FUNCTION__), __LINE__, i);
+				UE_LOG(LogROS, Log, TEXT(">> %s::%d Subscriber Found. Id = %d. "), *FString(__func__), __LINE__, i);
 #endif
 				Subscriber = ListSubscribers[i];
 				IsTopicFound = true; break;
@@ -356,7 +356,7 @@ void FROSBridgeHandler::OnMessage(void* InData, int32 InLength)
 		if (!IsTopicFound)
 		{
 			UE_LOG(LogROS, Error, TEXT(">> %s::%d Error: Topic [%s] subscriber not Found. "),
-				TEXT(__FUNCTION__), __LINE__, *Topic);
+				*FString(__func__), __LINE__, *Topic);
 		}
 		else
 		{
@@ -403,7 +403,7 @@ void FROSBridgeHandler::OnMessage(void* InData, int32 InLength)
 		if (!bFoundService)
 		{
 			UE_LOG(LogROS, Error, TEXT(">> %s::%d Error: Service Name [%s] Id [%s] not found. "),
-				TEXT(__FUNCTION__), __LINE__, *ServiceName, *Id);
+				*FString(__func__), __LINE__, *ServiceName, *Id);
 		}
 	}
 	else if (Op == "call_service")
@@ -435,13 +435,13 @@ void FROSBridgeHandler::OnMessage(void* InData, int32 InLength)
 		if (!bFoundService)
 		{
 			UE_LOG(LogROS, Error, TEXT(">> %s::%d Error: Service Name [%s] Id [%s] not found. "),
-				TEXT(__FUNCTION__), __LINE__, *ServiceName, *Id);
+				*FString(__func__), __LINE__, *ServiceName, *Id);
 		}
 		else
 		{
 #if UE_BUILD_DEBUG
 			UE_LOG(LogROS, Log, TEXT(">> %s::%d Info: Service Name [%s] Id [%s] found, calling callback function."),
-				TEXT(__FUNCTION__), __LINE__, *ServiceName, *Id);
+				*FString(__func__), __LINE__, *ServiceName, *Id);
 #endif
 			TSharedPtr<FROSBridgeSrv::SrvRequest> Request = ListServiceServers[FoundServiceIndex]->FromJson(ArgsObj);
 			TSharedPtr<FROSBridgeSrv::SrvResponse> Response = ListServiceServers[FoundServiceIndex]->Callback(Request); // block
