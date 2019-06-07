@@ -140,10 +140,10 @@ FROSBridgeHandler::FROSBridgeHandler(const FString& InHost, int32 InPort) :
 FROSBridgeHandler::FROSBridgeHandler(const FString& InHost, int32 InPort, FROSWebsocketInfoSignature InErrorCallback, FROSWebsocketInfoSignature InConnectedCallback) :
 	Host(InHost),
 	Port(InPort),
-	ErrorCallbacks(InErrorCallback),
-	ConnectedCallbacks(InConnectedCallback),
 	ThreadSleep(0.007),
-	bIsConnected(false)
+	bIsConnected(false),
+	ErrorCallbacks(InErrorCallback),
+	ConnectedCallbacks(InConnectedCallback)
 {
 }
 
