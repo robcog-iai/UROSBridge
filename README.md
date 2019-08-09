@@ -1,5 +1,4 @@
-
-## !!! Oudated !!!
+## !!! Outdated !!!
 
 **Bson** version is currently **discontinued** / **on hold** for an unknown time.
 
