@@ -1,3 +1,8 @@
+
+## !!! Oudated !!!
+
+**Bson** version is currently **discontinued** / **on hold** for an unknown time.
+
 # UROSBridge
 
 Unereal ROS bridge plugin for communication with [rosbridge](http://wiki.ros.org/rosbridge_suite) using WebSockets. The plugin supports subscribing and publishing both ROS messages (topics) and services.
