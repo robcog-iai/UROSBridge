@@ -175,10 +175,10 @@ public:
 	//This creates a Handler with a custom ErrorCallback
 	FROSBridgeHandler(const FString& InHost, int32 InPort, FWebsocketInfoCallBack UserErrorCallbacks, FWebsocketInfoCallBack UserConnectedCallbacks) :
 		Host(InHost), Port(InPort),
-		ErrorCallbacks(UserErrorCallbacks),
-		ConnectedCallbacks(UserConnectedCallbacks),
 		ClientInterval(0.01),
-		bIsClientConnected(false)
+		bIsClientConnected(false),
+		ErrorCallbacks(UserErrorCallbacks),
+		ConnectedCallbacks(UserConnectedCallbacks)
 	{
 	}
 	~FROSBridgeHandler()
