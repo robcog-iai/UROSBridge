@@ -7,7 +7,7 @@ UROSBridge could be used in Unreal Actors or in timers. To use it in actors, we 
 ```cpp
 
 // NB: Your #include "AROSActor.generated.h" must be the last include in the actor header
-#include "ROSBRidgeHandler.h"
+#include "ROSBridgeHandler.h"
 
 /// ...
 
