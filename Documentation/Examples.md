@@ -206,6 +206,8 @@ Your actors can then access the `ROSBridgeHandler` by calling e.g. `this->GetGam
 
 When the ROS Bridge Handler disconnects to server, it automatically destroys all subscriber instances.
 
+[Example](HandlerInGameInstance.md)]
+
 #### Request Service
 
 A service consists of two parts: Request and Response. Clients send out requests, and then get response from server. Servers process received requests and send out response.
@@ -215,7 +217,7 @@ To send service requests in UROSBridge, we need to create a service client class
 ```cpp
 #pragma once
 #include "ROSBridgeSrvClient.h"
-#include "tutorial_srvs/AddTwoInts.h"
+#include "rospy_tutorials/AddTwoInts.h"
 class FROSAddTwoIntsClient final : public FROSBridgeSrvClient
 {
 public:
@@ -261,7 +263,7 @@ To process service requests in UROSBridge, we need to create a service server cl
  #pragma once
 
  #include "ROSBridgeSrvServer.h"
- #include "tutorial_srvs/AddTwoInts.h"
+ #include "rospy_tutorials/AddTwoInts.h"
 
  class FROSAddTwoIntsServer final : public FROSBridgeSrvServer
  {
