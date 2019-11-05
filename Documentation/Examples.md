@@ -206,7 +206,7 @@ Your actors can then access the `ROSBridgeHandler` by calling e.g. `this->GetGam
 
 When the ROS Bridge Handler disconnects to server, it automatically destroys all subscriber instances.
 
-[Example](HandlerInGameInstance.md)]
+[Example](HandlerInGameInstance.md)
 
 #### Request Service
 
