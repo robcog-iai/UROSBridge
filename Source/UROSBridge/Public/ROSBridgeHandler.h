@@ -181,6 +181,7 @@ public:
 		ConnectedCallbacks(UserConnectedCallbacks)
 	{
 	}
+  
 	~FROSBridgeHandler()
 	{
 		ThreadCleanup();
