@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ThreadingBase.h"
-#include "Queue.h"
+#include "CoreGlobals.h"
+#include "Containers/Queue.h"
 
 #include "ROSBridgeMsg.h"
 #include "ROSBridgeSrv.h"
@@ -179,9 +179,9 @@ public:
 		bIsClientConnected(false),
 		ErrorCallbacks(UserErrorCallbacks),
 		ConnectedCallbacks(UserConnectedCallbacks)
-
 	{
 	}
+  
 	~FROSBridgeHandler()
 	{
 		ThreadCleanup();
