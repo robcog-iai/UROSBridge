@@ -9,7 +9,7 @@ namespace std_srvs
 	public:
 		SetBool()
 		{
-			SrvType = TEXT("srd_srvs/SetBool");
+			SrvType = TEXT("std_srvs/SetBool");
 		}
 
 		class Request : public SrvRequest 

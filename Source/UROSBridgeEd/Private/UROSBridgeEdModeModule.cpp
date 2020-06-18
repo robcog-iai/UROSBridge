@@ -83,4 +83,8 @@ void FUROSBridgeEdModule::ShutdownModule()
 
 #undef LOCTEXT_NAMESPACE
 
-IMPLEMENT_MODULE(FUROSBridgeEdModule, UROSBridgeEdMode)
+#if ENGINE_MINOR_VERSION < 22
+	IMPLEMENT_MODULE(FUROSBridgeEdModule, UROSBridgeEdMode)
+#else
+	IMPLEMENT_MODULE(FUROSBridgeEdModule, UROSBridgeEd)
+#endif

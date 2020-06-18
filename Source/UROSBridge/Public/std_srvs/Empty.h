@@ -13,7 +13,7 @@ namespace std_srvs
 	public:
 		Empty()
 		{
-			SrvType = TEXT("srd_srvs/Empty");
+			SrvType = TEXT("std_srvs/Empty");
 		}
 
 		class Request : public SrvRequest 
