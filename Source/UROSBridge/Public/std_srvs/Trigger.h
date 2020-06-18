@@ -10,7 +10,7 @@ namespace std_srvs
 	public:
 		Trigger()
 		{
-			SrvType = TEXT("srd_srvs/Trigger");
+			SrvType = TEXT("std_srvs/Trigger");
 		}
 
 		class Request : public SrvRequest 
@@ -44,20 +44,20 @@ namespace std_srvs
 		class Response : public SrvResponse 
 		{
 		private:
-			uint8 Success;
+			bool Success;
 			FString Message;
 
 		public:
 			Response() {}
-			Response(uint8 InSuccess, FString InMessage) : Success(InSuccess), Message(InMessage) {}
-			uint8 GetSuccess() const { return Success; }
+			Response(bool InSuccess, FString InMessage) : Success(InSuccess), Message(InMessage) {}
+			bool GetSuccess() const { return Success; }
 			FString GetMessage() const { return Message; }
-			void SetSuccess(uint8 InSuccess) { Success = InSuccess; }
+			void SetSuccess(bool InSuccess) { Success = InSuccess; }
 			void SetMessage(FString InMessage) { Message = InMessage; }
 
 			virtual void FromJson(TSharedPtr<FJsonObject> JsonObject) override 
 			{
-				Success = JsonObject->GetIntegerField("success");
+				Success = JsonObject->GetBoolField("success");
 				Message = JsonObject->GetStringField("message");
 			}
 
@@ -69,14 +69,15 @@ namespace std_srvs
 
 			virtual FString ToString() const override
 			{
-				return TEXT("Trigger::Response { success = ") + FString::FromInt(Success) + TEXT(", ") +
+				FString BoolString = Success ? "true" : "false";
+				return TEXT("Trigger::Response { success = ") + BoolString + TEXT(", ") +
 					TEXT(" message = \"") + Message + TEXT("\" } ");
 			}
 
 			virtual TSharedPtr<FJsonObject> ToJsonObject() const 
 			{
 				TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
-				Object->SetNumberField("success", Success);
+				Object->SetBoolField("success", Success);
 				Object->SetStringField("message", Message);
 				return Object;
 			}
