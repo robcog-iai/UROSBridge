@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ThreadingBase.h"
-#include "Queue.h"
+#include "CoreGlobals.h"
+#include "Containers/Queue.h"
 #include "ROSBridgeMsg.h"
 
 class UROSBRIDGE_API FROSBridgePublisher 
