@@ -5,13 +5,13 @@
 #include "CoreMinimal.h"
 #include "Json.h"
 
-class UROSBRIDGE_API FROSTime 
+class UROSBRIDGE_API FROSTime
 {
 public:
 	uint32 Secs, NSecs;
 
 	FROSTime(uint32 InSecs, uint32 InNSecs) :
-		Secs(InSecs), NSecs(InNSecs) 
+		Secs(InSecs), NSecs(InNSecs)
 	{
 	}
 
@@ -22,7 +22,7 @@ public:
 		NSecs = NowTime.NSecs;
 	}
 
-	static FROSTime Now() 
+	static FROSTime Now()
 	{
 		FDateTime NowDateTime = FDateTime::UtcNow();
 		uint32 Secs = (uint32)NowDateTime.ToUnixTimestamp();
@@ -30,7 +30,7 @@ public:
 		return FROSTime(Secs, NSecs);
 	}
 
-	static FROSTime GetFromJson(TSharedPtr<FJsonObject> JsonObject) 
+	static FROSTime GetFromJson(TSharedPtr<FJsonObject> JsonObject)
 	{
 		uint32 Secs = (uint32)(JsonObject->GetNumberField("secs"));
 		uint32 NSecs = (uint32)(JsonObject->GetNumberField("nsecs"));
@@ -42,8 +42,8 @@ public:
 		return TEXT("Time { secs = ") + FString::FromInt(Secs)
 				 + TEXT(", nsecs = ") + FString::FromInt(NSecs) + TEXT(" }");
 	}
-	
-	TSharedPtr<FJsonObject> ToJsonObject() const 
+
+	TSharedPtr<FJsonObject> ToJsonObject() const
 	{
 		TSharedPtr<FJsonObject> Object = MakeShareable<FJsonObject>(new FJsonObject());
 		Object->SetNumberField(TEXT("secs"), Secs);
@@ -51,7 +51,7 @@ public:
 		return Object;
 	}
 
-	FString ToYamlString() const 
+	FString ToYamlString() const
 	{
 		FString OutputString;
 		FJsonObject Object;
@@ -62,4 +62,9 @@ public:
 		FJsonSerializer::Serialize(MakeShared<FJsonObject>(Object), Writer);
 		return OutputString;
 	}
+
+        double GetTimeAsDouble()
+        {
+          return Secs + NSecs / 1000000000;
+        };
 };
