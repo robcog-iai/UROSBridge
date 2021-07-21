@@ -5,39 +5,39 @@
 #include "HTML5NetworkingPrivate.h"
 #include "IPAddress.h"
 
-#if PLATFORM_HTML5
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/ioctl.h>
-#include <assert.h>
-#include <emscripten/emscripten.h>
-#endif
+//#if PLATFORM_HTML5
+//#include <errno.h>
+//#include <sys/types.h>
+//#include <sys/socket.h>
+//#include <netinet/in.h>
+//#include <arpa/inet.h>
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include <string.h>
+//#include <unistd.h>
+//#include <fcntl.h>
+//#include <sys/ioctl.h>
+//#include <assert.h>
+//#include <emscripten/emscripten.h>
+//#endif
 
-#if !PLATFORM_HTML5
+//#if !PLATFORM_HTML5
 // Work around a conflict between a UI namespace defined by engine code and a typedef in OpenSSL
 #define UI UI_ST
 THIRD_PARTY_INCLUDES_START
 #include "libwebsockets.h"
 THIRD_PARTY_INCLUDES_END
 #undef UI
-#endif
+//#endif
 
-#if !PLATFORM_HTML5
+//#if !PLATFORM_HTML5
 static int unreal_networking_client(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len);
 
 static void lws_debugLogS(int level, const char *line)
 {
 	UE_LOG(LogHTML5Networking, Log, TEXT("client: %s"), ANSI_TO_TCHAR(line));
 }
-#endif
+//#endif
 
 FWebSocket::FWebSocket(
 		const FInternetAddr& ServerAddress
@@ -45,7 +45,7 @@ FWebSocket::FWebSocket(
 :IsServerSide(false)
 {
 
-#if !PLATFORM_HTML5
+//#if !PLATFORM_HTML5
 
 #if !UE_BUILD_SHIPPING
 	lws_set_log_level(LLL_ERR | LLL_WARN | LLL_NOTICE | LLL_DEBUG | LLL_INFO, lws_debugLogS);
@@ -78,31 +78,31 @@ FWebSocket::FWebSocket(
 
 	StrInetAddress = ServerAddress.ToString(false);
 	InetPort = ServerAddress.GetPort();
-#endif
+//#endif
 }
 
 void FWebSocket::Connect(){
-#if !PLATFORM_HTML5
+//#if !PLATFORM_HTML5
 	struct lws_client_connect_info ConnectInfo = {
 			Context, TCHAR_TO_ANSI(*StrInetAddress), InetPort, false, "/", TCHAR_TO_ANSI(*StrInetAddress), TCHAR_TO_ANSI(*StrInetAddress), Protocols[1].name, -1, this
 	};
 	Wsi = lws_client_connect_via_info(&ConnectInfo);
 	check(Wsi);
 
-#else // PLATFORM_HTML5
-
-	SockFd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (SockFd == -1) {
-		UE_LOG(LogHTML5Networking, Error, TEXT("Socket creationg failed "));
-	}
-	else
-	{
-		UE_LOG(LogHTML5Networking, Warning, TEXT(" Socked %d created "), SockFd);
-	}
-
-	fcntl(SockFd, F_SETFL, O_NONBLOCK);
-
-#endif
+//#else // PLATFORM_HTML5
+//
+//	SockFd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+//	if (SockFd == -1) {
+//		UE_LOG(LogHTML5Networking, Error, TEXT("Socket creationg failed "));
+//	}
+//	else
+//	{
+//		UE_LOG(LogHTML5Networking, Warning, TEXT(" Socked %d created "), SockFd);
+//	}
+//
+//	fcntl(SockFd, F_SETFL, O_NONBLOCK);
+//
+//#endif
 
 	// Windows XP does not have support for inet_pton
 #if PLATFORM_WINDOWS && _WIN32_WINNT <= 0x0502
@@ -130,15 +130,15 @@ void FWebSocket::Connect(){
 	}
 #endif
 
-#if PLATFORM_HTML5
-	int Ret = connect(SockFd, (struct sockaddr *)&RemoteAddr, sizeof(RemoteAddr));
-	UE_LOG(LogHTML5Networking, Warning, TEXT(" Connect socket returned %d"), Ret);
-#endif
+//#if PLATFORM_HTML5
+//	int Ret = connect(SockFd, (struct sockaddr *)&RemoteAddr, sizeof(RemoteAddr));
+//	UE_LOG(LogHTML5Networking, Warning, TEXT(" Connect socket returned %d"), Ret);
+//#endif
 
 	IsDestroyed = false; 
 }
 
-#if !PLATFORM_HTML5
+//#if !PLATFORM_HTML5
 FWebSocket::FWebSocket(WebSocketInternalContext* InContext, WebSocketInternal* InWsi)
 	: Context(InContext)
 	, Wsi(InWsi)
@@ -149,15 +149,15 @@ FWebSocket::FWebSocket(WebSocketInternalContext* InContext, WebSocketInternal* I
 	socklen_t len = sizeof RemoteAddr;
 	getpeername(sock, (struct sockaddr*)&RemoteAddr, &len);
 }
-#endif
+//#endif
 
 bool FWebSocket::Send(uint8* Data, uint32 Size)
 {
 	TArray<uint8> Buffer;
 
-#if !PLATFORM_HTML5
+//#if !PLATFORM_HTML5
 	Buffer.AddDefaulted(LWS_PRE); // Reserve space for WS header data
-#endif
+//#endif
 
 	Buffer.Append((uint8*)&Size, sizeof (uint32)); // insert size.
 	Buffer.Append((uint8*)Data, Size);
@@ -174,9 +174,9 @@ bool FWebSocket::SendText(uint8* Data, uint32 Size)
 {
 	TArray<uint8> Buffer;
 
-#if !PLATFORM_HTML5
+//#if !PLATFORM_HTML5
 	Buffer.AddDefaulted(LWS_PRE); // Reserve space for WS header data
-#endif
+//#endif
 
 	// Buffer.Append((uint8*)&Size, sizeof (uint32)); // insert size.
 	Buffer.Append((uint8*)Data, Size);
@@ -242,7 +242,7 @@ struct sockaddr_in* FWebSocket::GetRemoteAddr()
 
 FString FWebSocket::LocalEndPoint(bool bAppendPort)
 {
-#if !PLATFORM_HTML5
+//#if !PLATFORM_HTML5
 	int sock = lws_get_socket_fd(Wsi);
 	struct sockaddr_in addr;
 	socklen_t len = sizeof addr;
@@ -271,11 +271,11 @@ FString FWebSocket::LocalEndPoint(bool bAppendPort)
 #endif
 
 	return remote;
-#else
-	// NOTE: there's no way to get this info from browsers...
-	// return generic localhost without port #
-	return FString(TEXT("127.0.0.1"));
-#endif
+//#else
+//	// NOTE: there's no way to get this info from browsers...
+//	// return generic localhost without port #
+//	return FString(TEXT("127.0.0.1"));
+//#endif
 }
 
 void FWebSocket::Tick()
@@ -285,41 +285,41 @@ void FWebSocket::Tick()
 
 void FWebSocket::HandlePacket()
 {
-#if !PLATFORM_HTML5
+//#if !PLATFORM_HTML5
 
 	lws_service(Context, 0);
 	if (!IsServerSide)
 		lws_callback_on_writable_all_protocol(Context, &Protocols[0]);
 
-#else // PLATFORM_HTML5
-
-	fd_set Fdr;
-	fd_set Fdw;
-	int Res;
-
-	// make sure that server.fd is ready to read / write
-	FD_ZERO(&Fdr);
-	FD_ZERO(&Fdw);
-	FD_SET(SockFd, &Fdr);
-	FD_SET(SockFd, &Fdw);
-	Res = select(64, &Fdr, &Fdw, NULL, NULL);
-
-	if (Res == -1) {
-		UE_LOG(LogHTML5Networking, Warning, TEXT("Select Failed!"));
-		return;
-	}
-
-	if (FD_ISSET(SockFd, &Fdr)) {
-		// we can read!
-		OnRawRecieve(NULL, NULL);
-	}
-
-	if (FD_ISSET(SockFd, &Fdw)) {
-		// we can write
-		OnRawWebSocketWritable(NULL);
-	}
-
-#endif
+//#else // PLATFORM_HTML5
+//
+//	fd_set Fdr;
+//	fd_set Fdw;
+//	int Res;
+//
+//	// make sure that server.fd is ready to read / write
+//	FD_ZERO(&Fdr);
+//	FD_ZERO(&Fdw);
+//	FD_SET(SockFd, &Fdr);
+//	FD_SET(SockFd, &Fdw);
+//	Res = select(64, &Fdr, &Fdw, NULL, NULL);
+//
+//	if (Res == -1) {
+//		UE_LOG(LogHTML5Networking, Warning, TEXT("Select Failed!"));
+//		return;
+//	}
+//
+//	if (FD_ISSET(SockFd, &Fdr)) {
+//		// we can read!
+//		OnRawRecieve(NULL, NULL);
+//	}
+//
+//	if (FD_ISSET(SockFd, &Fdw)) {
+//		// we can write
+//		OnRawWebSocketWritable(NULL);
+//	}
+//
+//#endif
 }
 
 void FWebSocket::Flush()
@@ -327,7 +327,7 @@ void FWebSocket::Flush()
 	auto PendingMesssages = OutgoingBuffer.Num();
 	while (OutgoingBuffer.Num() > 0 && !IsServerSide)
 	{
-#if !PLATFORM_HTML5
+//#if !PLATFORM_HTML5
 		if (Protocols)
 		{
 			lws_callback_on_writable_all_protocol(Context, &Protocols[0]);
@@ -336,7 +336,7 @@ void FWebSocket::Flush()
 		{
 			lws_callback_on_writable(Wsi);
 		}
-#endif
+//#endif
 		HandlePacket();
 		if (PendingMesssages <= OutgoingBuffer.Num()) // FIXME! 
 		{
@@ -362,7 +362,7 @@ void FWebSocket::OnRawRecieve(void* Data, uint32 Size, bool isBinary)
 	UE_LOG(LogROS, Warning, TEXT("[WebSocket::OnRawReceive] Message size = %d, isBinary = %d"), Size, isBinary);
 #endif
 
-#if !PLATFORM_HTML5
+//#if !PLATFORM_HTML5
 
 	RecievedBuffer.Append((uint8*)Data, Size); // consumes all of Data
 	// UE_LOG(LogROS, Warning, TEXT("ReceivedBuffer.Num() = %d"), RecievedBuffer.Num());
@@ -393,41 +393,41 @@ void FWebSocket::OnRawRecieve(void* Data, uint32 Size, bool isBinary)
 	}
 
 
-#else // PLATFORM_HTML5
-
-	check(false); // Not modified (Yilong)
-
-	// browser was crashing when using RecievedBuffer...
-
-	check(Data == NULL); // jic this is not obvious, Data will be resigned to Buffer below
-
-	uint8 Buffer[1024]; // should be at MAX PACKET SIZE.
-	Size = recv(SockFd, Buffer, sizeof(Buffer), 0);
-//	while ( Size > sizeof(uint32) )
-	if ( Size > sizeof(uint32) )
-	{
-		Data = (void*)Buffer;
-		uint32 BytesToBeRead = *(uint32*)Data;
-		uint32 BytesLeft = Size;
-		while ( ( BytesToBeRead > 0 ) && ( BytesToBeRead < BytesLeft ) )
-		{
-			Data = (void*)((uint8*)Data + sizeof(uint32));
-			RecievedCallBack.ExecuteIfBound(Data, BytesToBeRead);
-
-			// "RecievedBuffer.RemoveAt()"
-			Data = (void*)((uint8*)Data + BytesToBeRead);
-			BytesLeft -= BytesToBeRead + sizeof(uint32);
-			if ( (uint8*)Data >= (Buffer+Size)  // hard cap
-				||	BytesLeft == 0	)		   // soft limit
-			{
-				break;
-			}
-			BytesToBeRead = *(uint32*)Data;
-		}
-//		Size = recv(SockFd, Buffer, sizeof(Buffer), 0);
-	}
-
-#endif
+//#else // PLATFORM_HTML5
+//
+//	check(false); // Not modified (Yilong)
+//
+//	// browser was crashing when using RecievedBuffer...
+//
+//	check(Data == NULL); // jic this is not obvious, Data will be resigned to Buffer below
+//
+//	uint8 Buffer[1024]; // should be at MAX PACKET SIZE.
+//	Size = recv(SockFd, Buffer, sizeof(Buffer), 0);
+////	while ( Size > sizeof(uint32) )
+//	if ( Size > sizeof(uint32) )
+//	{
+//		Data = (void*)Buffer;
+//		uint32 BytesToBeRead = *(uint32*)Data;
+//		uint32 BytesLeft = Size;
+//		while ( ( BytesToBeRead > 0 ) && ( BytesToBeRead < BytesLeft ) )
+//		{
+//			Data = (void*)((uint8*)Data + sizeof(uint32));
+//			RecievedCallBack.ExecuteIfBound(Data, BytesToBeRead);
+//
+//			// "RecievedBuffer.RemoveAt()"
+//			Data = (void*)((uint8*)Data + BytesToBeRead);
+//			BytesLeft -= BytesToBeRead + sizeof(uint32);
+//			if ( (uint8*)Data >= (Buffer+Size)  // hard cap
+//				||	BytesLeft == 0	)		   // soft limit
+//			{
+//				break;
+//			}
+//			BytesToBeRead = *(uint32*)Data;
+//		}
+////		Size = recv(SockFd, Buffer, sizeof(Buffer), 0);
+//	}
+//
+//#endif
 }
 
 void FWebSocket::OnRawWebSocketWritable(WebSocketInternal* wsi)
@@ -440,7 +440,7 @@ void FWebSocket::OnRawWebSocketWritable(WebSocketInternal* wsi)
 	lws_write_protocol OutType = (lws_write_protocol)OutgoingBufferType[0];
 	CriticalSection.Unlock();
 
-#if !PLATFORM_HTML5
+//#if !PLATFORM_HTML5
 
 	uint32 TotalDataSize = Packet.Num() - LWS_PRE;
 	uint32 DataToSend = TotalDataSize;
@@ -462,26 +462,26 @@ void FWebSocket::OnRawWebSocketWritable(WebSocketInternal* wsi)
 
 	check(Wsi == wsi);
 
-#else // PLATFORM_HTML5
-
-	uint32 TotalDataSize = Packet.Num();
-	uint32 DataToSend = TotalDataSize;
-	while (DataToSend)
-	{
-		// send actual data in one go.
-		int Result = send(SockFd, Packet.GetData()+(DataToSend-TotalDataSize),DataToSend, 0);
-		if (Result == -1)
-		{
-			// we are caught with our pants down. fail.
-			UE_LOG(LogHTML5Networking, Error, TEXT("Could not write %d bytes"), Packet.Num());
-			ErrorCallBack.Broadcast();
-			return;
-		}
-		UE_CLOG((uint32)Result < DataToSend, LogHTML5Networking, Warning, TEXT("Could not write all '%d' bytes to socket"), DataToSend);
-		DataToSend-=Result;
-	}
-
-#endif
+//#else // PLATFORM_HTML5
+//
+//	uint32 TotalDataSize = Packet.Num();
+//	uint32 DataToSend = TotalDataSize;
+//	while (DataToSend)
+//	{
+//		// send actual data in one go.
+//		int Result = send(SockFd, Packet.GetData()+(DataToSend-TotalDataSize),DataToSend, 0);
+//		if (Result == -1)
+//		{
+//			// we are caught with our pants down. fail.
+//			UE_LOG(LogHTML5Networking, Error, TEXT("Could not write %d bytes"), Packet.Num());
+//			ErrorCallBack.Broadcast();
+//			return;
+//		}
+//		UE_CLOG((uint32)Result < DataToSend, LogHTML5Networking, Warning, TEXT("Could not write all '%d' bytes to socket"), DataToSend);
+//		DataToSend-=Result;
+//	}
+//
+//#endif
 
 	// this is very inefficient we need a constant size circular buffer to efficiently not do unnecessary allocations/deallocations.
 	CriticalSection.Lock();
@@ -497,7 +497,7 @@ void FWebSocket::Destroy()
     ConnectedCallBack.Clear();
     ErrorCallBack.Clear();
 
-#if !PLATFORM_HTML5
+//#if !PLATFORM_HTML5
 
 	Flush();
 
@@ -509,11 +509,11 @@ void FWebSocket::Destroy()
 		Protocols = NULL;
 	}
 
-#else // PLATFORM_HTML5
-
-	close(SockFd);
-
-#endif
+//#else // PLATFORM_HTML5
+//
+//	close(SockFd);
+//
+//#endif
 
 	IsDestroyed = true; 
 }
@@ -524,7 +524,7 @@ FWebSocket::~FWebSocket()
 		Destroy(); 
 }
 
-#if !PLATFORM_HTML5
+//#if !PLATFORM_HTML5
 static int unreal_networking_client(
 		struct lws *Wsi,
 		enum lws_callback_reasons Reason,
@@ -574,4 +574,4 @@ static int unreal_networking_client(
 
 	return 0;
 }
-#endif
+//#endif
