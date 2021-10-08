@@ -63,7 +63,7 @@ FWebSocket::FWebSocket(
 void FWebSocket::Connect(){
 
   struct lws_client_connect_info ConnectInfo = {
-			Context, TCHAR_TO_ANSI(*StrInetAddress), InetPort, false, "/", TCHAR_TO_ANSI(*HostAddr), TCHAR_TO_ANSI(*StrInetAddress), Protocols[1].name, -1, this
+			Context, TCHAR_TO_ANSI(*StrInetAddress), InetPort, false, "/", TCHAR_TO_ANSI(*HostAddr), TCHAR_TO_ANSI(*HostAddr), Protocols[1].name, -1, this
 	};
   Wsi = lws_client_connect_via_info(&ConnectInfo);
   check(Wsi);
