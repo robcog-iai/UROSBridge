@@ -5,12 +5,7 @@
 #pragma  once
 #include "HTML5NetworkingPrivate.h"
 #include "Core.h"
-//#if !PLATFORM_HTML5
 #include "Runtime/Sockets/Private/BSDSockets/SocketSubsystemBSD.h"
-//#else
-//#include <netinet/in.h>
-//#endif
-
 class FWebSocket
 {
 
@@ -19,10 +14,8 @@ public:
 	// Initialize as client side socket. (do not connect)
 	FWebSocket(const FInternetAddr& ServerAddress);
 
-//#if !PLATFORM_HTML5
 	// Initialize as server side socket.
 	FWebSocket(WebSocketInternalContext* InContext, WebSocketInternal* Wsi);
-//#endif
 
 	// clean up.
 	~FWebSocket();
@@ -75,7 +68,6 @@ public:
 	/** Critical Section */
 	FCriticalSection CriticalSection;
 
-//#if !PLATFORM_HTML5
 	/** libwebsocket internal context*/
 	WebSocketInternalContext* Context;
 
@@ -94,8 +86,8 @@ public:
 	/** Server side socket or client side*/
 	bool IsServerSide;
 
-	/** Is the client destroyed? */ 
-	bool IsDestroyed; 
+	/** Is the client destroyed? */
+	bool IsDestroyed;
 
 	friend class FWebSocketServer;
 };
