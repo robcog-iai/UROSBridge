@@ -77,14 +77,15 @@ FWebSocket::FWebSocket(
 	check(Context);
 
 	StrInetAddress = ServerAddress.ToString(false);
+        HostAddr =  ServerAddress.ToString(true);
 	InetPort = ServerAddress.GetPort();
 //#endif
 }
 
 void FWebSocket::Connect(){
-//#if !PLATFORM_HTML5
-	struct lws_client_connect_info ConnectInfo = {
-			Context, TCHAR_TO_ANSI(*StrInetAddress), InetPort, false, "/", TCHAR_TO_ANSI(*StrInetAddress), TCHAR_TO_ANSI(*StrInetAddress), Protocols[1].name, -1, this
+
+  struct lws_client_connect_info ConnectInfo = {
+			Context, TCHAR_TO_ANSI(*StrInetAddress), InetPort, false, "/", TCHAR_TO_ANSI(*HostAddr), TCHAR_TO_ANSI(*StrInetAddress), Protocols[1].name, -1, this
 	};
 	Wsi = lws_client_connect_via_info(&ConnectInfo);
 	check(Wsi);

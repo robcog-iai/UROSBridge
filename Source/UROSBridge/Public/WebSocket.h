@@ -84,11 +84,9 @@ public:
 
 	/** libwebsocket Protocols that can be serviced by this implemenation*/
 	WebSocketInternalProtocol* Protocols;
-//#else
-//	int SockFd;
-//#endif
 
 	FString StrInetAddress;
+	FString HostAddr;
 	int32 InetPort;
 
 	struct sockaddr_in RemoteAddr;
