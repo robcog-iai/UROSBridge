@@ -16,7 +16,7 @@
  * this Blueprint as the Game Instance for your project. This can be done
  * in the UE4Editor -> Project Settings -> Maps & Modes.
  */
-UCLASS()
+UCLASS(Config=Ros)
 class UROSBRIDGE_API UROSBridgeGameInstance : public UGameInstance, public FTickableGameObject
 {
 	GENERATED_BODY()
@@ -39,10 +39,10 @@ protected:
 public:
 	TSharedPtr<FROSBridgeHandler> ROSHandler;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Config, Category = "ROS")
 	FString ROSBridgeServerHost;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Config, Category = "ROS")
 	int32 ROSBridgeServerPort;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")

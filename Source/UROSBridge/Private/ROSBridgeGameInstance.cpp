@@ -5,8 +5,8 @@
 // Default constructor
 UROSBridgeGameInstance::UROSBridgeGameInstance()
 {
-	ROSBridgeServerHost = "127.0.0.1";
-	ROSBridgeServerPort = 9090;
+	// ROSBridgeServerHost = "127.0.0.1";
+	// ROSBridgeServerPort = 9090;
 	bConnectToROS = true;
 }
 
@@ -15,7 +15,7 @@ void UROSBridgeGameInstance::OnStart()
 {
 	Super::OnStart();
 
-	if (!bConnectToROS) 
+	if (!bConnectToROS)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("ConnectToROS is false in GameInstance settings. Don't connect to rosbridge..."));
 		return;
@@ -37,7 +37,7 @@ void UROSBridgeGameInstance::Shutdown()
 	Super::Shutdown();
 }
 
-void UROSBridgeGameInstance::Tick(float DeltaTime) 
+void UROSBridgeGameInstance::Tick(float DeltaTime)
 {
 	if (ROSHandler.IsValid())
 	{
@@ -45,12 +45,12 @@ void UROSBridgeGameInstance::Tick(float DeltaTime)
 	}
 }
 
-bool UROSBridgeGameInstance::IsTickable() const 
+bool UROSBridgeGameInstance::IsTickable() const
 {
 	return true;
 }
 
-TStatId UROSBridgeGameInstance::GetStatId() const 
+TStatId UROSBridgeGameInstance::GetStatId() const
 {
 	return Super::GetStatID();
 }
