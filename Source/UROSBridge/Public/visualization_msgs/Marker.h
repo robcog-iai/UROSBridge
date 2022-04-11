@@ -64,7 +64,7 @@ namespace visualization_msgs
 			bool bInFrameLocked,
 			TArray<geometry_msgs::Point> InPoints, TArray<std_msgs::ColorRGBA> InColors,
 			FString InText, FString InMeshResource, bool bInMeshUseEmbeddedMaterials) :
-			Type(InMarkerType), Action(InActionType), Header(InHeader), Ns(InNs), Pose(InPose.GetPosition(), InPose.GetOrientation()),
+			Header(InHeader), Ns(InNs), Type(InMarkerType), Action(InActionType),  Pose(InPose.GetPosition(), InPose.GetOrientation()),
 			Scale(InScale.GetVector()),
 			Color(InColor.GetColor()), Lifetime(InLifetime), bFrameLocked(bInFrameLocked),
 			Points(InPoints), Colors(InColors),

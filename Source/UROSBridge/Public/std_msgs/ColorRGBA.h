@@ -31,7 +31,7 @@ namespace std_msgs
 		~ColorRGBA() override {}
 
 
-		FVector GetColor() const
+		FVector4 GetColor() const
 		{
 			return FVector4(R, G, B, A);
 		}
