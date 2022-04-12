@@ -10,8 +10,7 @@ class UROSBRIDGE_API FROSTime
 public:
 	uint32 Secs, NSecs;
 
-	FROSTime(uint32 InSecs, uint32 InNSecs) :
-		Secs(InSecs), NSecs(InNSecs)
+	FROSTime(uint32 InSecs, uint32 InNSecs) : Secs(InSecs), NSecs(InNSecs)
 	{
 	}
 
@@ -39,8 +38,7 @@ public:
 
 	FString ToString() const
 	{
-		return TEXT("Time { secs = ") + FString::FromInt(Secs)
-				 + TEXT(", nsecs = ") + FString::FromInt(NSecs) + TEXT(" }");
+		return TEXT("Time { secs = ") + FString::FromInt(Secs) + TEXT(", nsecs = ") + FString::FromInt(NSecs) + TEXT(" }");
 	}
 
 	TSharedPtr<FJsonObject> ToJsonObject() const
@@ -58,13 +56,13 @@ public:
 		Object.SetNumberField(TEXT("secs"), Secs);
 		Object.SetNumberField(TEXT("nsecs"), NSecs);
 
-		TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
+		TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
 		FJsonSerializer::Serialize(MakeShared<FJsonObject>(Object), Writer);
 		return OutputString;
 	}
 
-        double GetTimeAsDouble()
-        {
-          return Secs + NSecs / 1000000000;
-        };
+	double GetTimeAsDouble()
+	{
+		return Secs + NSecs / 1000000000.0;
+	};
 };
