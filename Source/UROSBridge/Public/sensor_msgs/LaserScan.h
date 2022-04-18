@@ -143,12 +143,12 @@ namespace sensor_msgs
 			RangeMax = InRangeMax;
 		}
 
-		void SetRanges(TArray<float>& InRanges)
+		void SetRanges(const TArray<float>& InRanges)
 		{
 			Ranges = InRanges;
 		}
 
-		void SetIntensities(TArray<float>& InIntensities)
+		void SetIntensities(const TArray<float>& InIntensities)
 		{
 			Intensities = InIntensities;
 		}
