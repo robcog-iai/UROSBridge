@@ -61,9 +61,14 @@ FWebSocket::FWebSocket(
 }
 
 void FWebSocket::Connect(){
+  auto StrInetAdressANSI = StringCast<ANSICHAR>(*StrInetAddress);
+  const char* StrInetAdressANSIPtr = StrInetAdressANSI.Get();
+
+  auto HostAddrANSI = StringCast<ANSICHAR>(*HostAddr);
+  const char* HostAddrANSIPtr = HostAddrANSI.Get();
 
   struct lws_client_connect_info ConnectInfo = {
-			Context, TCHAR_TO_ANSI(*StrInetAddress), InetPort, false, "/", TCHAR_TO_ANSI(*HostAddr), TCHAR_TO_ANSI(*HostAddr), Protocols[1].name, -1, this
+			Context, StrInetAdressANSIPtr, InetPort, false, "/", HostAddrANSIPtr, HostAddrANSIPtr, Protocols[1].name, -1, this
 	};
   Wsi = lws_client_connect_via_info(&ConnectInfo);
   check(Wsi);
